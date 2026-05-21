@@ -247,10 +247,10 @@ namespace StrafAdvance.Editor
             };
 
             string outputPath = System.IO.Path.Combine(
-                System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile),
-                "Desktop/StrafeAdvance.apk");
+                System.IO.Path.GetFullPath(".."),
+                "StrafeAdvance.apk");
 
-            var options = new UnityEditor.Build.Reporting.BuildPlayerOptions
+            var options = new BuildPlayerOptions
             {
                 scenes      = scenes,
                 locationPathName = outputPath,
