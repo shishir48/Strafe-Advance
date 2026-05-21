@@ -2,7 +2,9 @@
     "name": "_Game.Editor",
     "rootNamespace": "StrafAdvance.Editor",
     "references": [
-        "_Game.Scripts"
+        "_Game.Scripts",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI"
     ],
     "includePlatforms": ["Editor"],
     "excludePlatforms": [],
