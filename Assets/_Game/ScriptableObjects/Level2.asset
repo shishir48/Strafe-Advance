@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3f71cb4055d440d687de75f00d0cbab, type: 3}
+  m_Name: Level2
+  m_EditorClassIdentifier: _Game.Scripts::StrafAdvance.LevelConfig
+  levelName: Level 2
+  waves:
+  - {fileID: 11400000, guid: ab474ea0e7e9c4752915627bd660c9b3, type: 2}
+  - {fileID: 11400000, guid: 918a51162c14c4e79a94ce7cb169d5cc, type: 2}
+  - {fileID: 11400000, guid: 56ae9850fc548420cabc6d9e7f072d10, type: 2}
+  - {fileID: 11400000, guid: 6c794bd0deafa41ea8caaf7bae88deeb, type: 2}
+  - {fileID: 11400000, guid: de9cd0d0267334d9bab06a6ca1eb5953, type: 2}
+  - {fileID: 11400000, guid: 7422dd29604f049388360bc6f3ba5c9f, type: 2}
+  bossPrefab: {fileID: 0}
+  worldScrollSpeed: 4.5
+  iapProductId: free
+  parTimeSeconds: 110

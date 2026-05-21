@@ -1,0 +1,18 @@
+{
+    "name": "_Game.Scripts",
+    "rootNamespace": "StrafAdvance",
+    "references": [
+        "Unity.TextMeshPro",
+        "UnityEngine.Purchasing",
+        "UnityEngine.Purchasing.Stores"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
