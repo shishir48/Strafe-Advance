@@ -221,6 +221,53 @@ namespace StrafAdvance.Editor
             return slider;
         }
 
+        // ─── Build Android APK ──────────────────────────────────────────────────
+        [MenuItem("StrafAdvance/Build Android APK", priority = 5)]
+        public static void BuildAndroidAPK()
+        {
+            // Ensure Android build target
+            if (EditorUserBuildSettings.activeBuildTarget != BuildTarget.Android)
+            {
+                Debug.Log("[GameSetup] Switching to Android build target...");
+                EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Android, BuildTarget.Android);
+            }
+
+            // Build settings
+            PlayerSettings.productName        = "Strafe Advance";
+            PlayerSettings.applicationIdentifier = "com.strafegame.advance";
+            PlayerSettings.Android.minSdkVersion    = AndroidSdkVersions.AndroidApiLevel26;
+            PlayerSettings.Android.targetSdkVersion = AndroidSdkVersions.AndroidApiLevelAuto;
+            PlayerSettings.SetScriptingBackend(BuildTargetGroup.Android, ScriptingImplementation.IL2CPP);
+            PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
+
+            var scenes = new[]
+            {
+                "Assets/_Game/Scenes/Bootstrap.unity",
+                "Assets/_Game/Scenes/GameScene.unity"
+            };
+
+            string outputPath = System.IO.Path.Combine(
+                System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile),
+                "Desktop/StrafeAdvance.apk");
+
+            var options = new UnityEditor.Build.Reporting.BuildPlayerOptions
+            {
+                scenes      = scenes,
+                locationPathName = outputPath,
+                target      = BuildTarget.Android,
+                options     = BuildOptions.None
+            };
+
+            Debug.Log($"[GameSetup] Building APK to {outputPath}...");
+            var report = BuildPipeline.BuildPlayer(options);
+            var summary = report.summary;
+
+            if (summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
+                Debug.Log($"[GameSetup] APK build SUCCESS: {outputPath} ({summary.totalSize / 1024 / 1024} MB)");
+            else
+                Debug.LogError($"[GameSetup] APK build FAILED: {summary.result} — {summary.totalErrors} errors");
+        }
+
         // ─── Play Game ───────────────────────────────────────────────────────────
         [MenuItem("StrafAdvance/Play Game %F5", priority = 0)]
         public static void PlayGame()
