@@ -12,7 +12,7 @@ namespace StrafAdvance
             panel.SetActive(false);
         }
 
-        void OnDestroy() => GameManager.Instance.OnStateChanged -= OnStateChanged;
+        void OnDestroy() { if (GameManager.Instance != null) GameManager.Instance.OnStateChanged -= OnStateChanged; }
 
         void OnStateChanged(GameState state)
             => panel.SetActive(state == GameState.GameOver);
