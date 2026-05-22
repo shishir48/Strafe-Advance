@@ -44,7 +44,6 @@ namespace StrafAdvance
         {
             _spawning = true;
             WaveConfig wave = _level.waves[index];
-            Debug.Log($"[Wave] Starting wave {index+1}/{_level.waves.Length} type={wave.enemyType} count={wave.count}");
             OnWaveStarted?.Invoke(index);
 
             for (int i = 0; i < wave.count; i++)
@@ -104,7 +103,6 @@ namespace StrafAdvance
         public void ReportKill()
         {
             _enemiesAlive = Mathf.Max(0, _enemiesAlive - 1);
-            Debug.Log($"[Wave] Kill reported alive={_enemiesAlive} spawning={_spawning} waveIdx={CurrentWaveIndex}");
             if (_enemiesAlive > 0 || _spawning) return;
 
             CurrentWaveIndex++;
