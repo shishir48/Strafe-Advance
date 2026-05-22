@@ -376,7 +376,7 @@ namespace StrafAdvance.Editor
                         r.sharedMaterial = applyMat;
             }
 
-            SwapMesh("Player",              "astronautB.fbx",    Vector3.one * 0.015f, new Vector3(0, 180, 0), playerMat);
+            SwapMesh("Player",              "astronautA.fbx",    Vector3.one * 0.015f, new Vector3(0, 180, 0), playerMat);
             SwapMesh("Enemies/GruntEnemy",  "astronautA.fbx",    Vector3.one * 0.015f, new Vector3(0, 180, 0), gruntMat);
             SwapMesh("Enemies/FlankerEnemy","craft_speederA.fbx", Vector3.one * 0.007f, new Vector3(0, 180, 0), flankerMat);
             SwapMesh("Enemies/EliteEnemy",  "craft_speederC.fbx", Vector3.one * 0.008f, new Vector3(0, 180, 0), eliteMat);
