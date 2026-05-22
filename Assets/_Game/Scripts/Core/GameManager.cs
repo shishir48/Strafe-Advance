@@ -33,12 +33,14 @@ namespace StrafAdvance
 
         IEnumerator InitFlow()
         {
+            Debug.Log("[GameManager] InitFlow started");
             yield return null;
 
             var waveSpawner      = FindAnyObjectByType<WaveSpawner>();
             var corridorScroller = FindAnyObjectByType<CorridorScroller>();
             var l1 = Resources.Load<LevelConfig>("Level1");
 
+            Debug.Log($"[GameManager] ws={waveSpawner != null} cs={corridorScroller != null} l1={l1 != null}");
             if (waveSpawner == null || corridorScroller == null || l1 == null)
             {
                 Debug.LogWarning("[GameManager] Missing required components for auto-start.");
