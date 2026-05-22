@@ -19,11 +19,9 @@ namespace StrafAdvance
                 rb.isKinematic = true;
                 rb.useGravity  = false;
             }
-            // Set layer (doesn't require TagManager)
+            // Set layer — used for bullet detection
             int enemyLayer = LayerMask.NameToLayer("Enemy");
             if (enemyLayer >= 0) gameObject.layer = enemyLayer;
-            // Set tag safely
-            try { gameObject.tag = "Enemy"; } catch { }
         }
 
         public void Initialize(EnemyConfig config)
