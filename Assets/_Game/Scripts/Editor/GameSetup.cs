@@ -41,7 +41,7 @@ namespace StrafAdvance.Editor
             Color wallBase  = new Color(0.03f, 0.05f, 0.09f, 1f);
             Color wallGlow  = new Color(0.31f, 0.76f, 0.97f, 1f);
 
-            UpdateSciFiMat("Player",  navyBase,  blueGlow,  2.0f, 0.8f, 0.4f, urp);
+            UpdateSciFiMat("Player",  navyBase,  blueGlow,  0.8f, 0.8f, 0.4f, urp);
             UpdateSciFiMat("Grunt",   redBase,   redGlow,   1.5f, 0.6f, 0.3f, urp);
             UpdateSciFiMat("Flanker", tealBase,  tealGlow,  1.6f, 0.7f, 0.5f, urp);
             UpdateSciFiMat("Elite",   tealBase,  tealGlow,  1.8f, 0.7f, 0.5f, urp);
@@ -343,7 +343,7 @@ namespace StrafAdvance.Editor
             SwapMesh("Enemies/FlankerEnemy","craft_speederA.fbx", Vector3.one * 0.007f, new Vector3(0, 180, 0), flankerMat);
             SwapMesh("Enemies/EliteEnemy",  "craft_speederC.fbx", Vector3.one * 0.008f, new Vector3(0, 180, 0), eliteMat);
             SwapMesh("Enemies/Boss",        "turret_double.fbx",  Vector3.one * 0.015f, new Vector3(0, 0, 0),   bossMat);
-            SwapMesh("Level/CorridorTile",  "corridor_detailed.fbx", new Vector3(0.015f, 0.015f, 0.015f), Vector3.zero, tileMat);
+            SwapMesh("Level/CorridorTile",  "corridor.fbx", new Vector3(0.015f, 0.015f, 0.015f), Vector3.zero, tileMat);
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
