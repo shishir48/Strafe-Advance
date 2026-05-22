@@ -69,8 +69,15 @@ namespace StrafAdvance
             if (other.TryGetComponent<IDamageable>(out var damageable))
             {
                 damageable.TakeDamage(_damage);
+                SpawnHitVFX();
                 _pool?.Return(this);
             }
+        }
+
+        private void SpawnHitVFX()
+        {
+            var prefab = Resources.Load<GameObject>("VFX/HitSpark");
+            if (prefab != null) Instantiate(prefab, transform.position, Quaternion.identity);
         }
 
         public void OnGetFromPool() { }

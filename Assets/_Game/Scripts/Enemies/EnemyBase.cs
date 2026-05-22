@@ -48,7 +48,17 @@ namespace StrafAdvance
             Destroy(gameObject);
         }
 
-        protected virtual void Die() => Destroy(gameObject);
+        protected virtual void Die()
+        {
+            SpawnDeathVFX();
+            Destroy(gameObject);
+        }
+
+        protected virtual void SpawnDeathVFX()
+        {
+            var prefab = Resources.Load<GameObject>("VFX/EnemyDeath");
+            if (prefab != null) Instantiate(prefab, transform.position, Quaternion.identity);
+        }
     }
 }
 

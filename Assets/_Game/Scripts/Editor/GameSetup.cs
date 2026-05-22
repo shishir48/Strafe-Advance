@@ -20,7 +20,7 @@ namespace StrafAdvance.Editor
         {
             ApplySciFiMaterials();
             ApplyPostProcessing();
-            // ApplyVFX() added in Task 4
+            ApplyVFX();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log("[SciFiUpgrade] All passes complete. Check console for warnings.");
@@ -69,6 +69,101 @@ namespace StrafAdvance.Editor
             mat.SetFloat("_Metallic",    metallic);
             mat.SetFloat("_Smoothness",  smoothness);
             EditorUtility.SetDirty(mat);
+        }
+
+        static void ApplyVFX()
+        {
+            EnsureDir("Assets/Resources");
+            EnsureDir("Assets/Resources/VFX");
+
+            var urp = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
+
+            UpdateBulletTrail("Combat/PlayerBullet", new Color(0.31f, 0.76f, 0.97f), urp);
+
+            CreateVFXPrefab("HitSpark",
+                new Color(0.31f, 0.76f, 0.97f, 1f),
+                new Color(1.00f, 1.00f, 1.00f, 0f),
+                lifetime: 0.15f, speed: 3.5f, size: 0.08f, burst: 12, urp: urp);
+
+            CreateVFXPrefab("EnemyDeath",
+                new Color(0.31f, 0.76f, 0.97f, 1f),
+                new Color(0.50f, 0.90f, 1.00f, 0f),
+                lifetime: 0.40f, speed: 5f, size: 0.15f, burst: 20, urp: urp);
+
+            CreateVFXPrefab("BossDeath",
+                new Color(1.00f, 0.85f, 0.00f, 1f),
+                new Color(1.00f, 0.40f, 0.00f, 0f),
+                lifetime: 1.20f, speed: 7f, size: 0.28f, burst: 40, urp: urp);
+
+            Debug.Log("[SciFiUpgrade] VFX prefabs created in Assets/Resources/VFX/");
+        }
+
+        static void UpdateBulletTrail(string prefabSubPath, Color trailColor, Shader urp)
+        {
+            string path = $"{PrefabPath}/{prefabSubPath}.prefab";
+            if (AssetDatabase.LoadAssetAtPath<GameObject>(path) == null) return;
+
+            using var scope = new PrefabUtility.EditPrefabContentsScope(path);
+            var root = scope.prefabContentsRoot;
+
+            var trail = root.GetComponent<TrailRenderer>();
+            if (trail == null) trail = root.AddComponent<TrailRenderer>();
+            trail.time        = 0.1f;
+            trail.startWidth  = 0.06f;
+            trail.endWidth    = 0f;
+            trail.startColor  = trailColor;
+            trail.endColor    = new Color(trailColor.r, trailColor.g, trailColor.b, 0f);
+            trail.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+
+            var trailMat = new Material(urp ?? Shader.Find("Standard"));
+            trailMat.color = trailColor;
+            trailMat.SetColor("_BaseColor", trailColor);
+            trailMat.SetColor("_EmissionColor", trailColor * 3f);
+            trailMat.EnableKeyword("_EMISSION");
+            trail.material = trailMat;
+        }
+
+        static void CreateVFXPrefab(string name, Color startColor, Color endColor,
+            float lifetime, float speed, float size, int burst, Shader urp)
+        {
+            string savePath = $"Assets/Resources/VFX/{name}.prefab";
+
+            var go = new GameObject(name);
+            var ps = go.AddComponent<ParticleSystem>();
+
+            var main = ps.main;
+            main.startLifetime  = lifetime;
+            main.startSpeed     = new ParticleSystem.MinMaxCurve(speed * 0.5f, speed);
+            main.startSize      = new ParticleSystem.MinMaxCurve(size * 0.5f, size);
+            main.startColor     = new ParticleSystem.MinMaxGradient(startColor, endColor);
+            main.loop           = false;
+            main.playOnAwake    = true;
+            main.stopAction     = ParticleSystemStopAction.Destroy;
+            main.gravityModifier = 0f;
+            main.simulationSpace = ParticleSystemSimulationSpace.World;
+
+            var emission = ps.emission;
+            emission.enabled      = true;
+            emission.rateOverTime = 0;
+            emission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0f, burst) });
+
+            var shape = ps.shape;
+            shape.enabled   = true;
+            shape.shapeType = ParticleSystemShapeType.Sphere;
+            shape.radius    = 0.05f;
+
+            var renderer = go.GetComponent<ParticleSystemRenderer>();
+            var mat = new Material(urp ?? Shader.Find("Standard"));
+            mat.color = startColor;
+            mat.SetColor("_BaseColor", startColor);
+            mat.SetColor("_EmissionColor", startColor * 3f);
+            mat.EnableKeyword("_EMISSION");
+            renderer.material = mat;
+            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            renderer.receiveShadows = false;
+
+            PrefabUtility.SaveAsPrefabAsset(go, savePath);
+            Object.DestroyImmediate(go);
         }
 
         static void ApplyPostProcessing()
