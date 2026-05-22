@@ -41,11 +41,11 @@ namespace StrafAdvance.Editor
             Color wallBase  = new Color(0.03f, 0.05f, 0.09f, 1f);
             Color wallGlow  = new Color(0.31f, 0.76f, 0.97f, 1f);
 
-            UpdateSciFiMat("Player",  navyBase,  blueGlow,  0.8f, 0.8f, 0.4f, urp);
-            UpdateSciFiMat("Grunt",   redBase,   redGlow,   1.5f, 0.6f, 0.3f, urp);
-            UpdateSciFiMat("Flanker", tealBase,  tealGlow,  1.6f, 0.7f, 0.5f, urp);
-            UpdateSciFiMat("Elite",   tealBase,  tealGlow,  1.8f, 0.7f, 0.5f, urp);
-            UpdateSciFiMat("Boss",    blackBase, goldGlow,  2.5f, 0.9f, 0.6f, urp);
+            UpdateSciFiMat("Player",  navyBase,  blueGlow,  0.15f, 0.7f, 0.5f, urp);
+            UpdateSciFiMat("Grunt",   redBase,   redGlow,   0.15f, 0.6f, 0.4f, urp);
+            UpdateSciFiMat("Flanker", tealBase,  tealGlow,  0.15f, 0.7f, 0.5f, urp);
+            UpdateSciFiMat("Elite",   tealBase,  tealGlow,  0.15f, 0.7f, 0.5f, urp);
+            UpdateSciFiMat("Boss",    blackBase, goldGlow,  0.3f,  0.9f, 0.6f, urp);
             UpdateSciFiMat("Bullet",  Color.black, blueGlow, 5.0f, 0.0f, 0.0f, urp);
             UpdateSciFiMat("Tile",    navyBase,  blueGlow,  0.15f, 0.5f, 0.3f, urp);
             UpdateSciFiMat("Wall",    wallBase,  wallGlow,  0.12f, 0.5f, 0.3f, urp);
@@ -245,9 +245,9 @@ namespace StrafAdvance.Editor
             if (!profile.TryGet<Bloom>(out var bloom))
                 bloom = profile.Add<Bloom>(false);
             bloom.active = true;
-            bloom.intensity.Override(0.6f);
-            bloom.threshold.Override(0.8f);
-            bloom.scatter.Override(0.7f);
+            bloom.intensity.Override(0.35f);
+            bloom.threshold.Override(1.2f);
+            bloom.scatter.Override(0.5f);
 
             if (!profile.TryGet<Vignette>(out var vignette))
                 vignette = profile.Add<Vignette>(false);
