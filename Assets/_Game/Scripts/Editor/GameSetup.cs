@@ -774,6 +774,49 @@ namespace StrafAdvance.Editor
                 Debug.LogError($"[GameSetup] APK build FAILED: {summary.result} — {summary.totalErrors} errors");
         }
 
+        // ─── Create VFX Prefabs ──────────────────────────────────────────────────
+        [MenuItem("StrafAdvance/10. Create VFX Prefabs", priority = 100)]
+        public static void CreateVFXPrefabs()
+        {
+            EnsureDir("Assets/Resources/VFX");
+            CreateParticlePrefab("Assets/Resources/VFX/HitSpark.prefab",
+                new Color(1f, 0.9f, 0.2f), new Color(1f, 0.4f, 0f),
+                startSize: 0.15f, startSpeed: 4f, lifetime: 0.3f, count: 12);
+            CreateParticlePrefab("Assets/Resources/VFX/EnemyDeath.prefab",
+                new Color(1f, 0.3f, 0.1f), new Color(0.8f, 0f, 0.5f),
+                startSize: 0.4f, startSpeed: 6f, lifetime: 0.6f, count: 25);
+            AssetDatabase.SaveAssets(); AssetDatabase.Refresh();
+            Debug.Log("[GameSetup] VFX prefabs created.");
+        }
+
+        static void CreateParticlePrefab(string path, Color startColor, Color endColor,
+            float startSize, float startSpeed, float lifetime, int count)
+        {
+            if (AssetDatabase.LoadAssetAtPath<GameObject>(path) != null) return;
+            var go = new GameObject(System.IO.Path.GetFileNameWithoutExtension(path));
+            var ps = go.AddComponent<ParticleSystem>();
+            var main = ps.main;
+            main.startLifetime = lifetime; main.startSpeed = startSpeed;
+            main.startSize = startSize; main.loop = false; main.playOnAwake = true;
+            main.stopAction = ParticleSystemStopAction.Destroy; main.maxParticles = count * 2;
+            main.simulationSpace = ParticleSystemSimulationSpace.World;
+            main.startColor = new ParticleSystem.MinMaxGradient(startColor, endColor);
+            var emission = ps.emission;
+            emission.rateOverTime = 0;
+            emission.SetBursts(new[] { new ParticleSystem.Burst(0f, count) });
+            var shape = ps.shape; shape.shapeType = ParticleSystemShapeType.Sphere; shape.radius = 0.1f;
+            var col = ps.colorOverLifetime; col.enabled = true;
+            var g = new Gradient();
+            g.SetKeys(new[] { new GradientColorKey(startColor, 0f), new GradientColorKey(endColor, 1f) },
+                      new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0f, 1f) });
+            col.color = g;
+            var sizeOL = ps.sizeOverLifetime; sizeOL.enabled = true;
+            sizeOL.size = new ParticleSystem.MinMaxCurve(1f,
+                new AnimationCurve(new Keyframe(0f, 1f), new Keyframe(1f, 0f)));
+            PrefabUtility.SaveAsPrefabAsset(go, path);
+            Object.DestroyImmediate(go);
+        }
+
         // ─── Play Game ───────────────────────────────────────────────────────────
         [MenuItem("StrafAdvance/Play Game %F5", priority = 0)]
         public static void PlayGame()
