@@ -67,8 +67,16 @@ namespace StrafAdvance.Editor
         {
             const string modelsPath = "Assets/_Game/Art/Models";
 
+            // Load materials for applying to FBX meshes
+            var playerMat  = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Game/Art/Materials/Player.mat");
+            var gruntMat   = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Game/Art/Materials/Grunt.mat");
+            var flankerMat = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Game/Art/Materials/Flanker.mat");
+            var eliteMat   = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Game/Art/Materials/Elite.mat");
+            var bossMat    = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Game/Art/Materials/Boss.mat");
+            var tileMat    = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Game/Art/Materials/Tile.mat");
+
             // Helper: load mesh from FBX and apply to prefab replacing primitive renderers
-            void SwapMesh(string prefabSubPath, string fbxName, Vector3 scale, Vector3 rotation)
+            void SwapMesh(string prefabSubPath, string fbxName, Vector3 scale, Vector3 rotation, Material applyMat)
             {
                 string fbxPath = $"{modelsPath}/{fbxName}";
                 var fbxAsset = AssetDatabase.LoadAssetAtPath<GameObject>(fbxPath);
@@ -80,16 +88,17 @@ namespace StrafAdvance.Editor
                 using var scope = new PrefabUtility.EditPrefabContentsScope(prefabPath);
                 var root = scope.prefabContentsRoot;
 
-                // Remove old visual children (keep components)
+                // Remove old visual children but KEEP named functional ones (FirePoint, etc.)
+                var keepNames = new System.Collections.Generic.HashSet<string> { "FirePoint" };
                 for (int i = root.transform.childCount - 1; i >= 0; i--)
                 {
                     var child = root.transform.GetChild(i);
-                    if (child.GetComponent<Collider>() == null && child.GetComponent<Transform>() != null)
+                    if (!keepNames.Contains(child.name))
                         Object.DestroyImmediate(child.gameObject);
                 }
 
-                // Instantiate FBX mesh as child
-                var meshObj = (GameObject)PrefabUtility.InstantiatePrefab(fbxAsset);
+                // Instantiate FBX mesh as child (use Object.Instantiate to break prefab link)
+                var meshObj = Object.Instantiate(fbxAsset);
                 meshObj.name = "Mesh";
                 meshObj.transform.SetParent(root.transform, false);
                 meshObj.transform.localScale    = scale;
@@ -98,14 +107,19 @@ namespace StrafAdvance.Editor
                 // Remove colliders from mesh children
                 foreach (var col in meshObj.GetComponentsInChildren<Collider>())
                     Object.DestroyImmediate(col);
+
+                // Apply material to all renderers
+                if (applyMat != null)
+                    foreach (var r in meshObj.GetComponentsInChildren<Renderer>())
+                        r.sharedMaterial = applyMat;
             }
 
-            SwapMesh("Player",              "astronautA.fbx",    Vector3.one * 0.008f, new Vector3(0, 180, 0));
-            SwapMesh("Enemies/GruntEnemy",  "alien.fbx",          Vector3.one * 0.007f, new Vector3(0, 180, 0));
-            SwapMesh("Enemies/FlankerEnemy","craft_speederA.fbx", Vector3.one * 0.007f, new Vector3(0, 0, 0));
-            SwapMesh("Enemies/EliteEnemy",  "craft_speederC.fbx", Vector3.one * 0.008f, new Vector3(0, 0, 0));
-            SwapMesh("Enemies/Boss",        "turret_double.fbx",  Vector3.one * 0.015f, new Vector3(0, 0, 0));
-            SwapMesh("Level/CorridorTile",  "corridor_detailed.fbx", new Vector3(0.015f, 0.015f, 0.015f), Vector3.zero);
+            SwapMesh("Player",              "astronautA.fbx",    Vector3.one * 0.008f, new Vector3(0, 180, 0), playerMat);
+            SwapMesh("Enemies/GruntEnemy",  "alien.fbx",          Vector3.one * 0.007f, new Vector3(0, 180, 0), gruntMat);
+            SwapMesh("Enemies/FlankerEnemy","craft_speederA.fbx", Vector3.one * 0.007f, new Vector3(0, 180, 0), flankerMat);
+            SwapMesh("Enemies/EliteEnemy",  "craft_speederC.fbx", Vector3.one * 0.008f, new Vector3(0, 180, 0), eliteMat);
+            SwapMesh("Enemies/Boss",        "turret_double.fbx",  Vector3.one * 0.015f, new Vector3(0, 0, 0),   bossMat);
+            SwapMesh("Level/CorridorTile",  "corridor_detailed.fbx", new Vector3(0.015f, 0.015f, 0.015f), Vector3.zero, tileMat);
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
