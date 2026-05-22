@@ -70,14 +70,16 @@ namespace StrafAdvance
                     grunt.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); };
                     break;
                 case EnemyType.Flanker:
+                    if (flankerPrefab == null) { Debug.LogWarning("[WaveSpawner] flankerPrefab null, skipping"); ReportKill(); return; }
                     FlankerEnemy flanker = Instantiate(flankerPrefab, spawnPos, Quaternion.identity, spawnParent);
-                    flanker.Initialize(flankerConfig);
+                    flanker.Initialize(flankerConfig != null ? flankerConfig : gruntConfig);
                     flanker.InitFlanker(playerTransform);
                     flanker.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); };
                     break;
                 case EnemyType.Elite:
+                    if (elitePrefab == null) { Debug.LogWarning("[WaveSpawner] elitePrefab null, skipping"); ReportKill(); return; }
                     EliteEnemy elite = Instantiate(elitePrefab, spawnPos, Quaternion.identity, spawnParent);
-                    elite.Initialize(eliteConfig);
+                    elite.Initialize(eliteConfig != null ? eliteConfig : gruntConfig);
                     elite.InitElite(playerTransform);
                     elite.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); };
                     break;
