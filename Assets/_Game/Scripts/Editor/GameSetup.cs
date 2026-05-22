@@ -63,7 +63,7 @@ namespace StrafAdvance.Editor
             RemapPrefabRenderers("Enemies/FlankerEnemy",  flankerMat2);
             RemapPrefabRenderers("Enemies/EliteEnemy",   eliteMat2);
             RemapPrefabRenderers("Enemies/Boss",         bossMat2);
-            RemapPrefabRenderers("Level/CorridorTile",   tileMat2);
+            RebuildCorridorTile(tileMat2, urp);
 
             Debug.Log("[SciFiUpgrade] Materials updated.");
         }
@@ -80,6 +80,44 @@ namespace StrafAdvance.Editor
                 for (int i = 0; i < slots.Length; i++) slots[i] = mat;
                 r.sharedMaterials = slots;
             }
+        }
+
+        static void RebuildCorridorTile(Material tileMat, Shader urp)
+        {
+            string path = $"{PrefabPath}/Level/CorridorTile.prefab";
+            if (AssetDatabase.LoadAssetAtPath<GameObject>(path) == null) return;
+
+            // Bright edge-strip material — neon blue glow line
+            string edgePath = "Assets/_Game/Art/Materials/EdgeGlow.mat";
+            var edgeMat = AssetDatabase.LoadAssetAtPath<Material>(edgePath) ?? new Material(urp ?? Shader.Find("Standard"));
+            edgeMat.color = new Color(0.02f, 0.06f, 0.12f);
+            edgeMat.SetColor("_BaseColor", new Color(0.02f, 0.06f, 0.12f));
+            edgeMat.SetColor("_EmissionColor", new Color(0.31f, 0.76f, 0.97f) * 4f);
+            edgeMat.EnableKeyword("_EMISSION");
+            edgeMat.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
+            if (AssetDatabase.LoadAssetAtPath<Material>(edgePath) == null)
+                AssetDatabase.CreateAsset(edgeMat, edgePath);
+            else
+                EditorUtility.SetDirty(edgeMat);
+
+            using var scope = new PrefabUtility.EditPrefabContentsScope(path);
+            var root = scope.prefabContentsRoot;
+
+            // Remove FBX mesh children, keep functional children (CorridorTile component stays on root)
+            for (int i = root.transform.childCount - 1; i >= 0; i--)
+                Object.DestroyImmediate(root.transform.GetChild(i).gameObject);
+
+            // Floor — wide flat panel
+            CreatePart(root, "Floor", PrimitiveType.Cube, Vector3.zero, new Vector3(8f, 0.08f, 12f), tileMat);
+            // Side walls — thin vertical panels
+            CreatePart(root, "WallL", PrimitiveType.Cube, new Vector3(-4f, 1.5f, 0), new Vector3(0.08f, 3f, 12f), tileMat);
+            CreatePart(root, "WallR", PrimitiveType.Cube, new Vector3( 4f, 1.5f, 0), new Vector3(0.08f, 3f, 12f), tileMat);
+            // Glowing floor-edge strips — neon Tron lines
+            CreatePart(root, "EdgeL", PrimitiveType.Cube, new Vector3(-3.85f, 0.05f, 0), new Vector3(0.12f, 0.06f, 12f), edgeMat);
+            CreatePart(root, "EdgeR", PrimitiveType.Cube, new Vector3( 3.85f, 0.05f, 0), new Vector3(0.12f, 0.06f, 12f), edgeMat);
+            // Wall-base accent strips
+            CreatePart(root, "BaseL", PrimitiveType.Cube, new Vector3(-4f, 0.08f, 0), new Vector3(0.08f, 0.15f, 12f), edgeMat);
+            CreatePart(root, "BaseR", PrimitiveType.Cube, new Vector3( 4f, 0.08f, 0), new Vector3(0.08f, 0.15f, 12f), edgeMat);
         }
 
         static void UpdateSciFiMat(string name, Color baseColor, Color emissiveColor,
