@@ -47,8 +47,8 @@ namespace StrafAdvance.Editor
             UpdateSciFiMat("Elite",   tealBase,  tealGlow,  1.8f, 0.7f, 0.5f, urp);
             UpdateSciFiMat("Boss",    blackBase, goldGlow,  2.5f, 0.9f, 0.6f, urp);
             UpdateSciFiMat("Bullet",  Color.black, blueGlow, 5.0f, 0.0f, 0.0f, urp);
-            UpdateSciFiMat("Tile",    navyBase,  blueGlow,  0.5f, 0.5f, 0.3f, urp);
-            UpdateSciFiMat("Wall",    wallBase,  wallGlow,  0.3f, 0.5f, 0.3f, urp);
+            UpdateSciFiMat("Tile",    navyBase,  blueGlow,  0.15f, 0.5f, 0.3f, urp);
+            UpdateSciFiMat("Wall",    wallBase,  wallGlow,  0.12f, 0.5f, 0.3f, urp);
 
             // Remap ALL renderer material slots in FBX-based prefabs
             Material playerMat2  = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Game/Art/Materials/Player.mat");
