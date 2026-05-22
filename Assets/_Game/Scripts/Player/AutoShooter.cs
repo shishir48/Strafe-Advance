@@ -33,17 +33,18 @@ namespace StrafAdvance
 
         void Fire()
         {
+            Transform fp = firePoint != null ? firePoint : transform;
             Transform target = FindNearestEnemy();
-            SpawnBullet(firePoint.position, firePoint.rotation, target);
+            SpawnBullet(fp.position, fp.rotation, target);
 
             if (_multishot)
             {
                 SpawnBullet(
-                    firePoint.position + firePoint.right * 0.3f,
-                    Quaternion.Euler(0, 10f, 0) * firePoint.rotation, target);
+                    fp.position + fp.right * 0.3f,
+                    Quaternion.Euler(0, 10f, 0) * fp.rotation, target);
                 SpawnBullet(
-                    firePoint.position - firePoint.right * 0.3f,
-                    Quaternion.Euler(0, -10f, 0) * firePoint.rotation, target);
+                    fp.position - fp.right * 0.3f,
+                    Quaternion.Euler(0, -10f, 0) * fp.rotation, target);
             }
         }
 
