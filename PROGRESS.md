@@ -32,27 +32,7 @@
 - **Debug logs** in WaveSpawner still active (`[Wave] Starting` and `[Wave] Kill reported`) — remove before release build
 - **Coplay MCP** installed but only works in a NEW session (`claude` terminal restart)
 
----
 
-## How to Control Unity
-
-```bash
-# Play/Stop via menu
-osascript -e 'tell application "System Events" to tell process "Unity" to click menu item "Play Game" of menu "StrafAdvance" of menu bar 1'
-
-# Refresh assets
-osascript -e 'tell application "System Events" to tell process "Unity" to click menu item "Refresh" of menu "Assets" of menu bar 1'
-```
-
-## Build APK (batch mode — bypasses Burst AOT issue)
-```bash
-/Applications/Unity/Hub/Editor/6000.4.7f1/Unity.app/Contents/MacOS/Unity \
-  -projectPath /Users/shishirsingh/Strafe-Advance \
-  -executeMethod StrafAdvance.Editor.BatchBuilder.BuildAndroid \
-  -batchmode -quit -buildTarget Android \
-  -logFile ~/Desktop/build.log
-# Output: /Users/shishirsingh/StrafeAdvance.apk
-```
 
 ---
 
