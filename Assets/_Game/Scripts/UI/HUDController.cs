@@ -33,7 +33,7 @@ namespace StrafAdvance
                 rt.anchorMin = new Vector2(0f, 0f); rt.anchorMax = new Vector2(1f, 0f);
                 rt.anchoredPosition = new Vector2(0, 20); rt.sizeDelta = new Vector2(-40, 25);
                 bossHpGroup = go;
-                bossHpSlider = CreateSlider(go.transform, "BossBar", new Color(1f, 0.2f, 0.2f),
+                bossHpSlider = CreateSlider(go.transform, "BossBar", new Color(1f, 0.27f, 0.27f),
                     Vector2.zero, Vector2.zero);
                 bossHpGroup.SetActive(false);
             }
@@ -87,7 +87,7 @@ namespace StrafAdvance
             faRT.offsetMin = Vector2.zero; faRT.offsetMax = Vector2.zero;
 
             var fill = new GameObject("Fill"); fill.transform.SetParent(fa.transform, false);
-            var fillImg = fill.AddComponent<Image>(); fillImg.color = name.Contains("Boss") ? new Color(1f, 0.27f, 0.27f) : new Color(0.31f, 0.76f, 0.97f);
+            var fillImg = fill.AddComponent<Image>(); fillImg.color = fillColor;
             var fillRT = fill.GetComponent<RectTransform>(); fillRT.anchorMin = Vector2.zero; fillRT.anchorMax = Vector2.one;
             fillRT.offsetMin = Vector2.zero; fillRT.offsetMax = Vector2.zero;
 
