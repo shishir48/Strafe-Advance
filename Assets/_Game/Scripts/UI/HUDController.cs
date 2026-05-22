@@ -22,7 +22,7 @@ namespace StrafAdvance
             if (canvas == null) yield break;
 
             if (playerHpSlider == null) playerHpSlider = CreateSlider(canvas.transform, "HPBar",
-                new Color(0.2f, 0.8f, 0.2f), new Vector2(10, -10), new Vector2(220, 30));
+                new Color(0.31f, 0.76f, 0.97f), new Vector2(10, -10), new Vector2(220, 30));
             if (waveLabel == null) waveLabel = CreateLabel(canvas.transform, "WaveLabel",
                 new Vector2(0, -10), new Vector2(200, 35));
             if (bossHpGroup == null)
@@ -78,7 +78,7 @@ namespace StrafAdvance
             slider.minValue = 0; slider.maxValue = 1; slider.value = 1;
 
             var bg = new GameObject("BG"); bg.transform.SetParent(go.transform, false);
-            var bgImg = bg.AddComponent<Image>(); bgImg.color = new Color(0.1f, 0.1f, 0.1f, 0.8f);
+            var bgImg = bg.AddComponent<Image>(); bgImg.color = new Color(0.03f, 0.07f, 0.13f, 0.88f);
             var bgRT = bg.GetComponent<RectTransform>(); bgRT.anchorMin = Vector2.zero; bgRT.anchorMax = Vector2.one;
             bgRT.offsetMin = Vector2.zero; bgRT.offsetMax = Vector2.zero;
 
@@ -87,7 +87,7 @@ namespace StrafAdvance
             faRT.offsetMin = Vector2.zero; faRT.offsetMax = Vector2.zero;
 
             var fill = new GameObject("Fill"); fill.transform.SetParent(fa.transform, false);
-            var fillImg = fill.AddComponent<Image>(); fillImg.color = fillColor;
+            var fillImg = fill.AddComponent<Image>(); fillImg.color = name.Contains("Boss") ? new Color(1f, 0.27f, 0.27f) : new Color(0.31f, 0.76f, 0.97f);
             var fillRT = fill.GetComponent<RectTransform>(); fillRT.anchorMin = Vector2.zero; fillRT.anchorMax = Vector2.one;
             fillRT.offsetMin = Vector2.zero; fillRT.offsetMax = Vector2.zero;
 
@@ -104,7 +104,7 @@ namespace StrafAdvance
             rt.pivot = new Vector2(0.5f, 1f);
             rt.anchoredPosition = anchoredPos; rt.sizeDelta = sizeDelta;
             var tmp = go.AddComponent<TextMeshProUGUI>();
-            tmp.text = "Wave 1"; tmp.fontSize = 22; tmp.color = Color.white;
+            tmp.text = "Wave 1"; tmp.fontSize = 22; tmp.color = new Color(0.31f, 0.76f, 0.97f);
             tmp.alignment = TMPro.TextAlignmentOptions.Center;
             return tmp;
         }
