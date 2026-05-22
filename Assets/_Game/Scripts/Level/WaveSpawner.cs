@@ -55,6 +55,15 @@ namespace StrafAdvance
                     yield return new WaitForSeconds(wave.spawnInterval);
             }
             _spawning = false;
+            // All enemies may have died/escaped during spawning — advance if none alive
+            if (_enemiesAlive <= 0)
+            {
+                CurrentWaveIndex++;
+                if (CurrentWaveIndex >= _level.waves.Length)
+                    OnAllWavesComplete?.Invoke();
+                else
+                    StartCoroutine(SpawnWave(CurrentWaveIndex));
+            }
         }
 
         void SpawnEnemy(EnemyType type)
