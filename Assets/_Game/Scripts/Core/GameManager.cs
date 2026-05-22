@@ -130,8 +130,18 @@ namespace StrafAdvance
         IEnumerator WaitForTap()
         {
             yield return null;
-            while (!Input.GetMouseButtonDown(0) && Input.touchCount == 0 && !Input.anyKeyDown)
+#if UNITY_EDITOR
+            // In editor: auto-start after 3 seconds or on any input
+            float timeout = 3f;
+            while (timeout > 0f && !Input.GetMouseButtonDown(0) && Input.touchCount == 0 && !Input.anyKeyDown)
+            {
+                timeout -= Time.deltaTime;
                 yield return null;
+            }
+#else
+            while (!Input.GetMouseButtonDown(0) && Input.touchCount == 0)
+                yield return null;
+#endif
         }
 
         void ShowOverlay(string message, Action onTap)
