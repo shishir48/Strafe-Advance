@@ -16,9 +16,10 @@ namespace StrafAdvance
         {
             if (!TryGetComponent<Rigidbody>(out _rb))
                 _rb = gameObject.AddComponent<Rigidbody>();
-            _rb.isKinematic = true;
+            _rb.isKinematic = false;   // NON-kinematic so OnTriggerEnter fires vs kinematic enemies
             _rb.useGravity  = false;
-            _rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+            _rb.constraints = RigidbodyConstraints.FreezeRotation;
+            _rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
         }
 
         public void Setup(Transform target, int damage, float homingStrength,
@@ -40,10 +41,9 @@ namespace StrafAdvance
                     transform.forward, dir,
                     _homingStrength * Mathf.Deg2Rad * Time.fixedDeltaTime, 0f);
             }
-            Vector3 next = transform.position + transform.forward * _speed * Time.fixedDeltaTime;
-            _rb.MovePosition(next);
+            _rb.linearVelocity = transform.forward * _speed;
 
-            if (next.z > 60f || next.z < -10f)
+            if (transform.position.z > 60f || transform.position.z < -10f)
                 _pool?.Return(this);
         }
 
