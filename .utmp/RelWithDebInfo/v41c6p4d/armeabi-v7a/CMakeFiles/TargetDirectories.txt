@@ -1,0 +1,5 @@
+/Users/shishirsingh/Strafe-Advance/.utmp/RelWithDebInfo/v41c6p4d/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/shishirsingh/Strafe-Advance/.utmp/RelWithDebInfo/v41c6p4d/armeabi-v7a/CMakeFiles/rebuild_cache.dir
+/Users/shishirsingh/Strafe-Advance/.utmp/RelWithDebInfo/v41c6p4d/armeabi-v7a/GameActivity/CMakeFiles/game.dir
+/Users/shishirsingh/Strafe-Advance/.utmp/RelWithDebInfo/v41c6p4d/armeabi-v7a/GameActivity/CMakeFiles/edit_cache.dir
+/Users/shishirsingh/Strafe-Advance/.utmp/RelWithDebInfo/v41c6p4d/armeabi-v7a/GameActivity/CMakeFiles/rebuild_cache.dir

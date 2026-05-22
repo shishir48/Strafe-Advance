@@ -1,0 +1,17 @@
+/Users/shishirsingh/Strafe-Advance/Library/Bee/Android/Prj/Mono2x/Gradle/unityLibrary/src/main/cpp/GameActivity/GAToUnityCallbacks.h
+/Users/shishirsingh/Strafe-Advance/Library/Bee/Android/Prj/Mono2x/Gradle/unityLibrary/src/main/cpp/GameActivity/MacroEnd.h
+/Users/shishirsingh/Strafe-Advance/Library/Bee/Android/Prj/Mono2x/Gradle/unityLibrary/src/main/cpp/GameActivity/MacroHeaderBegin.h
+/Users/shishirsingh/Strafe-Advance/Library/Bee/Android/Prj/Mono2x/Gradle/unityLibrary/src/main/cpp/GameActivity/MacroSourceBegin.h
+/Users/shishirsingh/Strafe-Advance/Library/Bee/Android/Prj/Mono2x/Gradle/unityLibrary/src/main/cpp/GameActivity/UGAApplication.h
+/Users/shishirsingh/Strafe-Advance/Library/Bee/Android/Prj/Mono2x/Gradle/unityLibrary/src/main/cpp/GameActivity/UGAConfiguration.h
+/Users/shishirsingh/Strafe-Advance/Library/Bee/Android/Prj/Mono2x/Gradle/unityLibrary/src/main/cpp/GameActivity/UGADebug.h
+/Users/shishirsingh/Strafe-Advance/Library/Bee/Android/Prj/Mono2x/Gradle/unityLibrary/src/main/cpp/GameActivity/UGAEvents.h
+/Users/shishirsingh/Strafe-Advance/Library/Bee/Android/Prj/Mono2x/Gradle/unityLibrary/src/main/cpp/GameActivity/UGAInput.h
+/Users/shishirsingh/Strafe-Advance/Library/Bee/Android/Prj/Mono2x/Gradle/unityLibrary/src/main/cpp/GameActivity/UGASoftKeyboard.h
+/Users/shishirsingh/Strafe-Advance/Library/Bee/Android/Prj/Mono2x/Gradle/unityLibrary/src/main/cpp/GameActivity/UGASoftKeyboardCallbacks.h
+/Users/shishirsingh/Strafe-Advance/Library/Bee/Android/Prj/Mono2x/Gradle/unityLibrary/src/main/cpp/GameActivity/UGATypes.h
+/Users/shishirsingh/Strafe-Advance/Library/Bee/Android/Prj/Mono2x/Gradle/unityLibrary/src/main/cpp/GameActivity/UGAVersion.h
+/Users/shishirsingh/Strafe-Advance/Library/Bee/Android/Prj/Mono2x/Gradle/unityLibrary/src/main/cpp/GameActivity/UnityToGACallbacks.h
+/Users/shishirsingh/Strafe-Advance/Library/Bee/Android/Prj/Mono2x/Gradle/unityLibrary/src/main/cpp/GameActivity/UnityToGAConfigurationCallbacks.h
+/Users/shishirsingh/Strafe-Advance/Library/Bee/Android/Prj/Mono2x/Gradle/unityLibrary/src/main/cpp/GameActivity/UnityToGAKeyEventCallbacks.h
+/Users/shishirsingh/Strafe-Advance/Library/Bee/Android/Prj/Mono2x/Gradle/unityLibrary/src/main/cpp/GameActivity/UnityToGAMotionEventCallbacks.h

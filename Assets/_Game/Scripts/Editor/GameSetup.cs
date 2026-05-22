@@ -369,6 +369,7 @@ namespace StrafAdvance.Editor
                 var meshObj = Object.Instantiate(fbxAsset);
                 meshObj.name = "Mesh";
                 meshObj.transform.SetParent(root.transform, false);
+                meshObj.transform.localPosition = Vector3.zero;
                 meshObj.transform.localScale    = scale;
                 meshObj.transform.localRotation = Quaternion.Euler(rotation);
 
@@ -382,8 +383,8 @@ namespace StrafAdvance.Editor
                         r.sharedMaterial = applyMat;
             }
 
-            SwapMesh("Player",              "astronautA.fbx",    Vector3.one * 0.015f, new Vector3(0, 180, 0), playerMat);
-            SwapMesh("Enemies/GruntEnemy",  "astronautA.fbx",    Vector3.one * 0.015f, new Vector3(0, 180, 0), gruntMat);
+            SwapMesh("Player",              "astronautA.fbx",    Vector3.one * 2.0f, new Vector3(0, 180, 0), playerMat);
+            SwapMesh("Enemies/GruntEnemy",  "astronautA.fbx",    Vector3.one * 2.0f, new Vector3(0, 180, 0), gruntMat);
             SwapMesh("Enemies/FlankerEnemy","craft_speederA.fbx", Vector3.one * 0.007f, new Vector3(0, 180, 0), flankerMat);
             SwapMesh("Enemies/EliteEnemy",  "craft_speederC.fbx", Vector3.one * 0.008f, new Vector3(0, 180, 0), eliteMat);
             SwapMesh("Enemies/Boss",        "turret_double.fbx",  Vector3.one * 0.015f, new Vector3(0, 0, 0),   bossMat);

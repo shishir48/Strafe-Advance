@@ -1,0 +1,45 @@
+<h2>Implementation approach</h2>
+<p class="subtitle">3 ways to go full Clean Sci-Fi — pick the one that fits</p>
+
+<div class="options">
+
+  <div class="option" data-choice="script-driven" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Editor Script — Recommended ✦</h3>
+      <p>Write a <code>StrafAdvance &gt; 10. Apply Sci-Fi Upgrade</code> menu item that creates all materials from code and assigns them to prefabs. One-click, reproducible, version-controlled. Runs in seconds via MCP <code>execute_menu_item</code>.</p>
+      <div class="pros-cons" style="margin-top:8px;">
+        <div class="pros"><h4>Pros</h4><ul><li>Fast to iterate</li><li>Survives prefab resets</li><li>Easy to extend</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Limited to material properties — no custom shader nodes</li></ul></div>
+      </div>
+      <p style="font-size:11px;color:#4fc3f7;margin-top:6px;">Covers: all 4 areas (materials, HUD, post-processing, VFX) via separate sub-functions</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="shader-graph" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Custom Shader Graph</h3>
+      <p>Build custom URP Shader Graphs with fresnel rim glow, holographic scanline distortion, energy shield flicker. Maximum visual fidelity. Assigned via same editor script approach.</p>
+      <div class="pros-cons" style="margin-top:8px;">
+        <div class="pros"><h4>Pros</h4><ul><li>Unique look impossible with standard shaders</li><li>Fresnel edge glow on ships/enemies</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Shader Graph setup is slow through MCP</li><li>Harder to debug</li></ul></div>
+      </div>
+      <p style="font-size:11px;color:#888;margin-top:6px;">Best for: if you want a signature look beyond stock URP Lit</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="hybrid" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Hybrid — Script + Shader Graph</h3>
+      <p>Use the editor script for 80% (materials, HUD, post-processing, VFX) and add one custom Shader Graph for the <em>player ship only</em> — fresnel rim + animated energy pulse. Best balance of speed and visual impact.</p>
+      <div class="pros-cons" style="margin-top:8px;">
+        <div class="pros"><h4>Pros</h4><ul><li>Full coverage in one session</li><li>Player hero shader stands out</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Slightly more complex than pure script</li></ul></div>
+      </div>
+      <p style="font-size:11px;color:#4fc3f7;margin-top:6px;">Recommended if you want the absolute best result</p>
+    </div>
+  </div>
+
+</div>

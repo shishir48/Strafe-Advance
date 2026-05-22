@@ -1,0 +1,120 @@
+<h2>Clean Sci-Fi — Full Design</h2>
+<p class="subtitle">What each pass will change. Confirm before we write the spec.</p>
+
+<div class="section">
+  <span class="label">Pass 1 — Materials</span>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
+
+    <div style="background:#080e18;border:1px solid #4fc3f733;border-radius:6px;padding:12px;">
+      <div style="font-size:11px;color:#4fc3f7;letter-spacing:1px;margin-bottom:8px;">PLAYER (ASTRONAUT)</div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <div style="width:28px;height:28px;border-radius:3px;background:linear-gradient(135deg,#0d1a2e,#1a2d4a);border:2px solid #4fc3f7;box-shadow:0 0 8px #4fc3f766;"></div>
+        <div style="font-size:11px;color:#aaa;">Navy metallic + <span style="color:#4fc3f7;">electric blue</span> emissive trim</div>
+      </div>
+    </div>
+
+    <div style="background:#080e18;border:1px solid #ff444433;border-radius:6px;padding:12px;">
+      <div style="font-size:11px;color:#ff4444;letter-spacing:1px;margin-bottom:8px;">GRUNT ENEMIES (ALIEN)</div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <div style="width:28px;height:28px;border-radius:3px;background:linear-gradient(135deg,#1a0505,#2d0a0a);border:2px solid #ff4444;box-shadow:0 0 8px #ff444466;"></div>
+        <div style="font-size:11px;color:#aaa;">Dark gunmetal + <span style="color:#ff4444;">red</span> emissive (enemy contrast)</div>
+      </div>
+    </div>
+
+    <div style="background:#080e18;border:1px solid #00ffcc33;border-radius:6px;padding:12px;">
+      <div style="font-size:11px;color:#00ffcc;letter-spacing:1px;margin-bottom:8px;">FLANKER / ELITE (SPEEDER)</div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <div style="width:28px;height:28px;border-radius:3px;background:linear-gradient(135deg,#0a1a18,#102820);border:2px solid #00ffcc;box-shadow:0 0 8px #00ffcc66;"></div>
+        <div style="font-size:11px;color:#aaa;">Charcoal + <span style="color:#00ffcc;">cyan-green</span> emissive</div>
+      </div>
+    </div>
+
+    <div style="background:#080e18;border:1px solid #ffd70033;border-radius:6px;padding:12px;">
+      <div style="font-size:11px;color:#ffd700;letter-spacing:1px;margin-bottom:8px;">BOSS</div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <div style="width:28px;height:28px;border-radius:3px;background:linear-gradient(135deg,#0a0800,#1a1200);border:2px solid #ffd700;box-shadow:0 0 8px #ffd70066;"></div>
+        <div style="font-size:11px;color:#aaa;">Pure black + <span style="color:#ffd700;">gold</span> emissive (boss tier)</div>
+      </div>
+    </div>
+
+    <div style="background:#080e18;border:1px solid #4fc3f722;border-radius:6px;padding:12px;grid-column:1/-1;">
+      <div style="font-size:11px;color:#4fc3f7;letter-spacing:1px;margin-bottom:8px;">CORRIDOR TILE + BULLET</div>
+      <div style="display:flex;gap:12px;">
+        <div style="display:flex;gap:6px;align-items:center;">
+          <div style="width:28px;height:12px;border-radius:2px;background:linear-gradient(90deg,#0d1a2e,#1a2d4a);border:1px solid #4fc3f755;box-shadow:0 0 4px #4fc3f733;"></div>
+          <span style="font-size:11px;color:#aaa;">Corridor: dark panel + subtle blue trim</span>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <div style="width:16px;height:6px;border-radius:3px;background:#4fc3f7;box-shadow:0 0 10px #4fc3f7;"></div>
+          <span style="font-size:11px;color:#aaa;">Bullet: bright cyan emissive capsule</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <span class="label">Pass 2 — Post-Processing (URP Volume)</span>
+  <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+    <div style="background:#080e18;border:1px solid #4fc3f733;border-radius:4px;padding:8px 12px;font-size:11px;">
+      <span style="color:#4fc3f7;">Bloom</span><br><span style="color:#aaa;">intensity 0.6 · threshold 0.8<br>emissives pop without blowing out</span>
+    </div>
+    <div style="background:#080e18;border:1px solid #4fc3f733;border-radius:4px;padding:8px 12px;font-size:11px;">
+      <span style="color:#4fc3f7;">Vignette</span><br><span style="color:#aaa;">0.35 intensity · cinematic edges</span>
+    </div>
+    <div style="background:#080e18;border:1px solid #4fc3f733;border-radius:4px;padding:8px 12px;font-size:11px;">
+      <span style="color:#4fc3f7;">Color Grade</span><br><span style="color:#aaa;">slight blue lift · cool shadows</span>
+    </div>
+    <div style="background:#080e18;border:1px solid #4fc3f733;border-radius:4px;padding:8px 12px;font-size:11px;">
+      <span style="color:#4fc3f7;">Tonemapping</span><br><span style="color:#aaa;">ACES mode</span>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <span class="label">Pass 3 — HUD / UI</span>
+  <div style="background:#080e1888;border:1px solid #4fc3f744;border-radius:8px;padding:12px;margin-top:10px;max-width:320px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <div style="font-size:10px;color:#4fc3f7;letter-spacing:2px;">HULL INTEGRITY</div>
+      <div style="font-size:10px;color:#4fc3f7aa;">WAVE 3/6</div>
+    </div>
+    <div style="height:6px;background:#0d1a2e;border-radius:3px;border:1px solid #4fc3f733;overflow:hidden;">
+      <div style="height:100%;width:72%;background:linear-gradient(90deg,#0277bd,#4fc3f7);border-radius:3px;box-shadow:0 0 6px #4fc3f7;"></div>
+    </div>
+    <div style="margin-top:6px;font-size:9px;color:#4fc3f766;text-align:right;">72%</div>
+    <div style="margin-top:8px;font-size:10px;color:#4fc3f799;letter-spacing:1px;">SCORE &nbsp;<span style="color:#4fc3f7;">004200</span></div>
+  </div>
+  <p style="font-size:12px;color:#aaa;margin-top:8px;">Dark glass panel · blue gradient HP bar · monospace label font · score display added</p>
+</div>
+
+<div class="section">
+  <span class="label">Pass 4 — VFX / Particles</span>
+  <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">
+    <div style="background:#080e18;border:1px solid #4fc3f733;border-radius:4px;padding:8px 12px;font-size:11px;">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+        <div style="width:20px;height:4px;border-radius:2px;background:#4fc3f7;box-shadow:0 0 8px #4fc3f7;"></div>
+        <span style="color:#4fc3f7;">Bullet Trail</span>
+      </div>
+      <span style="color:#aaa;">Stretched glow capsule + cyan particle ribbon</span>
+    </div>
+    <div style="background:#080e18;border:1px solid #4fc3f733;border-radius:4px;padding:8px 12px;font-size:11px;">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+        <div style="display:flex;gap:2px;">
+          <div style="width:4px;height:4px;background:#4fc3f7;border-radius:50%;box-shadow:0 0 4px #4fc3f7;"></div>
+          <div style="width:3px;height:3px;background:#fff;border-radius:50%;box-shadow:0 0 3px #fff;margin-top:1px;"></div>
+          <div style="width:4px;height:4px;background:#00ffcc;border-radius:50%;box-shadow:0 0 4px #00ffcc;"></div>
+        </div>
+        <span style="color:#4fc3f7;">Hit Sparks</span>
+      </div>
+      <span style="color:#aaa;">Cyan/white burst particles on impact</span>
+    </div>
+    <div style="background:#080e18;border:1px solid #ff444433;border-radius:4px;padding:8px 12px;font-size:11px;">
+      <span style="color:#ff4444;">Enemy Death</span><br><span style="color:#aaa;">Blue-white flash + debris shards</span>
+    </div>
+    <div style="background:#080e18;border:1px solid #ffd70033;border-radius:4px;padding:8px 12px;font-size:11px;">
+      <span style="color:#ffd700;">Boss Death</span><br><span style="color:#aaa;">Large gold-white explosion + screen flash</span>
+    </div>
+  </div>
+</div>
+
+<p style="margin-top:16px;font-size:12px;color:#4fc3f7aa;">Does this look right? Confirm in terminal to move to spec.</p>
