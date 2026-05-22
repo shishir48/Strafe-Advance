@@ -69,6 +69,7 @@ namespace StrafAdvance
                     grunt.Initialize(gruntConfig);
                     grunt.InitGrunt(playerTransform, _enemyBulletPool);
                     grunt.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); };
+                    grunt.OnEscaped += _ => ReportKill();
                     break;
                 case EnemyType.Flanker:
                     if (flankerPrefab == null) { Debug.LogWarning("[WaveSpawner] flankerPrefab null, skipping"); ReportKill(); return; }
@@ -76,6 +77,7 @@ namespace StrafAdvance
                     flanker.Initialize(flankerConfig != null ? flankerConfig : gruntConfig);
                     flanker.InitFlanker(playerTransform);
                     flanker.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); };
+                    flanker.OnEscaped += _ => ReportKill();
                     break;
                 case EnemyType.Elite:
                     if (elitePrefab == null) { Debug.LogWarning("[WaveSpawner] elitePrefab null, skipping"); ReportKill(); return; }
@@ -83,6 +85,7 @@ namespace StrafAdvance
                     elite.Initialize(eliteConfig != null ? eliteConfig : gruntConfig);
                     elite.InitElite(playerTransform);
                     elite.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); };
+                    elite.OnEscaped += _ => ReportKill();
                     break;
             }
         }

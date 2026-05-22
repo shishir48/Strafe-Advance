@@ -40,6 +40,14 @@ namespace StrafAdvance
         }
 
         protected virtual void OnDamageTaken() { }
+        public event System.Action<EnemyBase> OnEscaped;
+
+        protected void EscapeOffScreen()
+        {
+            OnEscaped?.Invoke(this);
+            Destroy(gameObject);
+        }
+
         protected virtual void Die() => Destroy(gameObject);
     }
 }

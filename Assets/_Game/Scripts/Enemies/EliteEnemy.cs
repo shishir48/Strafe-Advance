@@ -18,7 +18,7 @@ namespace StrafAdvance
             if (_charging)
             {
                 transform.Translate(_chargeDir * 9f * Time.deltaTime, Space.World);
-                if (transform.position.z < -8f) Destroy(gameObject);
+                if (transform.position.z < -8f) EscapeOffScreen();
             }
             else
             {

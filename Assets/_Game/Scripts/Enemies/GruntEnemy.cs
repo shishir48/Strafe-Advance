@@ -29,7 +29,7 @@ namespace StrafAdvance
             }
 
             if (transform.position.z < -8f)
-                Destroy(gameObject);
+                EscapeOffScreen();
         }
 
         void FireAtPlayer()
