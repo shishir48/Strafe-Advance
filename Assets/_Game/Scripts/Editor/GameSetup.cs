@@ -61,6 +61,57 @@ namespace StrafAdvance.Editor
             Debug.Log("[GameSetup] Player prefab rewired. Press Play.");
         }
 
+        // ─── Apply Kenney Models ─────────────────────────────────────────────────
+        [MenuItem("StrafAdvance/9. Apply Kenney 3D Models", priority = 90)]
+        public static void ApplyKenneyModels()
+        {
+            const string modelsPath = "Assets/_Game/Art/Models";
+
+            // Helper: load mesh from FBX and apply to prefab replacing primitive renderers
+            void SwapMesh(string prefabSubPath, string fbxName, Vector3 scale, Vector3 rotation)
+            {
+                string fbxPath = $"{modelsPath}/{fbxName}";
+                var fbxAsset = AssetDatabase.LoadAssetAtPath<GameObject>(fbxPath);
+                if (fbxAsset == null) { Debug.LogWarning($"[GameSetup] FBX not found: {fbxPath}"); return; }
+
+                string prefabPath = $"{PrefabPath}/{prefabSubPath}.prefab";
+                if (AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath) == null) return;
+
+                using var scope = new PrefabUtility.EditPrefabContentsScope(prefabPath);
+                var root = scope.prefabContentsRoot;
+
+                // Remove old visual children (keep components)
+                for (int i = root.transform.childCount - 1; i >= 0; i--)
+                {
+                    var child = root.transform.GetChild(i);
+                    if (child.GetComponent<Collider>() == null && child.GetComponent<Transform>() != null)
+                        Object.DestroyImmediate(child.gameObject);
+                }
+
+                // Instantiate FBX mesh as child
+                var meshObj = (GameObject)PrefabUtility.InstantiatePrefab(fbxAsset);
+                meshObj.name = "Mesh";
+                meshObj.transform.SetParent(root.transform, false);
+                meshObj.transform.localScale    = scale;
+                meshObj.transform.localRotation = Quaternion.Euler(rotation);
+
+                // Remove colliders from mesh children
+                foreach (var col in meshObj.GetComponentsInChildren<Collider>())
+                    Object.DestroyImmediate(col);
+            }
+
+            SwapMesh("Player",              "astronautA.fbx",    Vector3.one * 0.008f, new Vector3(0, 180, 0));
+            SwapMesh("Enemies/GruntEnemy",  "alien.fbx",          Vector3.one * 0.007f, new Vector3(0, 180, 0));
+            SwapMesh("Enemies/FlankerEnemy","craft_speederA.fbx", Vector3.one * 0.007f, new Vector3(0, 0, 0));
+            SwapMesh("Enemies/EliteEnemy",  "craft_speederC.fbx", Vector3.one * 0.008f, new Vector3(0, 0, 0));
+            SwapMesh("Enemies/Boss",        "turret_double.fbx",  Vector3.one * 0.015f, new Vector3(0, 0, 0));
+            SwapMesh("Level/CorridorTile",  "corridor_detailed.fbx", new Vector3(0.015f, 0.015f, 0.015f), Vector3.zero);
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            Debug.Log("[GameSetup] Kenney 3D models applied to all prefabs.");
+        }
+
         // ─── Upgrade Graphics ────────────────────────────────────────────────────
         [MenuItem("StrafAdvance/8. Upgrade Graphics (Sci-Fi Neon)", priority = 80)]
         public static void UpgradeGraphics()
