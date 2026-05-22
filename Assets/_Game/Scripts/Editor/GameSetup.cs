@@ -359,6 +359,12 @@ namespace StrafAdvance.Editor
                         Object.DestroyImmediate(child.gameObject);
                 }
 
+                // Strip root primitive mesh components — left over from CreatePlayerPrefab/CreateEnemyPrefab
+                var rootRenderer = root.GetComponent<MeshRenderer>();
+                if (rootRenderer != null) Object.DestroyImmediate(rootRenderer);
+                var rootFilter   = root.GetComponent<MeshFilter>();
+                if (rootFilter   != null) Object.DestroyImmediate(rootFilter);
+
                 // Instantiate FBX mesh as child (use Object.Instantiate to break prefab link)
                 var meshObj = Object.Instantiate(fbxAsset);
                 meshObj.name = "Mesh";
