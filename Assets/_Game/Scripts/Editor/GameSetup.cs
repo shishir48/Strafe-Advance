@@ -221,11 +221,7 @@ namespace StrafAdvance.Editor
 
         static void AddGlow(GameObject go, Color color, float intensity)
         {
-            var light = go.GetComponent<Light>() ?? go.AddComponent<Light>();
-            light.type      = LightType.Point;
-            light.color     = color;
-            light.intensity = intensity;
-            light.range     = 3f;
+            // Glow comes from emissive materials + URP bloom — no Light component needed in prefab
         }
 
         // ─── Create Materials ────────────────────────────────────────────────────
