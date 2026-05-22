@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
 namespace StrafAdvance.Editor
@@ -18,7 +19,7 @@ namespace StrafAdvance.Editor
         public static void ApplySciFiUpgrade()
         {
             ApplySciFiMaterials();
-            // ApplyPostProcessing() added in Task 2
+            ApplyPostProcessing();
             // ApplyVFX() added in Task 4
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -68,6 +69,48 @@ namespace StrafAdvance.Editor
             mat.SetFloat("_Metallic",    metallic);
             mat.SetFloat("_Smoothness",  smoothness);
             EditorUtility.SetDirty(mat);
+        }
+
+        static void ApplyPostProcessing()
+        {
+            var profile = AssetDatabase.LoadAssetAtPath<VolumeProfile>("Assets/Settings/DefaultVolumeProfile.asset");
+            if (profile == null)
+            {
+                Debug.LogError("[SciFiUpgrade] DefaultVolumeProfile not found at Assets/Settings/DefaultVolumeProfile.asset");
+                return;
+            }
+
+            if (!profile.TryGet<Bloom>(out var bloom))
+                bloom = profile.Add<Bloom>(false);
+            bloom.active = true;
+            bloom.intensity.Override(0.6f);
+            bloom.threshold.Override(0.8f);
+            bloom.scatter.Override(0.7f);
+
+            if (!profile.TryGet<Vignette>(out var vignette))
+                vignette = profile.Add<Vignette>(false);
+            vignette.active = true;
+            vignette.intensity.Override(0.35f);
+            vignette.rounded.Override(true);
+
+            if (!profile.TryGet<ColorAdjustments>(out var colorAdj))
+                colorAdj = profile.Add<ColorAdjustments>(false);
+            colorAdj.active = true;
+            colorAdj.postExposure.Override(0.1f);
+            colorAdj.saturation.Override(10f);
+
+            if (!profile.TryGet<Tonemapping>(out var tonemap))
+                tonemap = profile.Add<Tonemapping>(false);
+            tonemap.active = true;
+            tonemap.mode.Override(TonemappingMode.ACES);
+
+            if (!profile.TryGet<WhiteBalance>(out var wb))
+                wb = profile.Add<WhiteBalance>(false);
+            wb.active = true;
+            wb.temperature.Override(-10f);
+
+            EditorUtility.SetDirty(profile);
+            Debug.Log("[SciFiUpgrade] Post-processing configured.");
         }
 
         // ─── Rewire Player Prefab ────────────────────────────────────────────────
