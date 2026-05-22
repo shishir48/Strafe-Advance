@@ -70,7 +70,10 @@ namespace StrafAdvance.Editor
             EnsureDir("Assets/_Game/Prefabs/Enemies");
             EnsureDir("Assets/_Game/Prefabs/Level");
 
-            var urp = Shader.Find("Universal Render Pipeline/Lit");
+            var urp = Shader.Find("Universal Render Pipeline/Lit")
+                   ?? Shader.Find("Packages/com.unity.render-pipelines.universal/Shaders/Lit.shader")
+                   ?? Shader.Find("Standard");
+            if (urp == null) { Debug.LogError("[GameSetup] Could not find URP/Standard shader."); return; }
 
             // ── Neon emissive materials ──────────────────────────────────────────
             Material playerMat  = CreateNeonMat("Player",   new Color(0.1f, 0.4f, 1f),    new Color(0f,   0.5f, 2f),   urp);
@@ -157,6 +160,7 @@ namespace StrafAdvance.Editor
 
         static Material CreateNeonMat(string name, Color baseColor, Color emissiveColor, Shader shader)
         {
+            if (shader == null) shader = Shader.Find("Standard");
             string path = $"Assets/_Game/Art/Materials/{name}.mat";
             var mat = AssetDatabase.LoadAssetAtPath<Material>(path) ?? new Material(shader) { name = name };
             mat.color = baseColor;
