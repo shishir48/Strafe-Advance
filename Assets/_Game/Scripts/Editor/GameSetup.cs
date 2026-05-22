@@ -13,6 +13,63 @@ namespace StrafAdvance.Editor
         private const string PrefabPath = "Assets/_Game/Prefabs";
         private const string ScenePath  = "Assets/_Game/Scenes";
 
+        // ─── 10. Apply Sci-Fi Upgrade ────────────────────────────────────────────────
+        [MenuItem("StrafAdvance/10. Apply Sci-Fi Upgrade", priority = 100)]
+        public static void ApplySciFiUpgrade()
+        {
+            ApplySciFiMaterials();
+            // ApplyPostProcessing() added in Task 2
+            // ApplyVFX() added in Task 4
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            Debug.Log("[SciFiUpgrade] All passes complete. Check console for warnings.");
+        }
+
+        static void ApplySciFiMaterials()
+        {
+            var urp = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
+
+            Color navyBase  = new Color(0.05f, 0.10f, 0.18f, 1f);
+            Color blueGlow  = new Color(0.31f, 0.76f, 0.97f, 1f);
+            Color redBase   = new Color(0.10f, 0.02f, 0.02f, 1f);
+            Color redGlow   = new Color(1.00f, 0.27f, 0.27f, 1f);
+            Color tealBase  = new Color(0.02f, 0.10f, 0.09f, 1f);
+            Color tealGlow  = new Color(0.00f, 1.00f, 0.80f, 1f);
+            Color blackBase = new Color(0.04f, 0.03f, 0.00f, 1f);
+            Color goldGlow  = new Color(1.00f, 0.85f, 0.00f, 1f);
+            Color wallBase  = new Color(0.03f, 0.05f, 0.09f, 1f);
+            Color wallGlow  = new Color(0.31f, 0.76f, 0.97f, 1f);
+
+            UpdateSciFiMat("Player",  navyBase,  blueGlow,  2.0f, 0.8f, 0.4f, urp);
+            UpdateSciFiMat("Grunt",   redBase,   redGlow,   1.5f, 0.6f, 0.3f, urp);
+            UpdateSciFiMat("Flanker", tealBase,  tealGlow,  1.6f, 0.7f, 0.5f, urp);
+            UpdateSciFiMat("Elite",   tealBase,  tealGlow,  1.8f, 0.7f, 0.5f, urp);
+            UpdateSciFiMat("Boss",    blackBase, goldGlow,  2.5f, 0.9f, 0.6f, urp);
+            UpdateSciFiMat("Bullet",  Color.black, blueGlow, 5.0f, 0.0f, 0.0f, urp);
+            UpdateSciFiMat("Tile",    navyBase,  blueGlow,  0.5f, 0.5f, 0.3f, urp);
+            UpdateSciFiMat("Wall",    wallBase,  wallGlow,  0.3f, 0.5f, 0.3f, urp);
+
+            Debug.Log("[SciFiUpgrade] Materials updated.");
+        }
+
+        static void UpdateSciFiMat(string name, Color baseColor, Color emissiveColor,
+            float emissiveIntensity, float metallic, float smoothness, Shader urp)
+        {
+            string path = $"Assets/_Game/Art/Materials/{name}.mat";
+            var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (mat == null) { Debug.LogWarning($"[SciFiUpgrade] Material not found: {path}"); return; }
+
+            if (urp != null) mat.shader = urp;
+            mat.color = baseColor;
+            mat.SetColor("_BaseColor", baseColor);
+            mat.SetColor("_EmissionColor", emissiveColor * emissiveIntensity);
+            mat.EnableKeyword("_EMISSION");
+            mat.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
+            mat.SetFloat("_Metallic",    metallic);
+            mat.SetFloat("_Smoothness",  smoothness);
+            EditorUtility.SetDirty(mat);
+        }
+
         // ─── Rewire Player Prefab ────────────────────────────────────────────────
         [MenuItem("StrafAdvance/Rewire Player Prefab", priority = 3)]
         public static void RewirePlayerPrefab()
