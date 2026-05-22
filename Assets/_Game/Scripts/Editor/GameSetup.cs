@@ -376,8 +376,8 @@ namespace StrafAdvance.Editor
                         r.sharedMaterial = applyMat;
             }
 
-            SwapMesh("Player",              "astronautB.fbx",    Vector3.one * 0.008f, new Vector3(0, 180, 0), playerMat);
-            SwapMesh("Enemies/GruntEnemy",  "alien.fbx",          Vector3.one * 0.007f, new Vector3(0, 180, 0), gruntMat);
+            SwapMesh("Player",              "astronautB.fbx",    Vector3.one * 0.015f, new Vector3(0, 180, 0), playerMat);
+            SwapMesh("Enemies/GruntEnemy",  "astronautA.fbx",    Vector3.one * 0.015f, new Vector3(0, 180, 0), gruntMat);
             SwapMesh("Enemies/FlankerEnemy","craft_speederA.fbx", Vector3.one * 0.007f, new Vector3(0, 180, 0), flankerMat);
             SwapMesh("Enemies/EliteEnemy",  "craft_speederC.fbx", Vector3.one * 0.008f, new Vector3(0, 180, 0), eliteMat);
             SwapMesh("Enemies/Boss",        "turret_double.fbx",  Vector3.one * 0.015f, new Vector3(0, 0, 0),   bossMat);
@@ -976,7 +976,7 @@ namespace StrafAdvance.Editor
             var cam = camGO.AddComponent<Camera>();
             cam.clearFlags   = CameraClearFlags.SolidColor;
             cam.backgroundColor = new Color(0.05f, 0.05f, 0.1f);
-            camGO.transform.SetPositionAndRotation(new Vector3(0, 4, -7), Quaternion.Euler(18, 0, 0));
+            camGO.transform.SetPositionAndRotation(new Vector3(0, 2, -6), Quaternion.Euler(8, 0, 0));
             camGO.AddComponent<AudioListener>();
 
             // Directional Light
