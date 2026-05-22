@@ -49,7 +49,6 @@ namespace StrafAdvance
 
         void OnTriggerEnter(Collider other)
         {
-            Debug.Log($"[Bullet] OnTriggerEnter hit: {other.gameObject.name} layer={other.gameObject.layer} isPlayer={_isPlayerBullet}");
             // Use layer check instead of tag to avoid TagManager dependency
             int hitLayer = other.gameObject.layer;
             int enemyLayer  = LayerMask.NameToLayer("Enemy");
