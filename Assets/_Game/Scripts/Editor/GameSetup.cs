@@ -306,20 +306,34 @@ namespace StrafAdvance.Editor
         public static void EnsureEnemyLayer()
         {
             var tagManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
+
+            // Add "Enemy" tag
+            var tags = tagManager.FindProperty("tags");
+            bool hasEnemyTag = false;
+            for (int i = 0; i < tags.arraySize; i++)
+                if (tags.GetArrayElementAtIndex(i).stringValue == "Enemy") { hasEnemyTag = true; break; }
+            if (!hasEnemyTag)
+            {
+                tags.InsertArrayElementAtIndex(tags.arraySize);
+                tags.GetArrayElementAtIndex(tags.arraySize - 1).stringValue = "Enemy";
+                Debug.Log("[GameSetup] Enemy tag added.");
+            }
+
+            // Add "Enemy" layer
             var layers = tagManager.FindProperty("layers");
             for (int i = 8; i < layers.arraySize; i++)
             {
                 var layer = layers.GetArrayElementAtIndex(i);
-                if (layer.stringValue == "Enemy") return;
+                if (layer.stringValue == "Enemy") break;
                 if (string.IsNullOrEmpty(layer.stringValue))
                 {
                     layer.stringValue = "Enemy";
-                    tagManager.ApplyModifiedProperties();
                     Debug.Log($"[GameSetup] Enemy layer added at index {i}.");
-                    return;
+                    break;
                 }
             }
-            Debug.LogWarning("[GameSetup] Could not add Enemy layer — no free layer slots.");
+            tagManager.ApplyModifiedProperties();
+            Debug.Log("[GameSetup] TagManager updated.");
         }
 
         // ─── Step 2: ScriptableObjects ───────────────────────────────────────────

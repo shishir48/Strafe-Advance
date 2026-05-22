@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace StrafAdvance
 {
@@ -18,23 +20,26 @@ namespace StrafAdvance
             DontDestroyOnLoad(gameObject);
         }
 
-        void Start() => StartCoroutine(DebugAutoStartCoroutine());
+        void Start() => StartCoroutine(InitFlow());
 
-        IEnumerator DebugAutoStartCoroutine()
+        IEnumerator InitFlow()
         {
-            yield return null; // wait one frame for all Start() calls to complete
+            yield return null;
 
             var waveSpawner      = FindAnyObjectByType<WaveSpawner>();
             var corridorScroller = FindAnyObjectByType<CorridorScroller>();
+            var l1 = Resources.Load<LevelConfig>("Level1");
 
-            if (waveSpawner == null || corridorScroller == null)
+            if (waveSpawner == null || corridorScroller == null || l1 == null)
             {
-                Debug.LogWarning("[GameManager] WaveSpawner or CorridorScroller not found for auto-start.");
+                Debug.LogWarning("[GameManager] Missing required components for auto-start.");
                 yield break;
             }
 
-            var l1 = Resources.Load<LevelConfig>("Level1");
-            if (l1 == null) { Debug.LogWarning("[GameManager] Resources/Level1 not found."); yield break; }
+            // Show tap-to-start screen
+            var tapCanvas = CreateTapToStartScreen();
+            yield return WaitForTap();
+            Destroy(tapCanvas);
 
             corridorScroller.Initialize(l1.worldScrollSpeed);
             waveSpawner.LoadLevel(l1);
@@ -77,6 +82,97 @@ namespace StrafAdvance
             if (State == state) return;
             State = state;
             OnStateChanged?.Invoke(state);
+            if (state == GameState.GameOver)   ShowOverlay("GAME OVER\nTap to retry", OnRetryTap);
+            if (state == GameState.LevelComplete) ShowOverlay("YOU WIN!\nTap to continue", OnWinTap);
+        }
+
+        // ── Tap-to-start ────────────────────────────────────────────────────────
+        GameObject CreateTapToStartScreen()
+        {
+            var go = new GameObject("TapToStart");
+            var canvas = go.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 99;
+            go.AddComponent<UnityEngine.UI.CanvasScaler>().uiScaleMode =
+                UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            go.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+
+            var bg = new GameObject("BG");
+            bg.transform.SetParent(go.transform, false);
+            var bgImg = bg.AddComponent<UnityEngine.UI.Image>();
+            bgImg.color = new Color(0, 0, 0, 0.75f);
+            var bgRT = bg.GetComponent<RectTransform>();
+            bgRT.anchorMin = Vector2.zero; bgRT.anchorMax = Vector2.one;
+            bgRT.offsetMin = bgRT.offsetMax = Vector2.zero;
+
+            var label = new GameObject("Label");
+            label.transform.SetParent(go.transform, false);
+            var tmp = label.AddComponent<TextMeshProUGUI>();
+            tmp.text = "STRAFE ADVANCE\n\nTap to Start";
+            tmp.fontSize = 52; tmp.color = Color.white;
+            tmp.alignment = TMPro.TextAlignmentOptions.Center;
+            var rt = label.GetComponent<RectTransform>();
+            rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one;
+            rt.offsetMin = rt.offsetMax = Vector2.zero;
+
+            return go;
+        }
+
+        IEnumerator WaitForTap()
+        {
+            yield return null;
+            while (!Input.GetMouseButtonDown(0) && Input.touchCount == 0)
+                yield return null;
+        }
+
+        void ShowOverlay(string message, Action onTap)
+        {
+            StartCoroutine(OverlayRoutine(message, onTap));
+        }
+
+        IEnumerator OverlayRoutine(string message, Action onTap)
+        {
+            var go = new GameObject("Overlay");
+            var canvas = go.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 100;
+            go.AddComponent<UnityEngine.UI.CanvasScaler>();
+            go.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+
+            var bg = new GameObject("BG"); bg.transform.SetParent(go.transform, false);
+            var bgImg = bg.AddComponent<UnityEngine.UI.Image>(); bgImg.color = new Color(0, 0, 0, 0.8f);
+            var bgRT = bg.GetComponent<RectTransform>();
+            bgRT.anchorMin = Vector2.zero; bgRT.anchorMax = Vector2.one;
+            bgRT.offsetMin = bgRT.offsetMax = Vector2.zero;
+
+            var label = new GameObject("Label"); label.transform.SetParent(go.transform, false);
+            var tmp = label.AddComponent<TextMeshProUGUI>();
+            tmp.text = message; tmp.fontSize = 52; tmp.color = Color.white;
+            tmp.alignment = TMPro.TextAlignmentOptions.Center;
+            var rt = label.GetComponent<RectTransform>();
+            rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one;
+            rt.offsetMin = rt.offsetMax = Vector2.zero;
+
+            yield return new WaitForSeconds(0.5f);
+            while (!Input.GetMouseButtonDown(0) && Input.touchCount == 0)
+                yield return null;
+
+            Destroy(go);
+            onTap?.Invoke();
+        }
+
+        void OnRetryTap()
+        {
+            SetState(GameState.Menu);
+            UnityEngine.SceneManagement.SceneManager.LoadScene(
+                UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+        }
+
+        void OnWinTap()
+        {
+            SetState(GameState.Menu);
+            UnityEngine.SceneManagement.SceneManager.LoadScene(
+                UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
         }
     }
 }

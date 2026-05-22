@@ -10,6 +10,20 @@ namespace StrafAdvance
 
         public event Action<EnemyBase> OnDeath;
 
+        protected virtual void Awake()
+        {
+            // Required for bullet OnTriggerEnter to fire
+            if (!TryGetComponent<Rigidbody>(out _))
+            {
+                var rb = gameObject.AddComponent<Rigidbody>();
+                rb.isKinematic = true;
+                rb.useGravity  = false;
+            }
+            // Ensure correct tag and layer
+            gameObject.tag   = "Enemy";
+            gameObject.layer = LayerMask.NameToLayer("Enemy");
+        }
+
         public void Initialize(EnemyConfig config)
         {
             Config = config;
