@@ -29,6 +29,7 @@ namespace StrafAdvance
 
         public void TakeDamage(int amount)
         {
+            Debug.Log($"[Enemy] {gameObject.name} TakeDamage {amount} hp={CurrentHp}");
             if (CurrentHp <= 0) return;
             CurrentHp = Mathf.Max(0, CurrentHp - amount);
             OnDamageTaken();
