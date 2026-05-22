@@ -48,8 +48,23 @@ namespace StrafAdvance
 
         void OnTriggerEnter(Collider other)
         {
-            string targetTag = _isPlayerBullet ? "Enemy" : "Player";
-            if (!other.CompareTag(targetTag)) return;
+            // Use layer check instead of tag to avoid TagManager dependency
+            int hitLayer = other.gameObject.layer;
+            int enemyLayer  = LayerMask.NameToLayer("Enemy");
+            int playerLayer = LayerMask.NameToLayer("Player");
+
+            bool hitEnemy  = _isPlayerBullet  && hitLayer == enemyLayer;
+            bool hitPlayer = !_isPlayerBullet  && hitLayer == playerLayer;
+
+            // Fallback: if layers not set, check for IDamageable on correct component type
+            if (!hitEnemy && !hitPlayer)
+            {
+                if (_isPlayerBullet && other.TryGetComponent<EnemyBase>(out _)) hitEnemy = true;
+                else if (!_isPlayerBullet && other.TryGetComponent<PlayerHealth>(out _)) hitPlayer = true;
+            }
+
+            if (!hitEnemy && !hitPlayer) return;
+
             if (other.TryGetComponent<IDamageable>(out var damageable))
             {
                 damageable.TakeDamage(_damage);

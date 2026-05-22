@@ -19,9 +19,11 @@ namespace StrafAdvance
                 rb.isKinematic = true;
                 rb.useGravity  = false;
             }
-            // Ensure correct tag and layer
-            gameObject.tag   = "Enemy";
-            gameObject.layer = LayerMask.NameToLayer("Enemy");
+            // Set layer (doesn't require TagManager)
+            int enemyLayer = LayerMask.NameToLayer("Enemy");
+            if (enemyLayer >= 0) gameObject.layer = enemyLayer;
+            // Set tag safely
+            try { gameObject.tag = "Enemy"; } catch { }
         }
 
         public void Initialize(EnemyConfig config)
