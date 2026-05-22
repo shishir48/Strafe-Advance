@@ -130,7 +130,7 @@ namespace StrafAdvance
         IEnumerator WaitForTap()
         {
             yield return null;
-            while (!Input.GetMouseButtonDown(0) && Input.touchCount == 0)
+            while (!Input.GetMouseButtonDown(0) && Input.touchCount == 0 && !Input.anyKeyDown)
                 yield return null;
         }
 
@@ -163,7 +163,7 @@ namespace StrafAdvance
             rt.offsetMin = rt.offsetMax = Vector2.zero;
 
             yield return new WaitForSeconds(0.5f);
-            while (!Input.GetMouseButtonDown(0) && Input.touchCount == 0)
+            while (!Input.GetMouseButtonDown(0) && Input.touchCount == 0 && !Input.anyKeyDown)
                 yield return null;
 
             Destroy(go);
