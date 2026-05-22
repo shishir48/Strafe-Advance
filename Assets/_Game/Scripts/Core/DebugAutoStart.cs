@@ -5,7 +5,8 @@ namespace StrafAdvance
 {
     public static class DebugAutoStart
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        // Disabled — GameManager.InitFlow() handles the full flow now
+        // [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void Init()
         {
             SceneManager.sceneLoaded += OnSceneLoaded;

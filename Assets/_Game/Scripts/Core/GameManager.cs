@@ -20,7 +20,16 @@ namespace StrafAdvance
             DontDestroyOnLoad(gameObject);
         }
 
+        public int Score { get; private set; }
+        public int KillCount { get; private set; }
+
         void Start() => StartCoroutine(InitFlow());
+
+        public void AddKill()
+        {
+            KillCount++;
+            Score += 100;
+        }
 
         IEnumerator InitFlow()
         {

@@ -11,6 +11,16 @@ namespace StrafAdvance
         private ObjectPool<Bullet> _pool;
         private bool _isPlayerBullet;
 
+        void Awake()
+        {
+            if (!TryGetComponent<Rigidbody>(out var rb))
+            {
+                rb = gameObject.AddComponent<Rigidbody>();
+                rb.isKinematic = true;
+                rb.useGravity  = false;
+            }
+        }
+
         public void Setup(Transform target, int damage, float homingStrength,
                           ObjectPool<Bullet> pool, bool isPlayerBullet)
         {

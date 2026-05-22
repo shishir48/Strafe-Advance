@@ -67,19 +67,19 @@ namespace StrafAdvance
                     GruntEnemy grunt = Instantiate(gruntPrefab, spawnPos, Quaternion.identity, spawnParent);
                     grunt.Initialize(gruntConfig);
                     grunt.InitGrunt(playerTransform, _enemyBulletPool);
-                    grunt.OnDeath += _ => ReportKill();
+                    grunt.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); };
                     break;
                 case EnemyType.Flanker:
                     FlankerEnemy flanker = Instantiate(flankerPrefab, spawnPos, Quaternion.identity, spawnParent);
                     flanker.Initialize(flankerConfig);
                     flanker.InitFlanker(playerTransform);
-                    flanker.OnDeath += _ => ReportKill();
+                    flanker.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); };
                     break;
                 case EnemyType.Elite:
                     EliteEnemy elite = Instantiate(elitePrefab, spawnPos, Quaternion.identity, spawnParent);
                     elite.Initialize(eliteConfig);
                     elite.InitElite(playerTransform);
-                    elite.OnDeath += _ => ReportKill();
+                    elite.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); };
                     break;
             }
         }
