@@ -189,14 +189,20 @@ namespace StrafAdvance.Editor
                 ClearChildren(go);
                 CreatePart(go, "Body", PrimitiveType.Sphere, Vector3.zero, Vector3.one * 0.18f, mat);
                 AddGlow(go, glowColor, 0.8f);
-                // Trail renderer
-                var trail = go.GetComponent<TrailRenderer>() ?? go.AddComponent<TrailRenderer>();
-                trail.time = 0.12f;
-                trail.startWidth = 0.08f;
-                trail.endWidth   = 0f;
-                trail.material   = mat;
-                trail.startColor = new Color(glowColor.r, glowColor.g, glowColor.b, 1f);
-                trail.endColor   = new Color(glowColor.r, glowColor.g, glowColor.b, 0f);
+                try
+                {
+                    // Remove old trail first to avoid serialization issues
+                    var oldTrail = go.GetComponent<TrailRenderer>();
+                    if (oldTrail != null) Object.DestroyImmediate(oldTrail);
+                    var trail = go.AddComponent<TrailRenderer>();
+                    trail.time = 0.12f;
+                    trail.startWidth = 0.08f;
+                    trail.endWidth   = 0f;
+                    trail.startColor = new Color(glowColor.r, glowColor.g, glowColor.b, 1f);
+                    trail.endColor   = new Color(glowColor.r, glowColor.g, glowColor.b, 0f);
+                    if (mat != null) trail.material = mat;
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[GameSetup] Trail setup: {e.Message}"); }
             });
         }
 
