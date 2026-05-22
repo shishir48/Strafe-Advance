@@ -10,15 +10,15 @@ namespace StrafAdvance
         private Transform _target;
         private ObjectPool<Bullet> _pool;
         private bool _isPlayerBullet;
+        private Rigidbody _rb;
 
         void Awake()
         {
-            if (!TryGetComponent<Rigidbody>(out var rb))
-            {
-                rb = gameObject.AddComponent<Rigidbody>();
-                rb.isKinematic = true;
-                rb.useGravity  = false;
-            }
+            if (!TryGetComponent<Rigidbody>(out _rb))
+                _rb = gameObject.AddComponent<Rigidbody>();
+            _rb.isKinematic = true;
+            _rb.useGravity  = false;
+            _rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
         }
 
         public void Setup(Transform target, int damage, float homingStrength,
@@ -31,18 +31,19 @@ namespace StrafAdvance
             _isPlayerBullet = isPlayerBullet;
         }
 
-        void Update()
+        void FixedUpdate()
         {
             if (_target != null && _homingStrength > 0f)
             {
                 Vector3 dir = (_target.position - transform.position).normalized;
                 transform.forward = Vector3.RotateTowards(
                     transform.forward, dir,
-                    _homingStrength * Mathf.Deg2Rad * Time.deltaTime, 0f);
+                    _homingStrength * Mathf.Deg2Rad * Time.fixedDeltaTime, 0f);
             }
-            transform.Translate(Vector3.forward * _speed * Time.deltaTime);
+            Vector3 next = transform.position + transform.forward * _speed * Time.fixedDeltaTime;
+            _rb.MovePosition(next);
 
-            if (transform.position.z > 60f || transform.position.z < -10f)
+            if (next.z > 60f || next.z < -10f)
                 _pool?.Return(this);
         }
 

@@ -12,14 +12,11 @@ namespace StrafAdvance
 
         protected virtual void Awake()
         {
-            // Required for bullet OnTriggerEnter to fire
-            if (!TryGetComponent<Rigidbody>(out _))
-            {
-                var rb = gameObject.AddComponent<Rigidbody>();
-                rb.isKinematic = true;
-                rb.useGravity  = false;
-            }
-            // Set layer — used for bullet detection
+            if (!TryGetComponent<Rigidbody>(out var rb))
+                rb = gameObject.AddComponent<Rigidbody>();
+            rb.isKinematic = true;
+            rb.useGravity  = false;
+            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
             int enemyLayer = LayerMask.NameToLayer("Enemy");
             if (enemyLayer >= 0) gameObject.layer = enemyLayer;
         }
