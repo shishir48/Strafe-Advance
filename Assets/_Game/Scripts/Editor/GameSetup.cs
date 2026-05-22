@@ -61,6 +61,173 @@ namespace StrafAdvance.Editor
             Debug.Log("[GameSetup] Player prefab rewired. Press Play.");
         }
 
+        // ─── Upgrade Graphics ────────────────────────────────────────────────────
+        [MenuItem("StrafAdvance/8. Upgrade Graphics (Sci-Fi Neon)", priority = 80)]
+        public static void UpgradeGraphics()
+        {
+            EnsureDir("Assets/_Game/Art/Materials");
+            EnsureDir("Assets/_Game/Prefabs/Combat");
+            EnsureDir("Assets/_Game/Prefabs/Enemies");
+            EnsureDir("Assets/_Game/Prefabs/Level");
+
+            var urp = Shader.Find("Universal Render Pipeline/Lit");
+
+            // ── Neon emissive materials ──────────────────────────────────────────
+            Material playerMat  = CreateNeonMat("Player",   new Color(0.1f, 0.4f, 1f),    new Color(0f,   0.5f, 2f),   urp);
+            Material gruntMat   = CreateNeonMat("Grunt",    new Color(1f,   0.15f, 0.05f), new Color(2f,   0.1f, 0f),   urp);
+            Material flankerMat = CreateNeonMat("Flanker",  new Color(1f,   0.5f,  0f),    new Color(2f,   0.8f, 0f),   urp);
+            Material eliteMat   = CreateNeonMat("Elite",    new Color(0.6f, 0f,    1f),    new Color(1.5f, 0f,   3f),   urp);
+            Material bossMat    = CreateNeonMat("Boss",     new Color(1f,   0f,    0.3f),  new Color(3f,   0f,   0.5f), urp);
+            Material bulletMat  = CreateNeonMat("Bullet",   new Color(0.9f, 1f,    0.2f),  new Color(2f,   3f,   0f),   urp);
+            Material tileMat    = CreateNeonMat("Tile",     new Color(0.06f,0.06f, 0.09f), new Color(0.1f, 0.3f, 0.5f), urp);
+            Material wallMat    = CreateNeonMat("Wall",     new Color(0.04f,0.04f, 0.07f), new Color(0f,   0.2f, 0.8f), urp);
+            Material powerUpMat = CreateNeonMat("PowerUp",  new Color(0f,   1f,    0.5f),  new Color(0f,   3f,   1f),   urp);
+
+            // ── Player: capsule body + sphere head + glow ────────────────────────
+            UpgradePrefab("Player", go =>
+            {
+                ClearChildren(go);
+                var body = CreatePart(go, "Body",   PrimitiveType.Capsule, new Vector3(0, 0, 0), new Vector3(0.5f, 0.7f, 0.5f), playerMat);
+                var cockpit = CreatePart(go, "Cockpit", PrimitiveType.Sphere, new Vector3(0, 0.5f, 0), Vector3.one * 0.35f, playerMat);
+                AddGlow(go, new Color(0.1f, 0.5f, 1f), 1.5f);
+            });
+
+            // ── Grunt: sphere (simple threat) ────────────────────────────────────
+            UpgradePrefab("Enemies/GruntEnemy", go =>
+            {
+                ClearChildren(go);
+                CreatePart(go, "Body", PrimitiveType.Sphere, Vector3.zero, Vector3.one * 0.7f, gruntMat);
+                CreatePart(go, "Eye",  PrimitiveType.Sphere, new Vector3(0, 0.1f, 0.3f), Vector3.one * 0.2f, CreateNeonMat("GruntEye", Color.white, new Color(3f,0.5f,0f), urp));
+                AddGlow(go, new Color(1f, 0.2f, 0f), 1f);
+            });
+
+            // ── Flanker: elongated diamond shape ────────────────────────────────
+            UpgradePrefab("Enemies/FlankerEnemy", go =>
+            {
+                ClearChildren(go);
+                CreatePart(go, "Body", PrimitiveType.Cube, Vector3.zero, new Vector3(0.5f, 0.5f, 0.9f), flankerMat);
+                CreatePart(go, "Wing1", PrimitiveType.Cube, new Vector3( 0.5f, 0, 0), new Vector3(0.6f, 0.12f, 0.5f), flankerMat);
+                CreatePart(go, "Wing2", PrimitiveType.Cube, new Vector3(-0.5f, 0, 0), new Vector3(0.6f, 0.12f, 0.5f), flankerMat);
+                AddGlow(go, new Color(1f, 0.6f, 0f), 1f);
+            });
+
+            // ── Elite: armoured cube with spikes ─────────────────────────────────
+            UpgradePrefab("Enemies/EliteEnemy", go =>
+            {
+                ClearChildren(go);
+                CreatePart(go, "Body",   PrimitiveType.Cube,    Vector3.zero,          new Vector3(0.8f, 0.8f, 0.8f), eliteMat);
+                CreatePart(go, "SpikeF", PrimitiveType.Cylinder, new Vector3(0, 0,  0.7f), new Vector3(0.15f, 0.4f, 0.15f), eliteMat);
+                CreatePart(go, "SpikeT", PrimitiveType.Cylinder, new Vector3(0, 0.7f, 0),  new Vector3(0.15f, 0.4f, 0.15f), eliteMat);
+                AddGlow(go, new Color(0.8f, 0f, 1f), 1.5f);
+            });
+
+            // ── Boss: large imposing shape ────────────────────────────────────────
+            UpgradePrefab("Enemies/Boss", go =>
+            {
+                ClearChildren(go);
+                CreatePart(go, "Core",  PrimitiveType.Cylinder, Vector3.zero,          new Vector3(1.2f, 0.6f, 1.2f), bossMat);
+                CreatePart(go, "Dome",  PrimitiveType.Sphere,   new Vector3(0, 0.5f, 0), Vector3.one * 1.0f, bossMat);
+                CreatePart(go, "Ring1", PrimitiveType.Cylinder, Vector3.zero,          new Vector3(1.8f, 0.08f, 1.8f), bossMat);
+                AddGlow(go, new Color(1f, 0f, 0.3f), 3f);
+            });
+
+            // ── Bullets: tiny glowing sphere ─────────────────────────────────────
+            UpgradeBulletPrefab("Combat/PlayerBullet", bulletMat, new Color(1f, 1f, 0.2f));
+            UpgradeBulletPrefab("Combat/EnemyBullet",  gruntMat,  new Color(1f, 0.2f, 0f));
+
+            // ── Corridor tile: dark floor with glowing edges ─────────────────────
+            UpgradePrefab("Level/CorridorTile", go =>
+            {
+                ClearChildren(go);
+                // Floor
+                CreatePart(go, "Floor", PrimitiveType.Cube, Vector3.zero, new Vector3(8f, 0.05f, 12f), tileMat);
+                // Left wall
+                CreatePart(go, "WallL", PrimitiveType.Cube, new Vector3(-4f, 1.5f, 0), new Vector3(0.1f, 3f, 12f), wallMat);
+                // Right wall
+                CreatePart(go, "WallR", PrimitiveType.Cube, new Vector3( 4f, 1.5f, 0), new Vector3(0.1f, 3f, 12f), wallMat);
+                // Edge strips (glowing)
+                CreatePart(go, "EdgeL", PrimitiveType.Cube, new Vector3(-3.9f, 0.06f, 0), new Vector3(0.15f, 0.05f, 12f), wallMat);
+                CreatePart(go, "EdgeR", PrimitiveType.Cube, new Vector3( 3.9f, 0.06f, 0), new Vector3(0.15f, 0.05f, 12f), wallMat);
+            });
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            Debug.Log("[GameSetup] Graphics upgraded to sci-fi neon style.");
+        }
+
+        static Material CreateNeonMat(string name, Color baseColor, Color emissiveColor, Shader shader)
+        {
+            string path = $"Assets/_Game/Art/Materials/{name}.mat";
+            var mat = AssetDatabase.LoadAssetAtPath<Material>(path) ?? new Material(shader) { name = name };
+            mat.color = baseColor;
+            mat.SetColor("_EmissionColor", emissiveColor);
+            mat.EnableKeyword("_EMISSION");
+            mat.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
+            if (AssetDatabase.LoadAssetAtPath<Material>(path) == null)
+                AssetDatabase.CreateAsset(mat, path);
+            else
+                EditorUtility.SetDirty(mat);
+            return mat;
+        }
+
+        static void UpgradePrefab(string subPath, System.Action<GameObject> modify)
+        {
+            string path = $"{PrefabPath}/{subPath}.prefab";
+            if (AssetDatabase.LoadAssetAtPath<GameObject>(path) == null) return;
+            using var scope = new PrefabUtility.EditPrefabContentsScope(path);
+            modify(scope.prefabContentsRoot);
+        }
+
+        static void UpgradeBulletPrefab(string subPath, Material mat, Color glowColor)
+        {
+            UpgradePrefab(subPath, go =>
+            {
+                ClearChildren(go);
+                CreatePart(go, "Body", PrimitiveType.Sphere, Vector3.zero, Vector3.one * 0.18f, mat);
+                AddGlow(go, glowColor, 0.8f);
+                // Trail renderer
+                var trail = go.GetComponent<TrailRenderer>() ?? go.AddComponent<TrailRenderer>();
+                trail.time = 0.12f;
+                trail.startWidth = 0.08f;
+                trail.endWidth   = 0f;
+                trail.material   = mat;
+                trail.startColor = new Color(glowColor.r, glowColor.g, glowColor.b, 1f);
+                trail.endColor   = new Color(glowColor.r, glowColor.g, glowColor.b, 0f);
+            });
+        }
+
+        static void ClearChildren(GameObject go)
+        {
+            for (int i = go.transform.childCount - 1; i >= 0; i--)
+                Object.DestroyImmediate(go.transform.GetChild(i).gameObject);
+            foreach (var r in go.GetComponents<Renderer>())
+                r.sharedMaterial = null;
+        }
+
+        static GameObject CreatePart(GameObject parent, string name, PrimitiveType pType,
+                                      Vector3 localPos, Vector3 localScale, Material mat)
+        {
+            var go = GameObject.CreatePrimitive(pType);
+            go.name = name;
+            go.transform.SetParent(parent.transform, false);
+            go.transform.localPosition = localPos;
+            go.transform.localScale    = localScale;
+            // Remove colliders from sub-parts (parent has the real one)
+            foreach (var col in go.GetComponents<Collider>())
+                Object.DestroyImmediate(col);
+            go.GetComponent<Renderer>().sharedMaterial = mat;
+            return go;
+        }
+
+        static void AddGlow(GameObject go, Color color, float intensity)
+        {
+            var light = go.GetComponent<Light>() ?? go.AddComponent<Light>();
+            light.type      = LightType.Point;
+            light.color     = color;
+            light.intensity = intensity;
+            light.range     = 3f;
+        }
+
         // ─── Create Materials ────────────────────────────────────────────────────
         [MenuItem("StrafAdvance/6. Create Materials & Apply to Prefabs", priority = 60)]
         public static void CreateMaterials()
