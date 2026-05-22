@@ -8,6 +8,12 @@ namespace StrafAdvance
         public int Phase { get; private set; } = 1;
         public event Action<int> OnPhaseChanged;
 
+        protected override void SpawnDeathVFX()
+        {
+            var prefab = Resources.Load<GameObject>("VFX/BossDeath");
+            if (prefab != null) Instantiate(prefab, transform.position, Quaternion.identity);
+        }
+
         protected override void OnDamageTaken()
         {
             if (Phase != 1) return;
