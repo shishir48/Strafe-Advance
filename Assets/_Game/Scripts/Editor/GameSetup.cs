@@ -50,7 +50,36 @@ namespace StrafAdvance.Editor
             UpdateSciFiMat("Tile",    navyBase,  blueGlow,  0.5f, 0.5f, 0.3f, urp);
             UpdateSciFiMat("Wall",    wallBase,  wallGlow,  0.3f, 0.5f, 0.3f, urp);
 
+            // Remap ALL renderer material slots in FBX-based prefabs
+            Material playerMat2  = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Game/Art/Materials/Player.mat");
+            Material gruntMat2   = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Game/Art/Materials/Grunt.mat");
+            Material flankerMat2 = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Game/Art/Materials/Flanker.mat");
+            Material eliteMat2   = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Game/Art/Materials/Elite.mat");
+            Material bossMat2    = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Game/Art/Materials/Boss.mat");
+            Material tileMat2    = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Game/Art/Materials/Tile.mat");
+
+            RemapPrefabRenderers("Player",               playerMat2);
+            RemapPrefabRenderers("Enemies/GruntEnemy",   gruntMat2);
+            RemapPrefabRenderers("Enemies/FlankerEnemy",  flankerMat2);
+            RemapPrefabRenderers("Enemies/EliteEnemy",   eliteMat2);
+            RemapPrefabRenderers("Enemies/Boss",         bossMat2);
+            RemapPrefabRenderers("Level/CorridorTile",   tileMat2);
+
             Debug.Log("[SciFiUpgrade] Materials updated.");
+        }
+
+        static void RemapPrefabRenderers(string prefabSubPath, Material mat)
+        {
+            if (mat == null) return;
+            string path = $"{PrefabPath}/{prefabSubPath}.prefab";
+            if (AssetDatabase.LoadAssetAtPath<GameObject>(path) == null) return;
+            using var scope = new PrefabUtility.EditPrefabContentsScope(path);
+            foreach (var r in scope.prefabContentsRoot.GetComponentsInChildren<Renderer>())
+            {
+                var slots = new Material[r.sharedMaterials.Length];
+                for (int i = 0; i < slots.Length; i++) slots[i] = mat;
+                r.sharedMaterials = slots;
+            }
         }
 
         static void UpdateSciFiMat(string name, Color baseColor, Color emissiveColor,
