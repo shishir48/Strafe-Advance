@@ -47,6 +47,7 @@ namespace StrafAdvance
             EventBus<XpGained>.Clear();
             EventBus<PlayerLeveledUp>.Clear();
             EventBus<PerkUnlocked>.Clear();
+            EventBus<ShieldHit>.Clear();
         }
 
         void Awake()

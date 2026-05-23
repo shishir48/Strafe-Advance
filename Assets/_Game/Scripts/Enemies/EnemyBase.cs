@@ -27,7 +27,7 @@ namespace StrafAdvance
             CurrentHp = config.maxHp;
         }
 
-        public void TakeDamage(int amount)
+        public virtual void TakeDamage(int amount)
         {
             if (CurrentHp <= 0) return;
             CurrentHp = Mathf.Max(0, CurrentHp - amount);

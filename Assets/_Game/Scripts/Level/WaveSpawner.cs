@@ -18,6 +18,10 @@ namespace StrafAdvance
         [SerializeField] private EnemyConfig chargerConfig;
         [SerializeField] private SniperEnemy sniperPrefab;
         [SerializeField] private EnemyConfig sniperConfig;
+        [SerializeField] private ShieldedEnemy shieldedPrefab;
+        [SerializeField] private EnemyConfig shieldedConfig;
+        [SerializeField] private SplitterEnemy splitterPrefab;
+        [SerializeField] private EnemyConfig splitterConfig;
         [SerializeField] private Bullet enemyBulletPrefab;
 
         private ObjectPool<Bullet> _enemyBulletPool;
@@ -139,6 +143,22 @@ namespace StrafAdvance
                     sniper.InitSniper(playerTransform, _enemyBulletPool);
                     sniper.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.Sniper, 400)); };
                     sniper.OnEscaped += _ => ReportKill();
+                    break;
+                case EnemyType.Shielded:
+                    if (shieldedPrefab == null) return;
+                    ShieldedEnemy shielded = Instantiate(shieldedPrefab, spawnPos, Quaternion.identity, spawnParent);
+                    shielded.Initialize(shieldedConfig != null ? shieldedConfig : gruntConfig);
+                    shielded.InitShielded(playerTransform);
+                    shielded.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.Shielded, 350)); };
+                    shielded.OnEscaped += _ => ReportKill();
+                    break;
+                case EnemyType.Splitter:
+                    if (splitterPrefab == null) return;
+                    SplitterEnemy splitter = Instantiate(splitterPrefab, spawnPos, Quaternion.identity, spawnParent);
+                    splitter.Initialize(splitterConfig != null ? splitterConfig : gruntConfig);
+                    splitter.InitSplitter(gruntPrefab, gruntConfig, playerTransform, _enemyBulletPool, spawnParent);
+                    splitter.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.Splitter, 300)); };
+                    splitter.OnEscaped += _ => ReportKill();
                     break;
             }
         }

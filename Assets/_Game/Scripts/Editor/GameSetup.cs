@@ -981,6 +981,8 @@ namespace StrafAdvance.Editor
             CreateEnemyConfig("EliteConfig",    maxHp: 80,  contact: 15, speed: 2f, fireRate: 0f,  bullet: 0);
             CreateEnemyConfig("ChargerConfig",  maxHp: 40,  contact: 25, speed: 6f, fireRate: 0f,  bullet: 0);
             CreateEnemyConfig("SniperConfig",   maxHp: 50,  contact: 5,  speed: 1.2f, fireRate: 2.5f, bullet: 25);
+            CreateEnemyConfig("ShieldedConfig", maxHp: 60,  contact: 12, speed: 2.5f, fireRate: 0f,   bullet: 0);
+            CreateEnemyConfig("SplitterConfig", maxHp: 50,  contact: 10, speed: 2.0f, fireRate: 0f,   bullet: 0);
             CreateEnemyConfig("BossConfig",     maxHp: 200, contact: 20, speed: 1.5f, fireRate: 3f, bullet: 15);
 
             // Level 1 waves — 10 waves, progressive difficulty curve
@@ -992,7 +994,10 @@ namespace StrafAdvance.Editor
                 CreateMixedWave  ("L1_Wave4",                                 // pressure mix
                     Entry(EnemyType.Grunt,   5, 1.0f),
                     Entry(EnemyType.Flanker, 2, 1.2f, startDelay: 2.0f)),
-                CreateWaveConfig("L1_Wave5",  EnemyType.Flanker, 5, 1.0f), // flanker rush
+                CreateMixedWave  ("L1_Wave5",                                 // flanker rush + shielded + splitter
+                    Entry(EnemyType.Flanker,  4, 1.0f),
+                    Entry(EnemyType.Shielded, 2, 1.8f, startDelay: 1.0f),
+                    Entry(EnemyType.Splitter, 1, 1.0f, startDelay: 3.0f)),
                 CreateMixedWave  ("L1_Wave6",                                 // tank + charger rush
                     Entry(EnemyType.Elite,   2, 2.0f),
                     Entry(EnemyType.Charger, 3, 0.8f, startDelay: 0.5f)),
@@ -1065,6 +1070,8 @@ namespace StrafAdvance.Editor
             CreateEnemyPrefab<EliteEnemy>("EliteEnemy",     "Enemies/EliteEnemy");
             CreateEnemyPrefab<ChargerEnemy>("ChargerEnemy", "Enemies/ChargerEnemy");
             CreateSniperPrefab();
+            CreateShieldedPrefab();
+            CreateEnemyPrefab<SplitterEnemy>("SplitterEnemy", "Enemies/SplitterEnemy");
             CreateBossPrefab();
 
             AssetDatabase.SaveAssets();
@@ -1106,6 +1113,7 @@ namespace StrafAdvance.Editor
             var powerUpPrefab = AssetDatabase.LoadAssetAtPath<GameObject>($"{PrefabPath}/Combat/PowerUp.prefab");
             if (powerUpPrefab != null) SetField(dropperGO.GetComponent<PowerUpDropper>(), "powerUpPrefab", powerUpPrefab);
             MakeGO<PlayerProgression>("PlayerProgression");
+            MakeGO<PerkEquipPanel>("PerkEquipPanel");
 
             // Spawn parent
             var spawnParent = new GameObject("SpawnParent");
@@ -1119,11 +1127,15 @@ namespace StrafAdvance.Editor
             SetField(ws, "eliteConfig",    LoadSO<EnemyConfig>("EliteConfig"));
             SetField(ws, "chargerConfig",  LoadSO<EnemyConfig>("ChargerConfig"));
             SetField(ws, "sniperConfig",   LoadSO<EnemyConfig>("SniperConfig"));
+            SetField(ws, "shieldedConfig", LoadSO<EnemyConfig>("ShieldedConfig"));
+            SetField(ws, "splitterConfig", LoadSO<EnemyConfig>("SplitterConfig"));
             SetField(ws, "gruntPrefab",    LoadPrefab<GruntEnemy>("Enemies/GruntEnemy"));
             SetField(ws, "flankerPrefab",  LoadPrefab<FlankerEnemy>("Enemies/FlankerEnemy"));
             SetField(ws, "elitePrefab",    LoadPrefab<EliteEnemy>("Enemies/EliteEnemy"));
             SetField(ws, "chargerPrefab",  LoadPrefab<ChargerEnemy>("Enemies/ChargerEnemy"));
             SetField(ws, "sniperPrefab",   LoadPrefab<SniperEnemy>("Enemies/SniperEnemy"));
+            SetField(ws, "shieldedPrefab", LoadPrefab<ShieldedEnemy>("Enemies/ShieldedEnemy"));
+            SetField(ws, "splitterPrefab", LoadPrefab<SplitterEnemy>("Enemies/SplitterEnemy"));
             SetField(ws, "enemyBulletPrefab", LoadPrefab<Bullet>("Combat/EnemyBullet"));
 
             // CorridorScroller
@@ -1378,6 +1390,34 @@ namespace StrafAdvance.Editor
             go.layer = LayerMask.NameToLayer("Enemy");
             go.transform.localScale = new Vector3(1.5f, 2f, 1.5f);
             go.AddComponent<BossController>();
+            PrefabUtility.SaveAsPrefabAsset(go, path);
+            Object.DestroyImmediate(go);
+        }
+
+        static void CreateShieldedPrefab()
+        {
+            string path = $"{PrefabPath}/Enemies/ShieldedEnemy.prefab";
+            if (AssetDatabase.LoadAssetAtPath<GameObject>(path) != null) return;
+
+            var go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            go.name  = "ShieldedEnemy";
+            go.tag   = "Enemy";
+            go.layer = LayerMask.NameToLayer("Enemy");
+            go.AddComponent<ShieldedEnemy>();
+
+            // Child shield plate placeholder
+            var shield = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            shield.name = "Shield";
+            Object.DestroyImmediate(shield.GetComponent<Collider>());
+            shield.transform.SetParent(go.transform, false);
+            shield.transform.localPosition = new Vector3(0, 0.2f, -0.55f);
+            shield.transform.localScale    = new Vector3(1.3f, 1.3f, 0.05f);
+
+            // Wire the shield ref via serialized field
+            var so = new SerializedObject(go.GetComponent<ShieldedEnemy>());
+            so.FindProperty("shieldVisual").objectReferenceValue = shield;
+            so.ApplyModifiedProperties();
+
             PrefabUtility.SaveAsPrefabAsset(go, path);
             Object.DestroyImmediate(go);
         }
