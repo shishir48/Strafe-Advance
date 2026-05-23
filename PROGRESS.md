@@ -30,8 +30,11 @@
 | P2.3 | Hitstop | Time.timeScale freeze 0.04s grunt / 0.10s elite / 0.06s player-hit. `HitstopRequest` event for custom |
 | P2.4 | Combo + multiplier | ×1→×2 at 5 kills, ×4 at 10, ×8 at 20. Resets on miss-timeout (2s) or PlayerDamaged. Publishes `ComboChanged`. +5 tests |
 | P2.5 | Mixed waves | L1_W4 (Grunt×5 + Flanker×2 @ 2s delay), L1_W7 (Grunt×6 + Flanker×3 @ 1.5s), L1_W9 (Elite×2 + Grunt×4 @ 1s) — uses `WaveEntry[]` |
+| P2.6 | Charger enemy | `EnemyType.Charger` added; ChargerEnemy class (lateral homing + melee rusher), config (HP 40, contact 25, speed 6), prefab creation. L1_W6 now mixed (Elite×2 + Charger×3) |
+| P2.7 | Power-up dropper | Chance-based drops on enemy kill (Grunt 5%, Flanker 10%, Elite 40%, Charger 10%) via `EventBus<EnemyKilled>`. Cached death pos from EnemyDamaged event |
+| P2.8 | XP/level/perks | `PlayerProgression` service: XP per kill (Grunt 10, Flanker 25, Elite 75, Charger 20), quadratic level curve (100×N²), auto-unlock perk on level-up. `Perk` data + `PerkCatalog` (5 perks). SaveData now persists level/xp/unlocked/equipped. `GetEquippedStats()` multiplies through equipped perks. +4 tests |
 
-Phase 2 remaining: enemy variety (6+ types), AI behavior trees, weapons (5+ blasters w/ alt-fire), perk tree, dodge roll, power-ups, ragdoll, Cinemachine kill cam.
+Phase 2 remaining: 5+ enemy types beyond Charger (sniper, drone swarm, shielded, splitter, mini-boss), AI behavior trees, weapons (5+ blasters w/ alt-fire), dodge roll/sprint/slide, ragdoll, Cinemachine kill cam, perk equip UI.
 
 ### Phase 1 — Foundation Refactor (COMPLETE ✅)
 

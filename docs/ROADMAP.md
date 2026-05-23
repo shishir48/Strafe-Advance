@@ -45,15 +45,16 @@ Goal: stop fighting the codebase. Lay senior-grade plumbing.
 
 ## Phase 2 — Gameplay Depth (4 weeks)
 
-- [x] **Mixed-type waves** — `WaveConfig.entries[]` shipped P1.3; L1_W4/W7/W9 converted to mixed (P2.5)
-- [ ] **Enemy variety** — add: melee charger, sniper, drone swarm, shielded, splitter, mini-boss
+- [x] **Mixed-type waves** — `WaveConfig.entries[]` shipped P1.3; L1_W4/W6/W7/W9 converted to mixed (P2.5/P2.6)
+- [x] **Enemy variety (start)** — Charger added (P2.6); remaining: sniper, drone swarm, shielded, splitter, mini-boss
 - [ ] **Enemy AI** — proper behavior trees (NodeCanvas free), not Update timers
 - [ ] **Weapons** — 5+ blasters, alt-fire, reload, recoil patterns, ammo/heat
-- [ ] **Player progression** — XP, level cap 50, perk tree (3 branches × 8 nodes)
+- [x] **Player progression (foundation)** — `PlayerProgression` service (P2.8): XP per kill, quadratic level curve, auto-unlock perks, 5-perk catalog with stat multipliers, persisted in SaveData
+- [ ] **Perk equip UI** — Phase 4
 - [x] **Combat juice** — hitstop (P2.3, 0.04s grunt / 0.10s elite / 0.06s player hit), screen shake (P2.2, Perlin trauma model), damage numbers (P2.1, pooled TMP), slow-mo via hitstop chain
 - [ ] **Combat juice (remaining)** — ragdoll death, Cinemachine impulse upgrade, slow-mo on boss kill
 - [ ] **Movement** — dodge roll, sprint, slide, aim assist on controller
-- [ ] **Power-ups** — shields, damage burst, time-slow, drone companion
+- [x] **Power-ups** — pickup prefab existed; `PowerUpDropper` (P2.7) drops on kill with type-based chance (Grunt 5% / Flanker 10% / Elite 40% / Charger 10%); types: Shield, RapidFire, Multishot
 - [x] **Combo + score multiplier** — `ComboTracker` (P2.4): ×1→×2 at 5, ×4 at 10, ×8 at 20; resets on miss-timeout (2s) or PlayerDamaged
 
 ---
