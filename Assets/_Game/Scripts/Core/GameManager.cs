@@ -9,12 +9,37 @@ namespace StrafAdvance
     public class GameManager : MonoBehaviour
     {
         public static GameManager Instance { get; private set; }
-        public GameState State { get; private set; } = GameState.Menu;
+        public GameState State => _fsm.Current;
 
+        /// <summary>Legacy event — prefer <c>EventBus&lt;GameStateChanged&gt;.Subscribe</c>.</summary>
         public event Action<GameState> OnStateChanged;
 
+        private readonly StateMachine<GameState> _fsm = BuildFsm();
+
+        static StateMachine<GameState> BuildFsm()
+        {
+            var fsm = new StateMachine<GameState>(GameState.Menu, strict: true);
+            // Allowed transitions — anything else is rejected by TryTransition.
+            fsm.Allow(GameState.Menu,          GameState.Playing);
+            fsm.Allow(GameState.Playing,       GameState.BossFight);
+            fsm.Allow(GameState.Playing,       GameState.GameOver);
+            fsm.Allow(GameState.Playing,       GameState.LevelComplete);
+            fsm.Allow(GameState.BossFight,     GameState.GameOver);
+            fsm.Allow(GameState.BossFight,     GameState.LevelComplete);
+            fsm.Allow(GameState.GameOver,      GameState.Menu);
+            fsm.Allow(GameState.LevelComplete, GameState.Menu);
+            return fsm;
+        }
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void ResetStatics() { Instance = null; }
+        static void ResetStatics()
+        {
+            Instance = null;
+            EventBus<GameStateChanged>.Clear();
+            EventBus<EnemyKilled>.Clear();
+            EventBus<WaveStarted>.Clear();
+            EventBus<PlayerDamaged>.Clear();
+        }
 
         void Awake()
         {
@@ -96,10 +121,15 @@ namespace StrafAdvance
 
         public void SetState(GameState state)
         {
-            if (State == state) return;
-            State = state;
+            var prev = _fsm.Current;
+            if (!_fsm.TryTransition(state))
+            {
+                if (prev != state) Debug.LogWarning($"[GameManager] Illegal transition {prev} → {state}, ignored.");
+                return;
+            }
             OnStateChanged?.Invoke(state);
-            if (state == GameState.GameOver)   ShowOverlay("GAME OVER\nTap to retry", OnRetryTap);
+            EventBus<GameStateChanged>.Publish(new GameStateChanged(prev, state));
+            if (state == GameState.GameOver)      ShowOverlay("GAME OVER\nTap to retry",  OnRetryTap);
             if (state == GameState.LevelComplete) ShowOverlay("YOU WIN!\nTap to continue", OnWinTap);
         }
 
