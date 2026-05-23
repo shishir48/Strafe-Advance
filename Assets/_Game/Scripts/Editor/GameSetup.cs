@@ -1074,12 +1074,15 @@ namespace StrafAdvance.Editor
                 Object.DestroyImmediate(r);
 
             // Singletons
-            MakeGO<GameManager>("GameManager");
-            MakeGO<IAPManager>("IAPManager");
+            var gmGO  = MakeGO<GameManager>("GameManager");
+            var iapGO = MakeGO<IAPManager>("IAPManager");
             var audioGO = MakeGO<AudioManager>("AudioManager");
             var musicSrc = audioGO.AddComponent<AudioSource>();
             musicSrc.playOnAwake = false;
             SetField(audioGO.GetComponent<AudioManager>(), "musicSource", musicSrc);
+
+            // DI scope — created early, wired below once dependencies exist
+            var scopeGO = MakeGO<GameLifetimeScope>("GameLifetimeScope");
 
             // Spawn parent
             var spawnParent = new GameObject("SpawnParent");
@@ -1185,6 +1188,14 @@ namespace StrafAdvance.Editor
             var eventSystemGO = new GameObject("EventSystem");
             eventSystemGO.AddComponent<UnityEngine.EventSystems.EventSystem>();
             eventSystemGO.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
+
+            // Wire DI scope refs
+            var scope = scopeGO.GetComponent<GameLifetimeScope>();
+            SetField(scope, "gameManager",      gmGO.GetComponent<GameManager>());
+            SetField(scope, "waveSpawner",      ws);
+            SetField(scope, "corridorScroller", csGO.GetComponent<CorridorScroller>());
+            SetField(scope, "audioManager",     audioGO.GetComponent<AudioManager>());
+            SetField(scope, "iapManager",       iapGO.GetComponent<IAPManager>());
 
             EditorSceneManager.SaveScene(scene, path);
             Debug.Log($"[GameSetup] GameScene saved to {path}. Wire Slider/TMP references in Inspector.");

@@ -53,7 +53,7 @@ namespace StrafAdvance
         void SpawnMuzzleFlash(Vector3 pos, Quaternion rot)
         {
             if (_muzzleFlashPrefab == null)
-                _muzzleFlashPrefab = Resources.Load<GameObject>("VFX/MuzzleFlash");
+                _muzzleFlashPrefab = AssetLoader.Load<GameObject>("VFX/MuzzleFlash");
             if (_muzzleFlashPrefab != null) Instantiate(_muzzleFlashPrefab, pos, rot);
         }
 

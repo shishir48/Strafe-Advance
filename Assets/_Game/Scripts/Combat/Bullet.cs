@@ -76,7 +76,7 @@ namespace StrafAdvance
 
         private void SpawnHitVFX()
         {
-            var prefab = Resources.Load<GameObject>("VFX/HitSpark");
+            var prefab = AssetLoader.Load<GameObject>("VFX/HitSpark");
             if (prefab != null) Instantiate(prefab, transform.position, Quaternion.identity);
         }
 

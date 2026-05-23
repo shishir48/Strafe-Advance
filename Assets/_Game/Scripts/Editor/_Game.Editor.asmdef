@@ -6,7 +6,11 @@
         "Unity.TextMeshPro",
         "UnityEngine.UI",
         "Unity.RenderPipelines.Universal.Runtime",
-        "Unity.RenderPipelines.Core.Runtime"
+        "Unity.RenderPipelines.Core.Runtime",
+        "Unity.Addressables",
+        "Unity.Addressables.Editor",
+        "Unity.ResourceManager",
+        "VContainer"
     ],
     "includePlatforms": ["Editor"],
     "excludePlatforms": [],

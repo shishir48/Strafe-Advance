@@ -45,7 +45,7 @@ namespace StrafAdvance
 
             var waveSpawner      = FindAnyObjectByType<WaveSpawner>();
             var corridorScroller = FindAnyObjectByType<CorridorScroller>();
-            var l1 = Resources.Load<LevelConfig>("Level1");
+            var l1 = AssetLoader.Load<LevelConfig>("Level1");
 
             if (waveSpawner == null || corridorScroller == null || l1 == null)
             {
@@ -72,7 +72,7 @@ namespace StrafAdvance
             {
                 SetState(GameState.BossFight);
                 corridorScroller.Stop();
-                var bossPrefab = Resources.Load<GameObject>("Boss");
+                var bossPrefab = AssetLoader.Load<GameObject>("Boss");
                 var bossSource = l1.bossPrefab != null ? l1.bossPrefab : bossPrefab;
                 if (bossSource != null)
                 {

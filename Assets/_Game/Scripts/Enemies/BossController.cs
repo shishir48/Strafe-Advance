@@ -10,7 +10,7 @@ namespace StrafAdvance
 
         protected override void SpawnDeathVFX()
         {
-            var prefab = Resources.Load<GameObject>("VFX/BossDeath");
+            var prefab = AssetLoader.Load<GameObject>("VFX/BossDeath");
             if (prefab != null) Instantiate(prefab, transform.position, Quaternion.identity);
         }
 

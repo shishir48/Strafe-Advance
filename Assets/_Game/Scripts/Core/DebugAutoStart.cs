@@ -26,7 +26,7 @@ namespace StrafAdvance
                 return;
             }
 
-            var l1 = Resources.Load<LevelConfig>("Level1");
+            var l1 = AssetLoader.Load<LevelConfig>("Level1");
             if (l1 == null) { Debug.LogWarning("DebugAutoStart: Resources/Level1.asset not found."); return; }
 
             corridorScroller.Initialize(l1.worldScrollSpeed);

@@ -51,7 +51,7 @@ namespace StrafAdvance
             {
                 spawner.OnWaveStarted += idx =>
                 {
-                    var lc = Resources.Load<LevelConfig>("Level1");
+                    var lc = AssetLoader.Load<LevelConfig>("Level1");
                     if (lc != null) SetWave(idx, lc.waves.Length);
                 };
             }

@@ -58,7 +58,7 @@ namespace StrafAdvance
 
         protected virtual void SpawnDeathVFX()
         {
-            var prefab = Resources.Load<GameObject>("VFX/EnemyDeath");
+            var prefab = AssetLoader.Load<GameObject>("VFX/EnemyDeath");
             if (prefab != null) Instantiate(prefab, transform.position, Quaternion.identity);
         }
     }
