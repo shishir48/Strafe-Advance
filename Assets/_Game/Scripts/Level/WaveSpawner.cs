@@ -57,6 +57,7 @@ namespace StrafAdvance
             _spawning = true;
             WaveConfig wave = _level.waves[index];
             OnWaveStarted?.Invoke(index);
+            EventBus<WaveStarted>.Publish(new WaveStarted(index, _level.waves.Length));
 
             if (wave.UsesEntries)
             {

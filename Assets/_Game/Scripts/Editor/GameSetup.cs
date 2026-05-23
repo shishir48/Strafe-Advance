@@ -1122,6 +1122,11 @@ namespace StrafAdvance.Editor
             MakeGO<PlayerProgression>("PlayerProgression");
             MakeGO<PerkEquipPanel>("PerkEquipPanel");
             MakeGO<KillCam>("KillCam");
+            MakeGO<ModernHUD>("ModernHUD");
+            MakeGO<PauseMenu>("PauseMenu");
+            MakeGO<SfxRouter>("SfxRouter");
+            MakeGO<CurrencyService>("CurrencyService");
+            MakeGO<RunSummaryPanel>("RunSummaryPanel");
 
             // Spawn parent
             var spawnParent = new GameObject("SpawnParent");

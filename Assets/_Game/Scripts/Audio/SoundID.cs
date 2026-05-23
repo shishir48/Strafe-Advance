@@ -9,6 +9,13 @@ namespace StrafAdvance
         LevelComplete,
         BossRoar,
         BossPhase2,
-        PowerUpCollect
+        PowerUpCollect,
+        Dodge,
+        ShieldHit,
+        ComboTier,
+        PerkUnlock,
+        UIClick,
+        UIConfirm,
+        EliteDeath,
     }
 }

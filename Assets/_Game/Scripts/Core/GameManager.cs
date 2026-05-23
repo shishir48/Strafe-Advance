@@ -50,6 +50,7 @@ namespace StrafAdvance
             EventBus<ShieldHit>.Clear();
             EventBus<KillCamRequest>.Clear();
             EventBus<BossPhaseChanged>.Clear();
+            EventBus<CurrencyEarned>.Clear();
         }
 
         void Awake()
