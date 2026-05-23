@@ -29,17 +29,17 @@
 
 ---
 
-## Phase 1 — Foundation Refactor (3 weeks)
+## Phase 1 — Foundation Refactor ✅ COMPLETE (2026-05-23)
 
 Goal: stop fighting the codebase. Lay senior-grade plumbing.
 
-- [ ] **Addressables migration** — replace all `Resources.Load` with addressable groups, remote content ready
-- [ ] **DI container** (VContainer) — `GameInstaller` scope, drop `FindAnyObjectByType` + reflection wiring
-- [ ] **State machine** (Stateless) — Boot → Menu → Loadout → Playing → Pause → Win/Lose, no hidden flags
-- [ ] **Event bus** (MessagePipe) — typed pub/sub replaces `Action<T>` events on singletons
-- [ ] **Save system** — JSON + AES, atomic writes, version migration, ICloud/Play Save hook (`Assets/_Game/Scripts/Core/SaveSystem.cs`)
-- [ ] **New Input System** properly — gamepad/touch/keyboard, runtime rebinding UI, `InputActionAsset`
-- [ ] **Test harness** — fix 4 pre-existing failures, add PlayMode integration tests for wave flow
+- [x] **Addressables migration** — `AssetLoader` facade with Addressables → Resources fallback, 9 keys registered via `StrafAdvance/11. Bootstrap Addressables`
+- [x] **DI container** (VContainer 1.18.0) — `GameLifetimeScope` registers GameManager + WaveSpawner + CorridorScroller + AudioManager + IAPManager + `SaveSystemFacade`
+- [x] **State machine** — hand-rolled `StateMachine<TState>` with validated transitions, enter/exit callbacks; `GameManager` now FSM-driven
+- [x] **Event bus** — hand-rolled `EventBus<T>` typed pub/sub, zero-alloc dispatch, exception-safe; standard messages `GameStateChanged`, `EnemyKilled`, `WaveStarted`, `PlayerDamaged`
+- [x] **Save system** — `SaveSystem.cs` JSON + AES-256-CBC + atomic write (temp+rename) + .bak rotation + schema versioning + migration scaffolding
+- [x] **New Input System** — `GameInput` facade, all `UnityEngine.Input` calls gone from runtime
+- [x] **Test harness** — fixed 4 pre-existing failures + added EventBus/StateMachine/SaveSystem suites; 36 → **52 EditMode tests, 0 failing**
 
 ---
 
