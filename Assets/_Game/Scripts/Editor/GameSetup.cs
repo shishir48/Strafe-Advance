@@ -981,39 +981,51 @@ namespace StrafAdvance.Editor
             CreateEnemyConfig("EliteConfig",    maxHp: 80,  contact: 15, speed: 2f, fireRate: 0f,  bullet: 0);
             CreateEnemyConfig("BossConfig",     maxHp: 200, contact: 20, speed: 1.5f, fireRate: 3f, bullet: 15);
 
-            // Level 1 waves
+            // Level 1 waves — 10 waves, progressive difficulty curve
             var l1w = new[]
             {
-                CreateWaveConfig("L1_Wave1", EnemyType.Grunt,   5, 1.5f),
-                CreateWaveConfig("L1_Wave2", EnemyType.Grunt,   4, 1.2f),
-                CreateWaveConfig("L1_Wave3", EnemyType.Grunt,   3, 1.0f),
-                CreateWaveConfig("L1_Wave4", EnemyType.Flanker, 4, 1.5f),
-                CreateWaveConfig("L1_Wave5", EnemyType.Flanker, 3, 1.2f),
-                CreateWaveConfig("L1_Wave6", EnemyType.Elite,   2, 2.0f),
+                CreateWaveConfig("L1_Wave1",  EnemyType.Grunt,   4, 1.6f), // tutorial: easy
+                CreateWaveConfig("L1_Wave2",  EnemyType.Grunt,   6, 1.3f), // volume
+                CreateWaveConfig("L1_Wave3",  EnemyType.Flanker, 3, 1.5f), // intro flanker
+                CreateWaveConfig("L1_Wave4",  EnemyType.Grunt,   7, 1.0f), // pressure
+                CreateWaveConfig("L1_Wave5",  EnemyType.Flanker, 5, 1.0f), // flanker rush
+                CreateWaveConfig("L1_Wave6",  EnemyType.Elite,   2, 2.0f), // first tank — breather + threat
+                CreateWaveConfig("L1_Wave7",  EnemyType.Grunt,   8, 0.8f), // fast horde
+                CreateWaveConfig("L1_Wave8",  EnemyType.Flanker, 6, 0.9f), // flanker swarm
+                CreateWaveConfig("L1_Wave9",  EnemyType.Elite,   3, 1.5f), // elite squad
+                CreateWaveConfig("L1_Wave10", EnemyType.Elite,   4, 1.2f), // finale before boss
             };
-            CreateLevelConfig("Level1", "Level 1", l1w, 4f,   "free",  120f);
+            CreateLevelConfig("Level1", "Level 1", l1w, 4f,   "free",  180f);
 
-            // Level 2 waves
+            // Level 2 waves — 10 waves, faster + heavier
             var l2w = new[]
             {
-                CreateWaveConfig("L2_Wave1", EnemyType.Grunt,   6, 1.2f),
-                CreateWaveConfig("L2_Wave2", EnemyType.Flanker, 5, 1.0f),
-                CreateWaveConfig("L2_Wave3", EnemyType.Grunt,   5, 1.0f),
-                CreateWaveConfig("L2_Wave4", EnemyType.Flanker, 4, 1.0f),
-                CreateWaveConfig("L2_Wave5", EnemyType.Elite,   3, 2.0f),
-                CreateWaveConfig("L2_Wave6", EnemyType.Elite,   2, 1.5f),
+                CreateWaveConfig("L2_Wave1",  EnemyType.Grunt,   6, 1.2f),
+                CreateWaveConfig("L2_Wave2",  EnemyType.Flanker, 5, 1.0f),
+                CreateWaveConfig("L2_Wave3",  EnemyType.Grunt,   8, 0.9f),
+                CreateWaveConfig("L2_Wave4",  EnemyType.Flanker, 6, 0.9f),
+                CreateWaveConfig("L2_Wave5",  EnemyType.Elite,   3, 1.8f),
+                CreateWaveConfig("L2_Wave6",  EnemyType.Grunt,  10, 0.7f),
+                CreateWaveConfig("L2_Wave7",  EnemyType.Flanker, 8, 0.8f),
+                CreateWaveConfig("L2_Wave8",  EnemyType.Elite,   4, 1.5f),
+                CreateWaveConfig("L2_Wave9",  EnemyType.Grunt,  12, 0.6f),
+                CreateWaveConfig("L2_Wave10", EnemyType.Elite,   5, 1.2f),
             };
-            CreateLevelConfig("Level2", "Level 2", l2w, 4.5f, "free",  110f);
+            CreateLevelConfig("Level2", "Level 2", l2w, 4.5f, "free",  170f);
 
-            // Level 3 waves
+            // Level 3 waves — 10 waves, max chaos
             var l3w = new[]
             {
-                CreateWaveConfig("L3_Wave1", EnemyType.Flanker, 6, 1.0f),
-                CreateWaveConfig("L3_Wave2", EnemyType.Grunt,   8, 0.8f),
-                CreateWaveConfig("L3_Wave3", EnemyType.Flanker, 5, 1.0f),
-                CreateWaveConfig("L3_Wave4", EnemyType.Elite,   4, 2.0f),
-                CreateWaveConfig("L3_Wave5", EnemyType.Flanker, 6, 0.8f),
-                CreateWaveConfig("L3_Wave6", EnemyType.Elite,   3, 1.5f),
+                CreateWaveConfig("L3_Wave1",  EnemyType.Flanker, 6, 1.0f),
+                CreateWaveConfig("L3_Wave2",  EnemyType.Grunt,   8, 0.8f),
+                CreateWaveConfig("L3_Wave3",  EnemyType.Flanker, 7, 0.8f),
+                CreateWaveConfig("L3_Wave4",  EnemyType.Elite,   4, 1.8f),
+                CreateWaveConfig("L3_Wave5",  EnemyType.Grunt,  12, 0.6f),
+                CreateWaveConfig("L3_Wave6",  EnemyType.Flanker, 9, 0.7f),
+                CreateWaveConfig("L3_Wave7",  EnemyType.Elite,   5, 1.5f),
+                CreateWaveConfig("L3_Wave8",  EnemyType.Grunt,  14, 0.5f),
+                CreateWaveConfig("L3_Wave9",  EnemyType.Flanker,10, 0.6f),
+                CreateWaveConfig("L3_Wave10", EnemyType.Elite,   6, 1.2f),
             };
             CreateLevelConfig("Level3", "Level 3", l3w, 5f,   "free",  100f);
 
@@ -1398,15 +1410,24 @@ namespace StrafAdvance.Editor
 
         static void CreateLevelConfig(string name, string levelName, WaveConfig[] waves, float speed, string iapId, float parTime)
         {
-            string path = $"{SOPath}/{name}.asset";
-            if (AssetDatabase.LoadAssetAtPath<LevelConfig>(path) != null) return;
-            var cfg = ScriptableObject.CreateInstance<LevelConfig>();
+            UpsertLevelConfig($"{SOPath}/{name}.asset", levelName, waves, speed, iapId, parTime);
+            // Runtime loads "Level1" via Resources.Load — keep Resources copy in sync
+            EnsureDir("Assets/Resources");
+            UpsertLevelConfig($"Assets/Resources/{name}.asset", levelName, waves, speed, iapId, parTime);
+        }
+
+        static void UpsertLevelConfig(string path, string levelName, WaveConfig[] waves, float speed, string iapId, float parTime)
+        {
+            var cfg = AssetDatabase.LoadAssetAtPath<LevelConfig>(path);
+            bool isNew = cfg == null;
+            if (isNew) cfg = ScriptableObject.CreateInstance<LevelConfig>();
             cfg.levelName       = levelName;
             cfg.waves           = waves;
             cfg.worldScrollSpeed = speed;
             cfg.iapProductId    = iapId;
             cfg.parTimeSeconds  = parTime;
-            AssetDatabase.CreateAsset(cfg, path);
+            if (isNew) AssetDatabase.CreateAsset(cfg, path);
+            else       EditorUtility.SetDirty(cfg);
         }
 
         static void CreateUIPanelGO(Transform parent, string name, out GameObject panel)

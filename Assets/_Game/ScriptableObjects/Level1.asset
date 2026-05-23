@@ -20,7 +20,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 00712d8c14baa4030ac1f4852c495296, type: 2}
   - {fileID: 11400000, guid: cfc668cc283ec4e1da2555ac977ede91, type: 2}
   - {fileID: 11400000, guid: 7e4722541157f4ce4a8261bc694be20c, type: 2}
+  - {fileID: 11400000, guid: c021702b9b0e24848baf6e79ca58d37e, type: 2}
+  - {fileID: 11400000, guid: 28c21cfd19e094de5a679e55dab5e3fa, type: 2}
+  - {fileID: 11400000, guid: 9d363454eb83a40cbb4c9cf6ef6b8a17, type: 2}
+  - {fileID: 11400000, guid: 187552731a0924373876b7a41375587f, type: 2}
   bossPrefab: {fileID: 0}
   worldScrollSpeed: 4
   iapProductId: free
-  parTimeSeconds: 120
+  parTimeSeconds: 180
