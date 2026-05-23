@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 509cfb640e8ab41a49d6f5e3d488f582, type: 3}
-  m_Name: FlankerConfig
+  m_Name: SniperConfig
   m_EditorClassIdentifier: _Game.Scripts::StrafAdvance.EnemyConfig
-  maxHp: 20
-  contactDamage: 10
-  moveSpeed: 4
-  fireRate: 0
-  bulletDamage: 0
-  aimLeadFactor: 0
-  accuracyJitterDeg: 0
+  maxHp: 50
+  contactDamage: 5
+  moveSpeed: 1.2
+  fireRate: 2.5
+  bulletDamage: 25
+  aimLeadFactor: 0.85
+  accuracyJitterDeg: 0.5

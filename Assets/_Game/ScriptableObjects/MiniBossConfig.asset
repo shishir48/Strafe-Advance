@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 509cfb640e8ab41a49d6f5e3d488f582, type: 3}
-  m_Name: FlankerConfig
+  m_Name: MiniBossConfig
   m_EditorClassIdentifier: _Game.Scripts::StrafAdvance.EnemyConfig
-  maxHp: 20
-  contactDamage: 10
-  moveSpeed: 4
-  fireRate: 0
-  bulletDamage: 0
-  aimLeadFactor: 0
-  accuracyJitterDeg: 0
+  maxHp: 350
+  contactDamage: 18
+  moveSpeed: 2
+  fireRate: 0.55
+  bulletDamage: 12
+  aimLeadFactor: 0.5
+  accuracyJitterDeg: 6

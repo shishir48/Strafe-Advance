@@ -976,21 +976,25 @@ namespace StrafAdvance.Editor
 
             CreateSO<PlayerConfig>("DefaultPlayerConfig");
 
-            CreateEnemyConfig("GruntConfig",   maxHp: 30,  contact: 10, speed: 3f, fireRate: 2f,  bullet: 8);
-            CreateEnemyConfig("FlankerConfig",  maxHp: 20,  contact: 10, speed: 4f, fireRate: 0f,  bullet: 0);
-            CreateEnemyConfig("EliteConfig",    maxHp: 80,  contact: 15, speed: 2f, fireRate: 0f,  bullet: 0);
-            CreateEnemyConfig("ChargerConfig",  maxHp: 40,  contact: 25, speed: 6f, fireRate: 0f,  bullet: 0);
-            CreateEnemyConfig("SniperConfig",   maxHp: 50,  contact: 5,  speed: 1.2f, fireRate: 2.5f, bullet: 25);
-            CreateEnemyConfig("ShieldedConfig", maxHp: 60,  contact: 12, speed: 2.5f, fireRate: 0f,   bullet: 0);
-            CreateEnemyConfig("SplitterConfig", maxHp: 50,  contact: 10, speed: 2.0f, fireRate: 0f,   bullet: 0);
-            CreateEnemyConfig("BossConfig",     maxHp: 200, contact: 20, speed: 1.5f, fireRate: 3f, bullet: 15);
+            CreateEnemyConfig("GruntConfig",   maxHp: 30,  contact: 10, speed: 3f,   fireRate: 2f,    bullet: 8,  aimLead: 0.35f, jitterDeg: 4f);
+            CreateEnemyConfig("FlankerConfig",  maxHp: 20,  contact: 10, speed: 4f,   fireRate: 0f,    bullet: 0);
+            CreateEnemyConfig("EliteConfig",    maxHp: 80,  contact: 15, speed: 2f,   fireRate: 0f,    bullet: 0);
+            CreateEnemyConfig("ChargerConfig",  maxHp: 40,  contact: 25, speed: 6f,   fireRate: 0f,    bullet: 0);
+            CreateEnemyConfig("SniperConfig",   maxHp: 50,  contact: 5,  speed: 1.2f, fireRate: 2.5f,  bullet: 25, aimLead: 0.85f, jitterDeg: 0.5f);
+            CreateEnemyConfig("ShieldedConfig", maxHp: 60,  contact: 12, speed: 2.5f, fireRate: 0f,    bullet: 0);
+            CreateEnemyConfig("SplitterConfig", maxHp: 50,  contact: 10, speed: 2.0f, fireRate: 0f,    bullet: 0);
+            CreateEnemyConfig("DroneConfig",    maxHp: 12,  contact: 5,  speed: 5.0f, fireRate: 0f,    bullet: 0);
+            CreateEnemyConfig("MiniBossConfig", maxHp: 350, contact: 18, speed: 2.0f, fireRate: 0.55f, bullet: 12, aimLead: 0.5f, jitterDeg: 6f);
+            CreateEnemyConfig("BossConfig",     maxHp: 200, contact: 20, speed: 1.5f, fireRate: 3f,    bullet: 15, aimLead: 0.6f, jitterDeg: 3f);
 
             // Level 1 waves — 10 waves, progressive difficulty curve
             var l1w = new[]
             {
                 CreateWaveConfig("L1_Wave1",  EnemyType.Grunt,   4, 1.6f), // tutorial: easy
                 CreateWaveConfig("L1_Wave2",  EnemyType.Grunt,   6, 1.3f), // volume
-                CreateWaveConfig("L1_Wave3",  EnemyType.Flanker, 3, 1.5f), // intro flanker
+                CreateMixedWave  ("L1_Wave3",                                 // intro flanker + drone swarm
+                    Entry(EnemyType.Flanker, 3, 1.5f),
+                    Entry(EnemyType.Drone,   8, 0.25f, startDelay: 1.0f)),
                 CreateMixedWave  ("L1_Wave4",                                 // pressure mix
                     Entry(EnemyType.Grunt,   5, 1.0f),
                     Entry(EnemyType.Flanker, 2, 1.2f, startDelay: 2.0f)),
@@ -1001,9 +1005,10 @@ namespace StrafAdvance.Editor
                 CreateMixedWave  ("L1_Wave6",                                 // tank + charger rush
                     Entry(EnemyType.Elite,   2, 2.0f),
                     Entry(EnemyType.Charger, 3, 0.8f, startDelay: 0.5f)),
-                CreateMixedWave  ("L1_Wave7",                                 // fast horde + escort
-                    Entry(EnemyType.Grunt,   6, 0.7f),
-                    Entry(EnemyType.Flanker, 3, 1.0f, startDelay: 1.5f)),
+                CreateMixedWave  ("L1_Wave7",                                 // fast horde + escort + mini-boss anchor
+                    Entry(EnemyType.MiniBoss, 1, 1f),
+                    Entry(EnemyType.Grunt,    6, 0.7f, startDelay: 1.0f),
+                    Entry(EnemyType.Flanker,  3, 1.0f, startDelay: 2.5f)),
                 CreateMixedWave  ("L1_Wave8",                                 // flanker swarm + sniper support
                     Entry(EnemyType.Flanker, 5, 0.9f),
                     Entry(EnemyType.Sniper,  2, 2.5f, startDelay: 0.5f)),
@@ -1072,6 +1077,8 @@ namespace StrafAdvance.Editor
             CreateSniperPrefab();
             CreateShieldedPrefab();
             CreateEnemyPrefab<SplitterEnemy>("SplitterEnemy", "Enemies/SplitterEnemy");
+            CreateDronePrefab();
+            CreateMiniBossPrefab();
             CreateBossPrefab();
 
             AssetDatabase.SaveAssets();
@@ -1129,6 +1136,8 @@ namespace StrafAdvance.Editor
             SetField(ws, "sniperConfig",   LoadSO<EnemyConfig>("SniperConfig"));
             SetField(ws, "shieldedConfig", LoadSO<EnemyConfig>("ShieldedConfig"));
             SetField(ws, "splitterConfig", LoadSO<EnemyConfig>("SplitterConfig"));
+            SetField(ws, "droneConfig",    LoadSO<EnemyConfig>("DroneConfig"));
+            SetField(ws, "miniBossConfig", LoadSO<EnemyConfig>("MiniBossConfig"));
             SetField(ws, "gruntPrefab",    LoadPrefab<GruntEnemy>("Enemies/GruntEnemy"));
             SetField(ws, "flankerPrefab",  LoadPrefab<FlankerEnemy>("Enemies/FlankerEnemy"));
             SetField(ws, "elitePrefab",    LoadPrefab<EliteEnemy>("Enemies/EliteEnemy"));
@@ -1136,6 +1145,8 @@ namespace StrafAdvance.Editor
             SetField(ws, "sniperPrefab",   LoadPrefab<SniperEnemy>("Enemies/SniperEnemy"));
             SetField(ws, "shieldedPrefab", LoadPrefab<ShieldedEnemy>("Enemies/ShieldedEnemy"));
             SetField(ws, "splitterPrefab", LoadPrefab<SplitterEnemy>("Enemies/SplitterEnemy"));
+            SetField(ws, "dronePrefab",    LoadPrefab<DroneEnemy>("Enemies/DroneEnemy"));
+            SetField(ws, "miniBossPrefab", LoadPrefab<MiniBossEnemy>("Enemies/MiniBossEnemy"));
             SetField(ws, "enemyBulletPrefab", LoadPrefab<Bullet>("Combat/EnemyBullet"));
 
             // CorridorScroller
@@ -1375,8 +1386,38 @@ namespace StrafAdvance.Editor
             go.tag   = "Enemy";
             go.layer = LayerMask.NameToLayer("Enemy");
             go.AddComponent<T>();
+            go.AddComponent<EnemyHitReact>(); // universal flash + pop + knockback
             PrefabUtility.SaveAsPrefabAsset(go, path);
             Object.DestroyImmediate(go);
+        }
+
+        /// <summary>Adds <see cref="EnemyHitReact"/> to every enemy prefab if missing. Idempotent.</summary>
+        [MenuItem("StrafAdvance/12. Add HitReact To Enemies", priority = 120)]
+        public static void AddHitReactToAllEnemies()
+        {
+            string[] paths = {
+                $"{PrefabPath}/Enemies/GruntEnemy.prefab",
+                $"{PrefabPath}/Enemies/FlankerEnemy.prefab",
+                $"{PrefabPath}/Enemies/EliteEnemy.prefab",
+                $"{PrefabPath}/Enemies/ChargerEnemy.prefab",
+                $"{PrefabPath}/Enemies/SniperEnemy.prefab",
+                $"{PrefabPath}/Enemies/ShieldedEnemy.prefab",
+                $"{PrefabPath}/Enemies/SplitterEnemy.prefab",
+                $"{PrefabPath}/Enemies/Boss.prefab",
+            };
+            int added = 0;
+            foreach (var path in paths)
+            {
+                if (AssetDatabase.LoadAssetAtPath<GameObject>(path) == null) continue;
+                using var scope = new PrefabUtility.EditPrefabContentsScope(path);
+                if (scope.prefabContentsRoot.GetComponent<EnemyHitReact>() == null)
+                {
+                    scope.prefabContentsRoot.AddComponent<EnemyHitReact>();
+                    added++;
+                }
+            }
+            AssetDatabase.SaveAssets();
+            Debug.Log($"[GameSetup] EnemyHitReact added to {added} enemy prefab(s).");
         }
 
         static void CreateBossPrefab()
@@ -1390,6 +1431,38 @@ namespace StrafAdvance.Editor
             go.layer = LayerMask.NameToLayer("Enemy");
             go.transform.localScale = new Vector3(1.5f, 2f, 1.5f);
             go.AddComponent<BossController>();
+            PrefabUtility.SaveAsPrefabAsset(go, path);
+            Object.DestroyImmediate(go);
+        }
+
+        static void CreateDronePrefab()
+        {
+            string path = $"{PrefabPath}/Enemies/DroneEnemy.prefab";
+            if (AssetDatabase.LoadAssetAtPath<GameObject>(path) != null) return;
+
+            var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            go.name  = "DroneEnemy";
+            go.tag   = "Enemy";
+            go.layer = LayerMask.NameToLayer("Enemy");
+            go.transform.localScale = Vector3.one * 0.45f;
+            go.AddComponent<DroneEnemy>();
+            go.AddComponent<EnemyHitReact>();
+            PrefabUtility.SaveAsPrefabAsset(go, path);
+            Object.DestroyImmediate(go);
+        }
+
+        static void CreateMiniBossPrefab()
+        {
+            string path = $"{PrefabPath}/Enemies/MiniBossEnemy.prefab";
+            if (AssetDatabase.LoadAssetAtPath<GameObject>(path) != null) return;
+
+            var go = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            go.name  = "MiniBossEnemy";
+            go.tag   = "Enemy";
+            go.layer = LayerMask.NameToLayer("Enemy");
+            go.transform.localScale = new Vector3(1.6f, 1.4f, 1.6f);
+            go.AddComponent<MiniBossEnemy>();
+            go.AddComponent<EnemyHitReact>();
             PrefabUtility.SaveAsPrefabAsset(go, path);
             Object.DestroyImmediate(go);
         }
@@ -1433,7 +1506,8 @@ namespace StrafAdvance.Editor
             go.layer = LayerMask.NameToLayer("Enemy");
             go.transform.localScale = new Vector3(0.8f, 1.2f, 0.8f);
             go.AddComponent<SniperEnemy>();
-            var lr = go.AddComponent<LineRenderer>();
+            // SniperEnemy has [RequireComponent(LineRenderer)] — fetch existing rather than add a second.
+            var lr = go.GetComponent<LineRenderer>() ?? go.AddComponent<LineRenderer>();
             lr.positionCount  = 2;
             lr.startWidth     = 0.04f;
             lr.endWidth       = 0.01f;
@@ -1479,18 +1553,22 @@ namespace StrafAdvance.Editor
             return asset;
         }
 
-        static EnemyConfig CreateEnemyConfig(string name, int maxHp, int contact, float speed, float fireRate, int bullet)
+        static EnemyConfig CreateEnemyConfig(string name, int maxHp, int contact, float speed,
+            float fireRate, int bullet, float aimLead = 0f, float jitterDeg = 0f)
         {
             string path = $"{SOPath}/{name}.asset";
-            var existing = AssetDatabase.LoadAssetAtPath<EnemyConfig>(path);
-            if (existing != null) return existing;
-            var cfg = ScriptableObject.CreateInstance<EnemyConfig>();
-            cfg.maxHp        = maxHp;
-            cfg.contactDamage = contact;
-            cfg.moveSpeed    = speed;
-            cfg.fireRate     = fireRate;
-            cfg.bulletDamage = bullet;
-            AssetDatabase.CreateAsset(cfg, path);
+            var cfg = AssetDatabase.LoadAssetAtPath<EnemyConfig>(path);
+            bool isNew = cfg == null;
+            if (isNew) cfg = ScriptableObject.CreateInstance<EnemyConfig>();
+            cfg.maxHp           = maxHp;
+            cfg.contactDamage   = contact;
+            cfg.moveSpeed       = speed;
+            cfg.fireRate        = fireRate;
+            cfg.bulletDamage    = bullet;
+            cfg.aimLeadFactor   = aimLead;
+            cfg.accuracyJitterDeg = jitterDeg;
+            if (isNew) AssetDatabase.CreateAsset(cfg, path);
+            else       EditorUtility.SetDirty(cfg);
             return cfg;
         }
 

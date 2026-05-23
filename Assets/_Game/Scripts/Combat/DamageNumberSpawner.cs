@@ -67,12 +67,18 @@ namespace StrafAdvance
             var go = new GameObject("DamageNumber(Template)");
             go.SetActive(false);
             var tmp = go.AddComponent<TextMeshPro>();
+            // Assign the TMP Settings default font asset so outline/material lookups don't NRE.
+            var defaultFont = TMP_Settings.defaultFontAsset;
+            if (defaultFont != null) tmp.font = defaultFont;
             tmp.alignment = TextAlignmentOptions.Center;
             tmp.fontSize  = 6f;
             tmp.text      = "0";
-            tmp.outlineWidth = 0.25f;
-            tmp.outlineColor = Color.black;
             tmp.fontStyle = FontStyles.Bold;
+            if (defaultFont != null)
+            {
+                tmp.outlineWidth = 0.25f;
+                tmp.outlineColor = Color.black;
+            }
 
             go.AddComponent<DamageNumber>();
             DontDestroyOnLoad(go);

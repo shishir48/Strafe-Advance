@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &7997165388547633438
+--- !u!1 &9031671271780600525
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,26 +8,26 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7041411768669488384}
-  - component: {fileID: 7464975687877513466}
-  - component: {fileID: 7291639361557702206}
-  - component: {fileID: 8575312527740757333}
-  - component: {fileID: 3492530815992066211}
-  - component: {fileID: 7311875923694261741}
+  - component: {fileID: 1761134306808883694}
+  - component: {fileID: 9011027269654570945}
+  - component: {fileID: 3675568891337504377}
+  - component: {fileID: 5977911007350852499}
+  - component: {fileID: 3375488818502310062}
+  - component: {fileID: 4492411406928253716}
   m_Layer: 8
-  m_Name: ChargerEnemy
+  m_Name: SplitterEnemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &7041411768669488384
+--- !u!4 &1761134306808883694
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7997165388547633438}
+  m_GameObject: {fileID: 9031671271780600525}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -36,21 +36,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &7464975687877513466
+--- !u!33 &9011027269654570945
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7997165388547633438}
+  m_GameObject: {fileID: 9031671271780600525}
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
---- !u!136 &7291639361557702206
+--- !u!136 &3675568891337504377
 CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7997165388547633438}
+  m_GameObject: {fileID: 9031671271780600525}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -67,13 +67,13 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!23 &8575312527740757333
+--- !u!23 &5977911007350852499
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7997165388547633438}
+  m_GameObject: {fileID: 9031671271780600525}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -116,32 +116,29 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &3492530815992066211
+--- !u!114 &3375488818502310062
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7997165388547633438}
+  m_GameObject: {fileID: 9031671271780600525}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3df7a1bbb85c34e79a98b232327dd36c, type: 3}
+  m_Script: {fileID: 11500000, guid: f09f03c89d3ad460db11219482a1158f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: _Game.Scripts::StrafAdvance.ChargerEnemy
-  lateralHomingSpeed: 4
-  lungeTriggerZ: 8
-  windUpSeconds: 0.5
-  lungeSeconds: 0.7
-  lungeSpeedMul: 2.6
-  lungeCooldown: 1.5
-  telegraphColor: {r: 3, g: 0.4, b: 0.4, a: 1}
---- !u!114 &7311875923694261741
+  m_EditorClassIdentifier: _Game.Scripts::StrafAdvance.SplitterEnemy
+  fragmentCount: 3
+  fragmentSpread: 1.2
+  fragmentSpeedMul: 1.4
+  fragmentHpMul: 0.4
+--- !u!114 &4492411406928253716
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7997165388547633438}
+  m_GameObject: {fileID: 9031671271780600525}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0b292c5e462c44b8a99d9722f9a979fb, type: 3}

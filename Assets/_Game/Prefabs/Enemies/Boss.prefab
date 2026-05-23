@@ -104,6 +104,7 @@ GameObject:
   - component: {fileID: 1542306019436187769}
   - component: {fileID: 6929882755109557442}
   - component: {fileID: 9023468820184893812}
+  - component: {fileID: 5560956429502180981}
   m_Layer: 8
   m_Name: Boss
   m_TagString: Untagged
@@ -162,6 +163,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 028291ad5683346b588af0a94c85549a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: _Game.Scripts::StrafAdvance.BossController
+--- !u!114 &5560956429502180981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5383572608229907570}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b292c5e462c44b8a99d9722f9a979fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: _Game.Scripts::StrafAdvance.EnemyHitReact
+  flashSeconds: 0.08
+  popScale: 1.18
+  popSeconds: 0.12
+  knockback: 0.18
+  flashColor: {r: 2.5, g: 2.5, b: 2.5, a: 1}
 --- !u!1 &8928186437321609966
 GameObject:
   m_ObjectHideFlags: 0

@@ -12,7 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c82952f3004843c4b1fb2907bcdd32e, type: 3}
   m_Name: L1_Wave3
   m_EditorClassIdentifier: _Game.Scripts::StrafAdvance.WaveConfig
-  entries: []
+  entries:
+  - enemyType: 1
+    count: 3
+    spawnInterval: 1.5
+    startDelay: 0
+  - enemyType: 7
+    count: 8
+    spawnInterval: 0.25
+    startDelay: 1
   enemyType: 1
   count: 3
   spawnInterval: 1.5

@@ -87,6 +87,8 @@ namespace StrafAdvance
             titleRT.anchoredPosition = new Vector2(0, -10);
             titleRT.sizeDelta = new Vector2(0, 80);
             var titleTMP = title.AddComponent<TextMeshProUGUI>();
+            var defaultFont = TMP_Settings.defaultFontAsset;
+            if (defaultFont != null) titleTMP.font = defaultFont;
             titleTMP.text = "PERKS  (tap to equip)";
             titleTMP.fontSize = 44;
             titleTMP.alignment = TextAlignmentOptions.Center;
@@ -162,6 +164,8 @@ namespace StrafAdvance
             trt.anchorMin = Vector2.zero; trt.anchorMax = Vector2.one;
             trt.offsetMin = new Vector2(20, 5); trt.offsetMax = new Vector2(-20, -5);
             var tmp = textGO.AddComponent<TextMeshProUGUI>();
+            var defaultFont = TMP_Settings.defaultFontAsset;
+            if (defaultFont != null) tmp.font = defaultFont;
             tmp.text = label;
             tmp.fontSize = 28;
             tmp.alignment = TextAlignmentOptions.Left;

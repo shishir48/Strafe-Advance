@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace StrafAdvance
 {
-    public enum EnemyType { Grunt, Flanker, Elite, Charger, Sniper, Shielded, Splitter }
+    public enum EnemyType { Grunt, Flanker, Elite, Charger, Sniper, Shielded, Splitter, Drone, MiniBoss }
 
     /// <summary>One enemy group inside a wave.</summary>
     [Serializable]

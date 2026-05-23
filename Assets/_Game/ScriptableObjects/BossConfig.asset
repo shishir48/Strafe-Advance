@@ -17,3 +17,5 @@ MonoBehaviour:
   moveSpeed: 1.5
   fireRate: 3
   bulletDamage: 15
+  aimLeadFactor: 0.6
+  accuracyJitterDeg: 3

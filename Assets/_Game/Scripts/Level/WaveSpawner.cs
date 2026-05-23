@@ -22,6 +22,10 @@ namespace StrafAdvance
         [SerializeField] private EnemyConfig shieldedConfig;
         [SerializeField] private SplitterEnemy splitterPrefab;
         [SerializeField] private EnemyConfig splitterConfig;
+        [SerializeField] private DroneEnemy dronePrefab;
+        [SerializeField] private EnemyConfig droneConfig;
+        [SerializeField] private MiniBossEnemy miniBossPrefab;
+        [SerializeField] private EnemyConfig miniBossConfig;
         [SerializeField] private Bullet enemyBulletPrefab;
 
         private ObjectPool<Bullet> _enemyBulletPool;
@@ -101,13 +105,17 @@ namespace StrafAdvance
         {
             float spawnX = UnityEngine.Random.Range(-2.5f, 2.5f);
             Vector3 spawnPos = new Vector3(spawnX, 0f, 25f);
+            float diff = DifficultyService.Current;
+
+            EnemyConfig ScaledOr(EnemyConfig c) =>
+                c != null ? c.WithDifficulty(diff) : null;
 
             switch (type)
             {
                 case EnemyType.Grunt:
                     if (gruntPrefab == null) return;
                     GruntEnemy grunt = Instantiate(gruntPrefab, spawnPos, Quaternion.identity, spawnParent);
-                    grunt.Initialize(gruntConfig);
+                    grunt.Initialize(ScaledOr(gruntConfig));
                     grunt.InitGrunt(playerTransform, _enemyBulletPool);
                     grunt.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.Grunt, 100)); };
                     grunt.OnEscaped += _ => ReportKill();
@@ -115,7 +123,7 @@ namespace StrafAdvance
                 case EnemyType.Flanker:
                     if (flankerPrefab == null) { Debug.LogWarning("[WaveSpawner] flankerPrefab null, skipping"); ReportKill(); return; }
                     FlankerEnemy flanker = Instantiate(flankerPrefab, spawnPos, Quaternion.identity, spawnParent);
-                    flanker.Initialize(flankerConfig != null ? flankerConfig : gruntConfig);
+                    flanker.Initialize(ScaledOr(flankerConfig != null ? flankerConfig : gruntConfig));
                     flanker.InitFlanker(playerTransform);
                     flanker.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.Flanker, 200)); };
                     flanker.OnEscaped += _ => ReportKill();
@@ -123,7 +131,7 @@ namespace StrafAdvance
                 case EnemyType.Elite:
                     if (elitePrefab == null) { Debug.LogWarning("[WaveSpawner] elitePrefab null, skipping"); ReportKill(); return; }
                     EliteEnemy elite = Instantiate(elitePrefab, spawnPos, Quaternion.identity, spawnParent);
-                    elite.Initialize(eliteConfig != null ? eliteConfig : gruntConfig);
+                    elite.Initialize(ScaledOr(eliteConfig != null ? eliteConfig : gruntConfig));
                     elite.InitElite(playerTransform);
                     elite.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.Elite, 500)); };
                     elite.OnEscaped += _ => ReportKill();
@@ -131,7 +139,7 @@ namespace StrafAdvance
                 case EnemyType.Charger:
                     if (chargerPrefab == null) return;
                     ChargerEnemy charger = Instantiate(chargerPrefab, spawnPos, Quaternion.identity, spawnParent);
-                    charger.Initialize(chargerConfig != null ? chargerConfig : gruntConfig);
+                    charger.Initialize(ScaledOr(chargerConfig != null ? chargerConfig : gruntConfig));
                     charger.InitCharger(playerTransform);
                     charger.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.Charger, 250)); };
                     charger.OnEscaped += _ => ReportKill();
@@ -139,7 +147,7 @@ namespace StrafAdvance
                 case EnemyType.Sniper:
                     if (sniperPrefab == null) return;
                     SniperEnemy sniper = Instantiate(sniperPrefab, spawnPos, Quaternion.identity, spawnParent);
-                    sniper.Initialize(sniperConfig != null ? sniperConfig : gruntConfig);
+                    sniper.Initialize(ScaledOr(sniperConfig != null ? sniperConfig : gruntConfig));
                     sniper.InitSniper(playerTransform, _enemyBulletPool);
                     sniper.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.Sniper, 400)); };
                     sniper.OnEscaped += _ => ReportKill();
@@ -147,7 +155,7 @@ namespace StrafAdvance
                 case EnemyType.Shielded:
                     if (shieldedPrefab == null) return;
                     ShieldedEnemy shielded = Instantiate(shieldedPrefab, spawnPos, Quaternion.identity, spawnParent);
-                    shielded.Initialize(shieldedConfig != null ? shieldedConfig : gruntConfig);
+                    shielded.Initialize(ScaledOr(shieldedConfig != null ? shieldedConfig : gruntConfig));
                     shielded.InitShielded(playerTransform);
                     shielded.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.Shielded, 350)); };
                     shielded.OnEscaped += _ => ReportKill();
@@ -155,10 +163,26 @@ namespace StrafAdvance
                 case EnemyType.Splitter:
                     if (splitterPrefab == null) return;
                     SplitterEnemy splitter = Instantiate(splitterPrefab, spawnPos, Quaternion.identity, spawnParent);
-                    splitter.Initialize(splitterConfig != null ? splitterConfig : gruntConfig);
+                    splitter.Initialize(ScaledOr(splitterConfig != null ? splitterConfig : gruntConfig));
                     splitter.InitSplitter(gruntPrefab, gruntConfig, playerTransform, _enemyBulletPool, spawnParent);
                     splitter.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.Splitter, 300)); };
                     splitter.OnEscaped += _ => ReportKill();
+                    break;
+                case EnemyType.Drone:
+                    if (dronePrefab == null) return;
+                    DroneEnemy drone = Instantiate(dronePrefab, spawnPos, Quaternion.identity, spawnParent);
+                    drone.Initialize(ScaledOr(droneConfig != null ? droneConfig : gruntConfig));
+                    drone.InitDrone(playerTransform);
+                    drone.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.Drone, 120)); };
+                    drone.OnEscaped += _ => ReportKill();
+                    break;
+                case EnemyType.MiniBoss:
+                    if (miniBossPrefab == null) return;
+                    MiniBossEnemy mb = Instantiate(miniBossPrefab, spawnPos, Quaternion.identity, spawnParent);
+                    mb.Initialize(ScaledOr(miniBossConfig != null ? miniBossConfig : eliteConfig));
+                    mb.InitMiniBoss(playerTransform, _enemyBulletPool);
+                    mb.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.MiniBoss, 1500)); EventBus<ShakeRequest>.Publish(new ShakeRequest(0.9f)); EventBus<HitstopRequest>.Publish(new HitstopRequest(0.2f)); };
+                    mb.OnEscaped += _ => ReportKill();
                     break;
             }
         }

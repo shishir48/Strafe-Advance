@@ -36,8 +36,21 @@ namespace StrafAdvance
         {
             if (_player == null || _bulletPool == null) return;
             Bullet b = _bulletPool.Get();
-            b.transform.SetPositionAndRotation(transform.position, Quaternion.identity);
+
+            // Lead the player using config-driven prediction + accuracy jitter.
+            Vector3 vel = _lastPlayerPos != Vector3.zero
+                ? (_player.position - _lastPlayerPos) / Mathf.Max(Time.deltaTime, 0.001f)
+                : Vector3.zero;
+            _lastPlayerPos = _player.position;
+            Vector3 aimAt = AimingMath.PredictPlayerPosition(
+                transform.position, _player.position, vel, bulletSpeed: 18f, Config.aimLeadFactor);
+            Quaternion rot = Quaternion.LookRotation(aimAt - transform.position, Vector3.up);
+            rot = AimingMath.Jitter(rot, Config.accuracyJitterDeg);
+
+            b.transform.SetPositionAndRotation(transform.position, rot);
             b.Setup(_player, Config.bulletDamage, 0f, _bulletPool, isPlayerBullet: false);
         }
+
+        private Vector3 _lastPlayerPos;
     }
 }
