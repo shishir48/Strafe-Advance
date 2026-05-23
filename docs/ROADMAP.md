@@ -46,8 +46,9 @@ Goal: stop fighting the codebase. Lay senior-grade plumbing.
 ## Phase 2 — Gameplay Depth (4 weeks)
 
 - [x] **Mixed-type waves** — `WaveConfig.entries[]` shipped P1.3; L1_W4/W6/W7/W9 converted to mixed (P2.5/P2.6)
-- [x] **Enemy variety** — Charger (P2.6), Sniper (P2.10), Shielded (P2.12), Splitter (P2.13); remaining: drone swarm, mini-boss
-- [ ] **Enemy AI** — proper behavior trees (NodeCanvas free), not Update timers
+- [x] **Enemy variety** — Charger (P2.6), Sniper (P2.10), Shielded (P2.12), Splitter (P2.13), Drone swarm boids (P2.15), Mini-Boss (P2.19) — 8 enemy types total
+- [x] **Enemy juice** — universal HitReact flash+pop+knock (P2.16), Charger telegraphed lunge (P2.18), aim-leading + accuracy jitter (P2.20), per-level difficulty scaling (P2.20)
+- [ ] **Enemy AI** — proper behavior trees (NodeCanvas free), not Update timers. Charger/MiniBoss have local FSMs; full unified brain skipped this batch.
 - [x] **Weapons** — 5 weapons in catalog (P2.11): Standard Blaster, Rapid SMG, Heavy Cannon, Scatter Gun (5-bullet spread), Tracker Pistol (homing). AutoShooter reads equipped. Alt-fire/reload still pending.
 - [x] **Player progression (foundation)** — `PlayerProgression` service (P2.8): XP per kill, quadratic level curve, auto-unlock perks, 5-perk catalog with stat multipliers, persisted in SaveData
 - [x] **Perk equip UI** — `PerkEquipPanel` (P2.14): runtime canvas auto-opens on level-up, lists unlocked perks, tap-toggle equip (max 3), persists via SaveSystem, live-refreshes AutoShooter

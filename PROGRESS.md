@@ -39,10 +39,15 @@
 | P2.12 | Shielded enemy | `EnemyType.Shielded` + `ShieldedEnemy` class: overrides `TakeDamage`, blocks front-cone (70° half-angle) hits, shield breaks after 5 chips. Forces flanking. ShieldHit event for VFX hooks. Front shield child Cube visual with alpha fade |
 | P2.13 | Splitter enemy | `EnemyType.Splitter` + `SplitterEnemy` class: on death spawns 3 mini-grunts (60% scale, 40% HP, 1.4× speed) via passed Grunt prefab/config |
 | P2.14 | Perk equip UI | `PerkEquipPanel` runtime-built canvas. Auto-opens on `PlayerLeveledUp`. Lists unlocked perks, tap to toggle equip (max 3). Persists via SaveSystem. Calls `AutoShooter.RefreshLoadout()` so mid-run perk change takes effect |
+| P2.15 | Drone swarm | `EnemyType.Drone` + `DroneEnemy` with boids (cohesion+separation+advance+player-homing). Small sphere prefab, 12 HP, fast, dangerous in numbers. Static registry for O(n) neighbor lookup |
+| P2.16 | Universal HitReact | `EnemyHitReact` component on every enemy: emission flash to HDR white (0.08s), scale-pop 1×→1.18×→1×, brief backward knockback. Auto-attached on prefab creation + retrofit menu item 12 |
+| P2.18 | Charger telegraph | 3-state FSM: Approach → WindUp (0.5s pause + scale-up + red flash) → Lunge (0.7s @ 2.6× speed). Skill-check moment for dodge. 1.5s cooldown between lunges |
+| P2.19 | Mini-Boss | `EnemyType.MiniBoss` + `MiniBossEnemy`: holds at z=14, sine-strafes, world-space HP bar that orients to camera. Phase 1: aimed single shot. Phase 2 (50% HP): 3-bullet spread + faster fire + shake on transition. Death triggers big shake + hitstop |
+| P2.20 | Aim leading + difficulty | `EnemyConfig.aimLeadFactor` (predict player position) + `accuracyJitterDeg` (random spread). `DifficultyService.Current` multiplier from player level (1 + 0.08/level capped ×3) applied per spawn via `EnemyConfig.WithDifficulty()` — HP/damage scale up, speed soft-capped. Grunts/Sniper/MiniBoss/Boss have non-zero lead |
 
-L1_W5 now mixes Flanker+Shielded+Splitter. L1_W8 mixes Flanker+Sniper. L1_W6 mixes Elite+Charger. L1_W4/W7/W9 mixed earlier.
+L1_W3 now adds 8-drone swarm. L1_W5 mixes Flanker+Shielded+Splitter. L1_W6 mixes Elite+Charger. L1_W7 anchors MiniBoss + horde. L1_W8 mixes Flanker+Sniper. L1_W4/W9 mixed earlier.
 
-Phase 2 remaining: drone swarm / mini-boss enemies, AI behavior trees, sprint+slide, ragdoll death, Cinemachine kill cam.
+Phase 2 remaining: EnemyBrain unified state machine refactor (skipped — payoff low vs churn), sprint+slide, ragdoll death, Cinemachine kill cam.
 
 ### Phase 1 — Foundation Refactor (COMPLETE ✅)
 
