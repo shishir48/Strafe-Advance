@@ -32,9 +32,12 @@
 | P2.5 | Mixed waves | L1_W4 (Grunt×5 + Flanker×2 @ 2s delay), L1_W7 (Grunt×6 + Flanker×3 @ 1.5s), L1_W9 (Elite×2 + Grunt×4 @ 1s) — uses `WaveEntry[]` |
 | P2.6 | Charger enemy | `EnemyType.Charger` added; ChargerEnemy class (lateral homing + melee rusher), config (HP 40, contact 25, speed 6), prefab creation. L1_W6 now mixed (Elite×2 + Charger×3) |
 | P2.7 | Power-up dropper | Chance-based drops on enemy kill (Grunt 5%, Flanker 10%, Elite 40%, Charger 10%) via `EventBus<EnemyKilled>`. Cached death pos from EnemyDamaged event |
-| P2.8 | XP/level/perks | `PlayerProgression` service: XP per kill (Grunt 10, Flanker 25, Elite 75, Charger 20), quadratic level curve (100×N²), auto-unlock perk on level-up. `Perk` data + `PerkCatalog` (5 perks). SaveData now persists level/xp/unlocked/equipped. `GetEquippedStats()` multiplies through equipped perks. +4 tests |
+| P2.8 | XP/level/perks | `PlayerProgression` service: XP per kill (Grunt 10, Flanker 25, Elite 75, Charger 20), quadratic level curve (100×N²), auto-unlock perk on level-up. `Perk` data + `PerkCatalog` (5 perks). SaveData persists level/xp/unlocked/equipped. `GetEquippedStats()` multiplies through equipped perks. +4 tests |
+| P2.9 | Dodge roll | Spacebar / gamepad B / 2-finger tap. 0.25s dash @ 4x strafe speed with i-frames via `PlayerHealth.SetInvincible`. 1.5s cooldown. Publishes `DodgePerformed` |
+| P2.10 | Sniper enemy | `EnemyType.Sniper` + `SniperEnemy` class: holds position at z=18, telegraphs shots with red LineRenderer for 0.7s, fires homing 25-dmg bullet every 2.5s. L1_W8 now mixed (Flanker×5 + Sniper×2 @ 0.5s delay) |
+| P2.11 | Weapon system | `WeaponConfig` + `WeaponCatalog` (5 weapons: Standard Blaster, Rapid SMG, Heavy Cannon, Scatter Gun, Tracker Pistol). AutoShooter reads `SaveData.equippedWeaponId` at start, applies `PlayerProgression.GetEquippedStats()` perks on top. Multishot spread fan + homing strength per weapon. +4 tests |
 
-Phase 2 remaining: 5+ enemy types beyond Charger (sniper, drone swarm, shielded, splitter, mini-boss), AI behavior trees, weapons (5+ blasters w/ alt-fire), dodge roll/sprint/slide, ragdoll, Cinemachine kill cam, perk equip UI.
+Phase 2 remaining: drone swarm / shielded / splitter / mini-boss enemies, AI behavior trees, sprint+slide, ragdoll death, Cinemachine kill cam, perk equip UI.
 
 ### Phase 1 — Foundation Refactor (COMPLETE ✅)
 
