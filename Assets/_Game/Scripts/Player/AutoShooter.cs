@@ -36,6 +36,7 @@ namespace StrafAdvance
             Transform fp = firePoint != null ? firePoint : transform;
             Transform target = FindNearestEnemy();
             SpawnBullet(fp.position, fp.rotation, target);
+            SpawnMuzzleFlash(fp.position, fp.rotation);
 
             if (_multishot)
             {
@@ -46,6 +47,14 @@ namespace StrafAdvance
                     fp.position - fp.right * 0.3f,
                     Quaternion.Euler(0, -10f, 0) * fp.rotation, target);
             }
+        }
+
+        private static GameObject _muzzleFlashPrefab;
+        void SpawnMuzzleFlash(Vector3 pos, Quaternion rot)
+        {
+            if (_muzzleFlashPrefab == null)
+                _muzzleFlashPrefab = Resources.Load<GameObject>("VFX/MuzzleFlash");
+            if (_muzzleFlashPrefab != null) Instantiate(_muzzleFlashPrefab, pos, rot);
         }
 
         void SpawnBullet(Vector3 pos, Quaternion rot, Transform target)

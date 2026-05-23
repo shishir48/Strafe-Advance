@@ -162,6 +162,11 @@ namespace StrafAdvance.Editor
                 new Color(1.00f, 0.40f, 0.00f, 0f),
                 lifetime: 1.20f, speed: 7f, size: 0.28f, burst: 40, urp: urp);
 
+            CreateVFXPrefab("MuzzleFlash",
+                new Color(1.00f, 0.95f, 0.40f, 1f),
+                new Color(1.00f, 0.60f, 0.10f, 0f),
+                lifetime: 0.08f, speed: 1.5f, size: 0.2f, burst: 6, urp: urp);
+
             Debug.Log("[SciFiUpgrade] VFX prefabs created in Assets/Resources/VFX/");
         }
 
@@ -169,6 +174,9 @@ namespace StrafAdvance.Editor
         {
             string path = $"{PrefabPath}/{prefabSubPath}.prefab";
             if (AssetDatabase.LoadAssetAtPath<GameObject>(path) == null) return;
+
+            // Reuse the saved Bullet.mat asset (already emissive blue) — runtime materials don't persist in prefabs
+            var trailMat = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Game/Art/Materials/Bullet.mat");
 
             using var scope = new PrefabUtility.EditPrefabContentsScope(path);
             var root = scope.prefabContentsRoot;
@@ -181,13 +189,7 @@ namespace StrafAdvance.Editor
             trail.startColor  = trailColor;
             trail.endColor    = new Color(trailColor.r, trailColor.g, trailColor.b, 0f);
             trail.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-
-            var trailMat = new Material(urp ?? Shader.Find("Standard"));
-            trailMat.color = trailColor;
-            trailMat.SetColor("_BaseColor", trailColor);
-            trailMat.SetColor("_EmissionColor", trailColor * 3f);
-            trailMat.EnableKeyword("_EMISSION");
-            trail.material = trailMat;
+            if (trailMat != null) trail.material = trailMat;
         }
 
         static void CreateVFXPrefab(string name, Color startColor, Color endColor,
@@ -220,12 +222,25 @@ namespace StrafAdvance.Editor
             shape.radius    = 0.05f;
 
             var renderer = go.GetComponent<ParticleSystemRenderer>();
-            var mat = new Material(urp ?? Shader.Find("Standard"));
+
+            // Save material as ASSET first — runtime materials don't persist in prefabs
+            EnsureDir("Assets/_Game/Art/Materials/VFX");
+            string matPath = $"Assets/_Game/Art/Materials/VFX/{name}.mat";
+            var mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+            if (mat == null)
+            {
+                mat = new Material(urp ?? Shader.Find("Standard"));
+                AssetDatabase.CreateAsset(mat, matPath);
+            }
+            mat.shader = urp ?? Shader.Find("Standard");
             mat.color = startColor;
             mat.SetColor("_BaseColor", startColor);
             mat.SetColor("_EmissionColor", startColor * 3f);
             mat.EnableKeyword("_EMISSION");
-            renderer.material = mat;
+            mat.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
+            EditorUtility.SetDirty(mat);
+
+            renderer.sharedMaterial = mat;
             renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             renderer.receiveShadows = false;
 
@@ -390,9 +405,76 @@ namespace StrafAdvance.Editor
             SwapMesh("Enemies/Boss",        "turret_double.fbx",  Vector3.one * 0.015f, new Vector3(0, 0, 0),   bossMat);
             SwapMesh("Level/CorridorTile",  "corridor.fbx", new Vector3(0.015f, 0.015f, 0.015f), Vector3.zero, tileMat);
 
+            // Attach blaster to humanoid characters (player + grunts)
+            AttachBlasterToHand("Player",             "blaster-l.fbx", playerMat);
+            AttachBlasterToHand("Enemies/GruntEnemy", "blaster-l.fbx", gruntMat);
+
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log("[GameSetup] Kenney 3D models applied to all prefabs.");
+        }
+
+        static void AttachBlasterToHand(string prefabSubPath, string fbxName, Material applyMat)
+        {
+            string fbxPath = $"Assets/_Game/Art/Models/{fbxName}";
+            var fbxAsset = AssetDatabase.LoadAssetAtPath<GameObject>(fbxPath);
+            if (fbxAsset == null) { Debug.LogWarning($"[GameSetup] Blaster FBX not found: {fbxPath}"); return; }
+
+            string prefabPath = $"{PrefabPath}/{prefabSubPath}.prefab";
+            if (AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath) == null) return;
+
+            using var scope = new PrefabUtility.EditPrefabContentsScope(prefabPath);
+            var root = scope.prefabContentsRoot;
+
+            Transform mesh = null;
+            foreach (var t in root.GetComponentsInChildren<Transform>())
+                if (t.name == "Mesh") { mesh = t; break; }
+            if (mesh == null) { Debug.LogWarning($"[GameSetup] Mesh node not found in {prefabSubPath}"); return; }
+
+            // Remove existing blaster if re-running
+            for (int i = mesh.childCount - 1; i >= 0; i--)
+            {
+                var c = mesh.GetChild(i);
+                if (c.name == "Blaster") Object.DestroyImmediate(c.gameObject);
+            }
+
+            var blaster = Object.Instantiate(fbxAsset);
+            blaster.name = "Blaster";
+            blaster.transform.SetParent(mesh, false);
+            // Mesh is at scale 2.0, rotation 180° Y. Place blaster in front of body at hand height.
+            // Mesh-local: negative X for right side (after 180° Y becomes +X world), negative Z for forward
+            blaster.transform.localPosition = new Vector3(-0.15f, 0.3f, -0.25f);
+            blaster.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
+            blaster.transform.localScale    = Vector3.one * 0.6f;
+
+            foreach (var col in blaster.GetComponentsInChildren<Collider>())
+                Object.DestroyImmediate(col);
+
+            if (applyMat != null)
+                foreach (var r in blaster.GetComponentsInChildren<Renderer>())
+                {
+                    var slots = new Material[r.sharedMaterials.Length];
+                    for (int j = 0; j < slots.Length; j++) slots[j] = applyMat;
+                    r.sharedMaterials = slots;
+                }
+
+            // Create FirePoint at blaster muzzle (sibling of Blaster under Mesh so its world position is at gun tip)
+            for (int i = mesh.childCount - 1; i >= 0; i--)
+                if (mesh.GetChild(i).name == "FirePoint") Object.DestroyImmediate(mesh.GetChild(i).gameObject);
+            var firePoint = new GameObject("FirePoint");
+            firePoint.transform.SetParent(mesh, false);
+            // Forward muzzle position in Mesh-local space (in front of body)
+            firePoint.transform.localPosition = new Vector3(-0.15f, 0.3f, -0.5f);
+            firePoint.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
+
+            // Wire FirePoint on AutoShooter (player) or enemy shooter (grunt)
+            var shooter = root.GetComponent<AutoShooter>();
+            if (shooter != null)
+            {
+                var so = new SerializedObject(shooter);
+                so.FindProperty("firePoint").objectReferenceValue = firePoint.transform;
+                so.ApplyModifiedProperties();
+            }
         }
 
         // ─── Upgrade Graphics ────────────────────────────────────────────────────
