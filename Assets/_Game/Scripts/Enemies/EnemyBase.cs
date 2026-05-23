@@ -45,13 +45,15 @@ namespace StrafAdvance
         protected void EscapeOffScreen()
         {
             OnEscaped?.Invoke(this);
-            Destroy(gameObject);
+            if (Application.isPlaying) Destroy(gameObject);
+            else DestroyImmediate(gameObject);
         }
 
         protected virtual void Die()
         {
             SpawnDeathVFX();
-            Destroy(gameObject);
+            if (Application.isPlaying) Destroy(gameObject);
+            else DestroyImmediate(gameObject);
         }
 
         protected virtual void SpawnDeathVFX()

@@ -25,41 +25,20 @@ namespace StrafAdvance
 
         void HandleInput()
         {
-#if UNITY_EDITOR
-            HandleMouseInput();
-#else
-            HandleTouchInput();
-#endif
-        }
-
-        void HandleTouchInput()
-        {
-            if (Input.touchCount == 0) return;
-            Touch touch = Input.GetTouch(0);
-            if (touch.phase == TouchPhase.Began)
+            if (GameInput.PrimaryPressedThisFrame)
             {
-                _isDragging = true;
-                _dragStartX = touch.position.x;
+                _isDragging   = true;
+                _dragStartX   = GameInput.PointerPosition.x;
                 _playerStartX = transform.position.x;
             }
-            else if (touch.phase == TouchPhase.Moved && _isDragging)
-                UpdateTargetX(touch.position.x);
-            else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
-                _isDragging = false;
-        }
-
-        void HandleMouseInput()
-        {
-            if (Input.GetMouseButtonDown(0))
+            else if (GameInput.PrimaryHeld && _isDragging)
             {
-                _isDragging = true;
-                _dragStartX = Input.mousePosition.x;
-                _playerStartX = transform.position.x;
+                UpdateTargetX(GameInput.PointerPosition.x);
             }
-            else if (Input.GetMouseButton(0) && _isDragging)
-                UpdateTargetX(Input.mousePosition.x);
-            else if (Input.GetMouseButtonUp(0))
+            else if (GameInput.PrimaryReleasedThisFrame)
+            {
                 _isDragging = false;
+            }
         }
 
         void UpdateTargetX(float screenX)

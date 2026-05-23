@@ -1,0 +1,153 @@
+# Strafe Advance — Roadmap to Paid Game
+
+**Status:** Demo → polished mobile shooter, indie scope, 6 months
+**Target:** Premium mobile shooter (Android/iOS), $4.99 with IAP cosmetic shop
+**KPIs to hit before global launch:** D1 ≥ 35%, D7 ≥ 12%, D30 ≥ 5%, ARPDAU ≥ $0.10
+
+---
+
+## Current Demo Audit
+
+| Area | Demo Signal |
+|------|-------------|
+| Wave system | Single enemy type per wave, no mix |
+| Enemy variety | 3 types (Grunt, Flanker, Elite) + Boss, no behavior depth |
+| Animation | Static FBX, no rigs, no death rolls, no aim IK |
+| Combat juice | None — no screen shake, hitstop, ragdoll, damage numbers, kill cam |
+| Code architecture | `FindAnyObjectByType`, `SetField` reflection, no DI, no event bus |
+| Asset loading | `Resources.Load` everywhere (anti-pattern, blocks ship size) |
+| Save system | None — runs forget everything |
+| Input | Mixed legacy + new Input System, no rebinding |
+| Audio | Stub AudioManager, no SFX library, no adaptive music |
+| Monetization | IAPManager placeholder, no products, no ads, no currency |
+| Telemetry | None |
+| UI | Basic HUD + tap-to-start, no main menu polish, no settings |
+| Tutorial | None |
+| Localization | EN only, hardcoded strings |
+| Performance | No profiling, no LOD, no occlusion culling |
+| CI/CD | Manual builds via menu item |
+
+---
+
+## Phase 1 — Foundation Refactor (3 weeks)
+
+Goal: stop fighting the codebase. Lay senior-grade plumbing.
+
+- [ ] **Addressables migration** — replace all `Resources.Load` with addressable groups, remote content ready
+- [ ] **DI container** (VContainer) — `GameInstaller` scope, drop `FindAnyObjectByType` + reflection wiring
+- [ ] **State machine** (Stateless) — Boot → Menu → Loadout → Playing → Pause → Win/Lose, no hidden flags
+- [ ] **Event bus** (MessagePipe) — typed pub/sub replaces `Action<T>` events on singletons
+- [ ] **Save system** — JSON + AES, atomic writes, version migration, ICloud/Play Save hook (`Assets/_Game/Scripts/Core/SaveSystem.cs`)
+- [ ] **New Input System** properly — gamepad/touch/keyboard, runtime rebinding UI, `InputActionAsset`
+- [ ] **Test harness** — fix 4 pre-existing failures, add PlayMode integration tests for wave flow
+
+---
+
+## Phase 2 — Gameplay Depth (4 weeks)
+
+- [ ] **Mixed-type waves** — `WaveConfig.entries[]` (enemy type + count + delay), boss intros
+- [ ] **Enemy variety** — add: melee charger, sniper, drone swarm, shielded, splitter, mini-boss
+- [ ] **Enemy AI** — proper behavior trees (NodeCanvas free), not Update timers
+- [ ] **Weapons** — 5+ blasters, alt-fire, reload, recoil patterns, ammo/heat
+- [ ] **Player progression** — XP, level cap 50, perk tree (3 branches × 8 nodes)
+- [ ] **Combat juice** — hitstop (0.05s on hit), screen shake (Cinemachine impulse), ragdoll, damage numbers, slow-mo on boss kill
+- [ ] **Movement** — dodge roll, sprint, slide, aim assist on controller
+- [ ] **Power-ups** — shields, damage burst, time-slow, drone companion
+- [ ] **Combo + score multiplier** — kill streak → multiplier, fades on miss/hit
+
+---
+
+## Phase 3 — Visual Production (4 weeks)
+
+- [ ] **Mixamo rig** astronautA — idle, run forward/strafe, aim, shoot, hit, death (~10 anims)
+- [ ] **Animator** with blend trees + IK constraints (weapon-arm to target)
+- [ ] **Custom shader** (Shader Graph) — fresnel rim, dissolve death, hit flash, energy shield
+- [ ] **VFX Graph** rewrite — smoke, plasma, sparks, impact decals, env particles
+- [ ] **Cinemachine** — gameplay vcam, kill cam, boss intro cam, scripted shake on impulse
+- [ ] **Lighting pass** — directional + point lights on corridor strips, fog, baked light probes
+- [ ] **Skybox** — sci-fi nebula HDRI (Polyhaven CC0)
+- [ ] **Environment variants** — 4+ corridors: industrial / cargo / boss arena / abandoned + prop kit
+
+---
+
+## Phase 4 — UI / UX (3 weeks)
+
+- [ ] **Main menu** — animated, parallax background, hub scene
+- [ ] **Loadout screen** — weapons + perks + cosmetics before each run
+- [ ] **In-run HUD** — HP/shields, ammo/heat, combo counter, wave countdown, minimap, score popups
+- [ ] **Pause menu** — settings, resume, restart, quit
+- [ ] **Settings** — graphics quality, audio mixers, sensitivity, colorblind mode, subtitle, sfx volume per channel
+- [ ] **Tutorial** — first 3 waves scripted with prompt overlays (move, shoot, dodge)
+- [ ] **Localization** — SmartLocalization, ship EN + ES + JP + ZH-CN
+- [ ] **UI Toolkit (UXML)** for menus — faster iteration than uGUI for complex layouts
+
+---
+
+## Phase 5 — Audio (2 weeks)
+
+- [ ] **Adaptive music** — FMOD or Unity Audio Mixer snapshots: chill → tension → boss
+- [ ] **SFX library** — 60+ clips: weapons per-type, impacts per-surface, enemy vocals, UI clicks, ambient
+- [ ] **VO barks** — short player + boss lines (Eleven Labs or asset store)
+- [ ] **3D positional audio** — distance falloff, occlusion on corridors
+- [ ] **Mixer routing** — Music / SFX / VO / UI buses with per-bus volume controls in Settings
+
+---
+
+## Phase 6 — Monetization + Live Ops (3 weeks)
+
+- [ ] **Currency** — soft credits (earned) + hard gems (IAP)
+- [ ] **Store** — cosmetic skins (player, blaster, corridor theme), weekly featured rotation
+- [ ] **IAP products** — gem packs ($1.99/$4.99/$9.99/$19.99), starter bundle, season pass, no-ads removal
+- [ ] **Rewarded ads** — IronSource/AppLovin: revive on death, 2x reward on run end
+- [ ] **Battle Pass** — 30-tier seasonal, free + premium lanes, weekly challenges
+- [ ] **Daily login**, achievements, leaderboards (Lootlocker free tier)
+- [ ] **Remote config** (Firebase) — tune wave difficulty + IAP prices + drop rates without app update
+- [ ] **Analytics** — GameAnalytics or Firebase: funnel, D1/D7/D30 retention, ARPDAU, churn cohorts
+
+---
+
+## Phase 7 — Quality + Ship (4 weeks)
+
+- [ ] **Performance** target: 60 FPS iPhone 12 / Pixel 6, 30 FPS low-end. SRP Batcher, GPU Instancing, LOD groups, occlusion culling
+- [ ] **Memory** — ASTC/ETC2 textures, audio compression, asset bundle splits
+- [ ] **Crash reporting** — Crashlytics + Sentry
+- [ ] **CI/CD** — GitHub Actions: build Android/iOS on tag, upload to Play Console internal / TestFlight, run PlayMode tests
+- [ ] **Bug bash** — controller test, accessibility audit, age rating, store metadata + screenshots
+- [ ] **Soft launch** — Philippines/Vietnam 4 weeks, optimize KPIs
+- [ ] **Global launch** — Apple/Google editorial pitch, launch trailer, press kit
+
+---
+
+## Team Estimate (typical mid-tier indie)
+
+| Role | Count | Notes |
+|------|-------|-------|
+| Senior generalist Unity dev | 1 | Lead |
+| Gameplay/combat programmer | 1 | |
+| UI/tools programmer | 1 | |
+| 3D artist / animator | 1 | |
+| VFX + tech artist | 1 | |
+| Audio designer | 1 | Contract from Phase 5 |
+| Game designer | 1 | |
+| Producer / live ops | 1 | |
+| QA | 1 | Contract from Phase 5 |
+
+## Budget (6 months indie scope)
+
+- Team salaries: **$250k–$400k**
+- Asset licenses (FMOD/Wwise, Mixamo Pro, IronSource setup): **$5k–$15k**
+- Marketing/UA budget: **$50k–$200k** at launch
+- **Total: ~$400k–$700k**
+
+---
+
+## Phase 1 Execution Order (this session + follow-ups)
+
+1. Fix 4 pre-existing test failures (baseline green)
+2. Add `SaveSystem` — JSON + AES, atomic writes, version migration
+3. Mixed-type `WaveConfig.entries[]` + spawner support
+4. New Input System wiring + replace legacy `Input` calls
+5. VContainer DI scope (replaces `FindAnyObjectByType`, `SetField`)
+6. Addressables migration (kills `Resources.Load`)
+7. State machine refactor (Stateless package)
+8. Event bus (MessagePipe)

@@ -46,13 +46,24 @@ namespace StrafAdvance
             WaveConfig wave = _level.waves[index];
             OnWaveStarted?.Invoke(index);
 
-            for (int i = 0; i < wave.count; i++)
+            if (wave.UsesEntries)
             {
-                SpawnEnemy(wave.enemyType);
-                ReportEnemySpawned(1);
-                if (wave.spawnInterval > 0f)
-                    yield return new WaitForSeconds(wave.spawnInterval);
+                int active = wave.entries.Length;
+                foreach (var entry in wave.entries)
+                    StartCoroutine(SpawnEntry(entry, () => active--));
+                while (active > 0) yield return null;
             }
+            else
+            {
+                for (int i = 0; i < wave.count; i++)
+                {
+                    SpawnEnemy(wave.enemyType);
+                    ReportEnemySpawned(1);
+                    if (wave.spawnInterval > 0f)
+                        yield return new WaitForSeconds(wave.spawnInterval);
+                }
+            }
+
             _spawning = false;
             // All enemies may have died/escaped during spawning — advance if none alive
             if (_enemiesAlive <= 0)
@@ -65,6 +76,19 @@ namespace StrafAdvance
             }
         }
 
+        IEnumerator SpawnEntry(WaveEntry entry, Action onDone)
+        {
+            if (entry.startDelay > 0f) yield return new WaitForSeconds(entry.startDelay);
+            for (int i = 0; i < entry.count; i++)
+            {
+                SpawnEnemy(entry.enemyType);
+                ReportEnemySpawned(1);
+                if (entry.spawnInterval > 0f)
+                    yield return new WaitForSeconds(entry.spawnInterval);
+            }
+            onDone?.Invoke();
+        }
+
         void SpawnEnemy(EnemyType type)
         {
             float spawnX = UnityEngine.Random.Range(-2.5f, 2.5f);
@@ -73,6 +97,7 @@ namespace StrafAdvance
             switch (type)
             {
                 case EnemyType.Grunt:
+                    if (gruntPrefab == null) return;
                     GruntEnemy grunt = Instantiate(gruntPrefab, spawnPos, Quaternion.identity, spawnParent);
                     grunt.Initialize(gruntConfig);
                     grunt.InitGrunt(playerTransform, _enemyBulletPool);
@@ -108,7 +133,7 @@ namespace StrafAdvance
             CurrentWaveIndex++;
             if (CurrentWaveIndex >= _level.waves.Length)
                 OnAllWavesComplete?.Invoke();
-            else
+            else if (Application.isPlaying)
                 StartCoroutine(SpawnWave(CurrentWaveIndex));
         }
     }

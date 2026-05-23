@@ -3,6 +3,7 @@
     "rootNamespace": "StrafAdvance",
     "references": [
         "Unity.TextMeshPro",
+        "Unity.InputSystem",
         "UnityEngine.Purchasing",
         "UnityEngine.Purchasing.Stores"
     ],

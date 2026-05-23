@@ -139,11 +139,10 @@ namespace StrafAdvance
         {
             yield return null;
 #if UNITY_EDITOR
-            // Editor: unconditional 3s auto-start (legacy Input may not fire under new Input System)
+            // Editor: unconditional 3s auto-start so iteration is fast.
             yield return new WaitForSeconds(3f);
 #else
-            while (!Input.GetMouseButtonDown(0) && Input.touchCount == 0)
-                yield return null;
+            while (!GameInput.AnyInputThisFrame) yield return null;
 #endif
         }
 
@@ -176,8 +175,7 @@ namespace StrafAdvance
             rt.offsetMin = rt.offsetMax = Vector2.zero;
 
             yield return new WaitForSeconds(0.5f);
-            while (!Input.GetMouseButtonDown(0) && Input.touchCount == 0 && !Input.anyKeyDown)
-                yield return null;
+            while (!GameInput.AnyInputThisFrame) yield return null;
 
             Destroy(go);
             onTap?.Invoke();

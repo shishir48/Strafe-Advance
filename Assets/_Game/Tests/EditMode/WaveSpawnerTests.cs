@@ -47,6 +47,31 @@ namespace StrafAdvance.Tests
         }
 
         [Test]
+        public void WaveConfig_TotalCount_PrefersEntriesOverLegacyCount()
+        {
+            var w = ScriptableObject.CreateInstance<WaveConfig>();
+            w.count = 5;
+            w.entries = new[]
+            {
+                new WaveEntry { enemyType = EnemyType.Grunt,   count = 4 },
+                new WaveEntry { enemyType = EnemyType.Flanker, count = 3 },
+            };
+            Assert.IsTrue(w.UsesEntries);
+            Assert.AreEqual(7, w.TotalCount);
+            Object.DestroyImmediate(w);
+        }
+
+        [Test]
+        public void WaveConfig_TotalCount_FallsBackToLegacyWhenNoEntries()
+        {
+            var w = ScriptableObject.CreateInstance<WaveConfig>();
+            w.count = 5;
+            Assert.IsFalse(w.UsesEntries);
+            Assert.AreEqual(5, w.TotalCount);
+            Object.DestroyImmediate(w);
+        }
+
+        [Test]
         public void ReportKill_FiresAllWavesComplete_AfterLastWave()
         {
             bool fired = false;
