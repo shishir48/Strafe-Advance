@@ -44,10 +44,13 @@
 | P2.18 | Charger telegraph | 3-state FSM: Approach → WindUp (0.5s pause + scale-up + red flash) → Lunge (0.7s @ 2.6× speed). Skill-check moment for dodge. 1.5s cooldown between lunges |
 | P2.19 | Mini-Boss | `EnemyType.MiniBoss` + `MiniBossEnemy`: holds at z=14, sine-strafes, world-space HP bar that orients to camera. Phase 1: aimed single shot. Phase 2 (50% HP): 3-bullet spread + faster fire + shake on transition. Death triggers big shake + hitstop |
 | P2.20 | Aim leading + difficulty | `EnemyConfig.aimLeadFactor` (predict player position) + `accuracyJitterDeg` (random spread). `DifficultyService.Current` multiplier from player level (1 + 0.08/level capped ×3) applied per spawn via `EnemyConfig.WithDifficulty()` — HP/damage scale up, speed soft-capped. Grunts/Sniper/MiniBoss/Boss have non-zero lead |
+| P2.21 | Sprint + stamina | Hold-shift / right-trigger / 2-finger sustained = sprint at 1.6× strafe. 5s full stamina, regen 0.8/s after 1s delay. `PlayerController.StaminaT` / `IsSprinting` exposed for HUD |
+| P2.22 | Ragdoll-lite death | `EnemyRagdoll` component: on death claims corpse (`SuppressAutoDestroy`), disables AI scripts + colliders, flips Rigidbody to non-kinematic + gravity, applies back+up impulse + random spin, fades emission for 1.6s then destroys. Auto-added to every new + existing enemy prefab |
+| P2.23 | Kill cam | `KillCam` slow-mo (0.28× scale) + camera zoom toward kill point + restore over 1.4s on `KillCamRequest`. Fires on MiniBoss + Boss death. Cinematic pacing |
 
 L1_W3 now adds 8-drone swarm. L1_W5 mixes Flanker+Shielded+Splitter. L1_W6 mixes Elite+Charger. L1_W7 anchors MiniBoss + horde. L1_W8 mixes Flanker+Sniper. L1_W4/W9 mixed earlier.
 
-Phase 2 remaining: EnemyBrain unified state machine refactor (skipped — payoff low vs churn), sprint+slide, ragdoll death, Cinemachine kill cam.
+Phase 2 remaining: EnemyBrain unified state machine refactor (skipped — payoff low vs churn), slide movement, aim-assist on controller.
 
 ### Phase 1 — Foundation Refactor (COMPLETE ✅)
 

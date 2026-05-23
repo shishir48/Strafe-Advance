@@ -53,8 +53,8 @@ Goal: stop fighting the codebase. Lay senior-grade plumbing.
 - [x] **Player progression (foundation)** — `PlayerProgression` service (P2.8): XP per kill, quadratic level curve, auto-unlock perks, 5-perk catalog with stat multipliers, persisted in SaveData
 - [x] **Perk equip UI** — `PerkEquipPanel` (P2.14): runtime canvas auto-opens on level-up, lists unlocked perks, tap-toggle equip (max 3), persists via SaveSystem, live-refreshes AutoShooter
 - [x] **Combat juice** — hitstop (P2.3, 0.04s grunt / 0.10s elite / 0.06s player hit), screen shake (P2.2, Perlin trauma model), damage numbers (P2.1, pooled TMP), slow-mo via hitstop chain
-- [ ] **Combat juice (remaining)** — ragdoll death, Cinemachine impulse upgrade, slow-mo on boss kill
-- [x] **Movement** — dodge roll (P2.9: 0.25s dash + 1.5s cooldown + i-frames); sprint/slide/aim-assist still pending
+- [x] **Combat juice (extended)** — ragdoll-lite (P2.22) + KillCam slow-mo+zoom on boss death (P2.23). Cinemachine impulse upgrade still pending.
+- [x] **Movement** — dodge roll (P2.9), sprint+stamina (P2.21); slide/aim-assist still pending
 - [x] **Power-ups** — pickup prefab existed; `PowerUpDropper` (P2.7) drops on kill with type-based chance (Grunt 5% / Flanker 10% / Elite 40% / Charger 10%); types: Shield, RapidFire, Multishot
 - [x] **Combo + score multiplier** — `ComboTracker` (P2.4): ×1→×2 at 5, ×4 at 10, ×8 at 20; resets on miss-timeout (2s) or PlayerDamaged
 
