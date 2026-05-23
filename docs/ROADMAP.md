@@ -4,6 +4,8 @@
 **Target:** Premium mobile shooter (Android/iOS), $4.99 with IAP cosmetic shop
 **KPIs to hit before global launch:** D1 ≥ 35%, D7 ≥ 12%, D30 ≥ 5%, ARPDAU ≥ $0.10
 
+> **Session checkpoint (last touched):** Phase 1 ✅ complete, Phase 2 ✅ 22/24 done, Phase 4 ✅ 3/8 done (HUD/Pause/RunSummary), Phase 5 ✅ event-routing done (clips TODO), Phase 6 ✅ soft currency done. **65/65 tests green.** Full session log + file map in `PROGRESS.md`.
+
 ---
 
 ## Current Demo Audit
@@ -77,19 +79,21 @@ Goal: stop fighting the codebase. Lay senior-grade plumbing.
 
 - [ ] **Main menu** — animated, parallax background, hub scene
 - [ ] **Loadout screen** — weapons + perks + cosmetics before each run
-- [ ] **In-run HUD** — HP/shields, ammo/heat, combo counter, wave countdown, minimap, score popups
-- [ ] **Pause menu** — settings, resume, restart, quit
+- [x] **In-run HUD** (P4.1) — HP + stamina + dodge pip + wave + combo + rolling score (`ModernHUD`)
+- [x] **Pause menu** (P4.2) — Esc/Start toggle, Resume/Perks/Restart/Quit, freezes time
 - [ ] **Settings** — graphics quality, audio mixers, sensitivity, colorblind mode, subtitle, sfx volume per channel
 - [ ] **Tutorial** — first 3 waves scripted with prompt overlays (move, shoot, dodge)
 - [ ] **Localization** — SmartLocalization, ship EN + ES + JP + ZH-CN
 - [ ] **UI Toolkit (UXML)** for menus — faster iteration than uGUI for complex layouts
+- [x] **Post-run summary** (P6.1, lives in UI) — score, kills, XP, currency, best, restart/menu buttons
 
 ---
 
 ## Phase 5 — Audio (2 weeks)
 
 - [ ] **Adaptive music** — FMOD or Unity Audio Mixer snapshots: chill → tension → boss
-- [ ] **SFX library** — 60+ clips: weapons per-type, impacts per-surface, enemy vocals, UI clicks, ambient
+- [ ] **SFX library** — 60+ clips: weapons per-type, impacts per-surface, enemy vocals, UI clicks, ambient. SoundID enum and `SfxRouter` already in place (P5.1) — only AudioClip assets needed
+- [x] **Event routing** (P5.1) — `SfxRouter` bridges `EnemyKilled`/`EnemyDamaged`/`PlayerDamaged`/`DodgePerformed`/`ShieldHit`/`ComboChanged`/`PerkUnlocked`/`BossPhaseChanged` to `AudioManager.PlaySFX`
 - [ ] **VO barks** — short player + boss lines (Eleven Labs or asset store)
 - [ ] **3D positional audio** — distance falloff, occlusion on corridors
 - [ ] **Mixer routing** — Music / SFX / VO / UI buses with per-bus volume controls in Settings
@@ -98,7 +102,8 @@ Goal: stop fighting the codebase. Lay senior-grade plumbing.
 
 ## Phase 6 — Monetization + Live Ops (3 weeks)
 
-- [ ] **Currency** — soft credits (earned) + hard gems (IAP)
+- [x] **Soft currency** (P6.1) — `CurrencyService` awards per-enemy drop, persists in SaveData, exposes EarnedThisRun for summary. `CurrencyEarned` event for HUD popups
+- [ ] **Hard currency** — IAP gems (Phase 6 actual)
 - [ ] **Store** — cosmetic skins (player, blaster, corridor theme), weekly featured rotation
 - [ ] **IAP products** — gem packs ($1.99/$4.99/$9.99/$19.99), starter bundle, season pass, no-ads removal
 - [ ] **Rewarded ads** — IronSource/AppLovin: revive on death, 2x reward on run end
