@@ -1094,10 +1094,14 @@ namespace StrafAdvance.Editor
             // DI scope — created early, wired below once dependencies exist
             var scopeGO = MakeGO<GameLifetimeScope>("GameLifetimeScope");
 
-            // Combat juice — damage numbers, screen shake, hitstop, combo (added in P2)
+            // Combat juice — damage numbers, screen shake, hitstop, combo, power-ups (added in P2)
             MakeGO<DamageNumberSpawner>("DamageNumberSpawner");
             MakeGO<Hitstop>("Hitstop");
             MakeGO<ComboTracker>("ComboTracker");
+            var dropperGO = MakeGO<PowerUpDropper>("PowerUpDropper");
+            var powerUpPrefab = AssetDatabase.LoadAssetAtPath<GameObject>($"{PrefabPath}/Combat/PowerUp.prefab");
+            if (powerUpPrefab != null) SetField(dropperGO.GetComponent<PowerUpDropper>(), "powerUpPrefab", powerUpPrefab);
+            MakeGO<PlayerProgression>("PlayerProgression");
 
             // Spawn parent
             var spawnParent = new GameObject("SpawnParent");

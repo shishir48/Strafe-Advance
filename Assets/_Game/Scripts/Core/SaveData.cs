@@ -32,8 +32,12 @@ namespace StrafAdvance
         public int   bestScore;
         public int   softCurrency;
         public int   hardCurrency;
-        public List<string> unlockedSkins = new List<string>();
+        public int   playerLevel = 1;
+        public int   playerXp;
+        public List<string> unlockedSkins   = new List<string>();
         public List<int>    completedLevels = new List<int>();
+        public List<string> unlockedPerkIds = new List<string>();
+        public List<string> equippedPerkIds = new List<string>();
     }
 
     [Serializable]
