@@ -25,6 +25,9 @@ namespace StrafAdvance
         private readonly Queue<AudioSource> _sfxPool = new Queue<AudioSource>();
         private float _sfxVolume = 1f;
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetStatics() { Instance = null; }
+
         void Awake()
         {
             if (Instance != null) { Destroy(gameObject); return; }

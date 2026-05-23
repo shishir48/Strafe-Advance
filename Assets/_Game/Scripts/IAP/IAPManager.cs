@@ -21,6 +21,9 @@ namespace StrafAdvance
         };
         private static readonly string[] ConsumableIds = { "powerup_pack" };
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetStatics() { Instance = null; }
+
         void Awake()
         {
             if (Instance != null) { Destroy(gameObject); return; }

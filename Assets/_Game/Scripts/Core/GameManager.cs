@@ -13,6 +13,9 @@ namespace StrafAdvance
 
         public event Action<GameState> OnStateChanged;
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetStatics() { Instance = null; }
+
         void Awake()
         {
             if (Instance != null && Instance != this) { Destroy(gameObject); return; }
@@ -136,13 +139,8 @@ namespace StrafAdvance
         {
             yield return null;
 #if UNITY_EDITOR
-            // In editor: auto-start after 3 seconds or on any input
-            float timeout = 3f;
-            while (timeout > 0f && !Input.GetMouseButtonDown(0) && Input.touchCount == 0 && !Input.anyKeyDown)
-            {
-                timeout -= Time.deltaTime;
-                yield return null;
-            }
+            // Editor: unconditional 3s auto-start (legacy Input may not fire under new Input System)
+            yield return new WaitForSeconds(3f);
 #else
             while (!Input.GetMouseButtonDown(0) && Input.touchCount == 0)
                 yield return null;
