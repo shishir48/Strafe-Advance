@@ -50,9 +50,14 @@ namespace StrafAdvance
             else DestroyImmediate(gameObject);
         }
 
+        /// <summary>Components like <see cref="EnemyRagdoll"/> set this true in their OnDeath
+        /// handler to take over the corpse lifecycle (tumble + fade + delayed destroy).</summary>
+        public bool SuppressAutoDestroy { get; set; }
+
         protected virtual void Die()
         {
             SpawnDeathVFX();
+            if (SuppressAutoDestroy) return;
             if (Application.isPlaying) Destroy(gameObject);
             else DestroyImmediate(gameObject);
         }

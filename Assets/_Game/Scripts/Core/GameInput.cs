@@ -75,5 +75,25 @@ namespace StrafAdvance
                 return false;
             }
         }
+
+        // ─── Sprint (hold) ──────────────────────────────────────────────────────
+
+        /// <summary>Shift / right-trigger / sustained-2-finger-touch held this frame.</summary>
+        public static bool SprintHeld =>
+            (Keyboard.current != null && Keyboard.current.leftShiftKey.isPressed) ||
+            (Gamepad.current  != null && Gamepad.current.rightTrigger.ReadValue() > 0.5f) ||
+            TwoFingersHeld;
+
+        static bool TwoFingersHeld
+        {
+            get
+            {
+                if (Touchscreen.current == null) return false;
+                int active = 0;
+                foreach (var t in Touchscreen.current.touches)
+                    if (t.press.isPressed) active++;
+                return active >= 2;
+            }
+        }
     }
 }

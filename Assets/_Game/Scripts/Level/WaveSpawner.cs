@@ -181,7 +181,7 @@ namespace StrafAdvance
                     MiniBossEnemy mb = Instantiate(miniBossPrefab, spawnPos, Quaternion.identity, spawnParent);
                     mb.Initialize(ScaledOr(miniBossConfig != null ? miniBossConfig : eliteConfig));
                     mb.InitMiniBoss(playerTransform, _enemyBulletPool);
-                    mb.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.MiniBoss, 1500)); EventBus<ShakeRequest>.Publish(new ShakeRequest(0.9f)); EventBus<HitstopRequest>.Publish(new HitstopRequest(0.2f)); };
+                    mb.OnDeath += e => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.MiniBoss, 1500)); EventBus<ShakeRequest>.Publish(new ShakeRequest(0.9f)); EventBus<HitstopRequest>.Publish(new HitstopRequest(0.2f)); EventBus<KillCamRequest>.Publish(new KillCamRequest(e.transform.position)); };
                     mb.OnEscaped += _ => ReportKill();
                     break;
             }

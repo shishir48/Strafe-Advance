@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 2467989680294517868}
   - component: {fileID: 8133383625667772627}
   - component: {fileID: 573768735703197838}
+  - component: {fileID: 6088041654784290991}
+  - component: {fileID: 8016174574526620075}
   m_Layer: 8
   m_Name: SniperEnemy
   m_TagString: Enemy
@@ -255,3 +257,38 @@ MonoBehaviour:
   homingStrength: 90
   laserIdleColor: {r: 1, g: 0.2, b: 0.2, a: 0.3}
   laserChargeColor: {r: 1, g: 0.05, b: 0.05, a: 1}
+--- !u!114 &6088041654784290991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2647617389574204275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b292c5e462c44b8a99d9722f9a979fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: _Game.Scripts::StrafAdvance.EnemyHitReact
+  flashSeconds: 0.08
+  popScale: 1.18
+  popSeconds: 0.12
+  knockback: 0.18
+  flashColor: {r: 2.5, g: 2.5, b: 2.5, a: 1}
+--- !u!114 &8016174574526620075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2647617389574204275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62481e08106b84b519707c39debaa657, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: _Game.Scripts::StrafAdvance.EnemyRagdoll
+  lifetime: 1.6
+  impulseBack: 4
+  impulseUp: 3
+  spinTorque: 8
+  gravity: 14
+  fadeStartFrac: 0.6

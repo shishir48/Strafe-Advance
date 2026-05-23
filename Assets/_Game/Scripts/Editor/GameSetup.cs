@@ -1121,6 +1121,7 @@ namespace StrafAdvance.Editor
             if (powerUpPrefab != null) SetField(dropperGO.GetComponent<PowerUpDropper>(), "powerUpPrefab", powerUpPrefab);
             MakeGO<PlayerProgression>("PlayerProgression");
             MakeGO<PerkEquipPanel>("PerkEquipPanel");
+            MakeGO<KillCam>("KillCam");
 
             // Spawn parent
             var spawnParent = new GameObject("SpawnParent");
@@ -1387,6 +1388,7 @@ namespace StrafAdvance.Editor
             go.layer = LayerMask.NameToLayer("Enemy");
             go.AddComponent<T>();
             go.AddComponent<EnemyHitReact>(); // universal flash + pop + knockback
+            go.AddComponent<EnemyRagdoll>();  // tumble + fade death
             PrefabUtility.SaveAsPrefabAsset(go, path);
             Object.DestroyImmediate(go);
         }
@@ -1415,9 +1417,13 @@ namespace StrafAdvance.Editor
                     scope.prefabContentsRoot.AddComponent<EnemyHitReact>();
                     added++;
                 }
+                if (scope.prefabContentsRoot.GetComponent<EnemyRagdoll>() == null)
+                {
+                    scope.prefabContentsRoot.AddComponent<EnemyRagdoll>();
+                }
             }
             AssetDatabase.SaveAssets();
-            Debug.Log($"[GameSetup] EnemyHitReact added to {added} enemy prefab(s).");
+            Debug.Log($"[GameSetup] EnemyHitReact added to {added} enemy prefab(s) + ragdoll ensured on all.");
         }
 
         static void CreateBossPrefab()

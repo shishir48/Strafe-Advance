@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1434069969862038344}
   - component: {fileID: 2802958885504614150}
   - component: {fileID: 2911596132851363995}
+  - component: {fileID: 6687511479194061436}
   m_Layer: 8
   m_Name: FlankerEnemy
   m_TagString: Untagged
@@ -87,6 +88,24 @@ MonoBehaviour:
   popSeconds: 0.12
   knockback: 0.18
   flashColor: {r: 2.5, g: 2.5, b: 2.5, a: 1}
+--- !u!114 &6687511479194061436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 440435453612703793}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62481e08106b84b519707c39debaa657, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: _Game.Scripts::StrafAdvance.EnemyRagdoll
+  lifetime: 1.6
+  impulseBack: 4
+  impulseUp: 3
+  spinTorque: 8
+  gravity: 14
+  fadeStartFrac: 0.6
 --- !u!1 &2974301266790992072
 GameObject:
   m_ObjectHideFlags: 0

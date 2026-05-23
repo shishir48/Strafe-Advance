@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5977911007350852499}
   - component: {fileID: 3375488818502310062}
   - component: {fileID: 4492411406928253716}
+  - component: {fileID: 8573791569348870416}
   m_Layer: 8
   m_Name: SplitterEnemy
   m_TagString: Enemy
@@ -149,3 +150,21 @@ MonoBehaviour:
   popSeconds: 0.12
   knockback: 0.18
   flashColor: {r: 2.5, g: 2.5, b: 2.5, a: 1}
+--- !u!114 &8573791569348870416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9031671271780600525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62481e08106b84b519707c39debaa657, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: _Game.Scripts::StrafAdvance.EnemyRagdoll
+  lifetime: 1.6
+  impulseBack: 4
+  impulseUp: 3
+  spinTorque: 8
+  gravity: 14
+  fadeStartFrac: 0.6

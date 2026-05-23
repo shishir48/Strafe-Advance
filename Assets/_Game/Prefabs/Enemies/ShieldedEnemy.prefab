@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 6564763980521973300}
   - component: {fileID: 5394762572597190380}
   - component: {fileID: 3314176838503574219}
+  - component: {fileID: 5768662085915237603}
+  - component: {fileID: 5819156236179917941}
   m_Layer: 8
   m_Name: ShieldedEnemy
   m_TagString: Enemy
@@ -131,6 +133,41 @@ MonoBehaviour:
   shieldHits: 5
   shieldFrontAngleDeg: 70
   shieldVisual: {fileID: 5183220203643901055}
+--- !u!114 &5768662085915237603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 443896558310813471}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b292c5e462c44b8a99d9722f9a979fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: _Game.Scripts::StrafAdvance.EnemyHitReact
+  flashSeconds: 0.08
+  popScale: 1.18
+  popSeconds: 0.12
+  knockback: 0.18
+  flashColor: {r: 2.5, g: 2.5, b: 2.5, a: 1}
+--- !u!114 &5819156236179917941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 443896558310813471}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62481e08106b84b519707c39debaa657, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: _Game.Scripts::StrafAdvance.EnemyRagdoll
+  lifetime: 1.6
+  impulseBack: 4
+  impulseUp: 3
+  spinTorque: 8
+  gravity: 14
+  fadeStartFrac: 0.6
 --- !u!1 &5183220203643901055
 GameObject:
   m_ObjectHideFlags: 0

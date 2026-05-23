@@ -48,6 +48,8 @@ namespace StrafAdvance
             EventBus<PlayerLeveledUp>.Clear();
             EventBus<PerkUnlocked>.Clear();
             EventBus<ShieldHit>.Clear();
+            EventBus<KillCamRequest>.Clear();
+            EventBus<BossPhaseChanged>.Clear();
         }
 
         void Awake()
@@ -121,7 +123,13 @@ namespace StrafAdvance
                         bossConf.maxHp = 200; bossConf.moveSpeed = 1.5f;
                         bossConf.contactDamage = 20; bossConf.fireRate = 3f;
                         bossCtrl.Initialize(bossConf);
-                        bossCtrl.OnDeath += _ => SetState(GameState.LevelComplete);
+                        bossCtrl.OnDeath += e =>
+                        {
+                            EventBus<KillCamRequest>.Publish(new KillCamRequest(e.transform.position));
+                            EventBus<ShakeRequest>.Publish(new ShakeRequest(1f));
+                            EventBus<HitstopRequest>.Publish(new HitstopRequest(0.35f));
+                            SetState(GameState.LevelComplete);
+                        };
                     }
                 }
                 else

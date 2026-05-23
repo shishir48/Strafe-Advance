@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8575312527740757333}
   - component: {fileID: 3492530815992066211}
   - component: {fileID: 7311875923694261741}
+  - component: {fileID: 6486994024425043909}
   m_Layer: 8
   m_Name: ChargerEnemy
   m_TagString: Enemy
@@ -152,3 +153,21 @@ MonoBehaviour:
   popSeconds: 0.12
   knockback: 0.18
   flashColor: {r: 2.5, g: 2.5, b: 2.5, a: 1}
+--- !u!114 &6486994024425043909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7997165388547633438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62481e08106b84b519707c39debaa657, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: _Game.Scripts::StrafAdvance.EnemyRagdoll
+  lifetime: 1.6
+  impulseBack: 4
+  impulseUp: 3
+  spinTorque: 8
+  gravity: 14
+  fadeStartFrac: 0.6
