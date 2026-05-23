@@ -400,9 +400,9 @@ namespace StrafAdvance.Editor
 
             SwapMesh("Player",              "astronautA.fbx",    Vector3.one * 2.0f, new Vector3(0, 180, 0), playerMat);
             SwapMesh("Enemies/GruntEnemy",  "astronautA.fbx",    Vector3.one * 2.0f, new Vector3(0, 180, 0), gruntMat);
-            SwapMesh("Enemies/FlankerEnemy","craft_speederA.fbx", Vector3.one * 0.007f, new Vector3(0, 180, 0), flankerMat);
-            SwapMesh("Enemies/EliteEnemy",  "craft_speederC.fbx", Vector3.one * 0.008f, new Vector3(0, 180, 0), eliteMat);
-            SwapMesh("Enemies/Boss",        "turret_double.fbx",  Vector3.one * 0.015f, new Vector3(0, 0, 0),   bossMat);
+            SwapMesh("Enemies/FlankerEnemy","craft_speederA.fbx", Vector3.one * 1.5f, new Vector3(0, 180, 0), flankerMat);
+            SwapMesh("Enemies/EliteEnemy",  "craft_speederC.fbx", Vector3.one * 2.0f, new Vector3(0, 180, 0), eliteMat);
+            SwapMesh("Enemies/Boss",        "turret_double.fbx",  Vector3.one * 3.0f, new Vector3(0, 0, 0),   bossMat);
             SwapMesh("Level/CorridorTile",  "corridor.fbx", new Vector3(0.015f, 0.015f, 0.015f), Vector3.zero, tileMat);
 
             // Attach blaster to humanoid characters (player + grunts)
