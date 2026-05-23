@@ -36,8 +36,13 @@
 | P2.9 | Dodge roll | Spacebar / gamepad B / 2-finger tap. 0.25s dash @ 4x strafe speed with i-frames via `PlayerHealth.SetInvincible`. 1.5s cooldown. Publishes `DodgePerformed` |
 | P2.10 | Sniper enemy | `EnemyType.Sniper` + `SniperEnemy` class: holds position at z=18, telegraphs shots with red LineRenderer for 0.7s, fires homing 25-dmg bullet every 2.5s. L1_W8 now mixed (Flanker×5 + Sniper×2 @ 0.5s delay) |
 | P2.11 | Weapon system | `WeaponConfig` + `WeaponCatalog` (5 weapons: Standard Blaster, Rapid SMG, Heavy Cannon, Scatter Gun, Tracker Pistol). AutoShooter reads `SaveData.equippedWeaponId` at start, applies `PlayerProgression.GetEquippedStats()` perks on top. Multishot spread fan + homing strength per weapon. +4 tests |
+| P2.12 | Shielded enemy | `EnemyType.Shielded` + `ShieldedEnemy` class: overrides `TakeDamage`, blocks front-cone (70° half-angle) hits, shield breaks after 5 chips. Forces flanking. ShieldHit event for VFX hooks. Front shield child Cube visual with alpha fade |
+| P2.13 | Splitter enemy | `EnemyType.Splitter` + `SplitterEnemy` class: on death spawns 3 mini-grunts (60% scale, 40% HP, 1.4× speed) via passed Grunt prefab/config |
+| P2.14 | Perk equip UI | `PerkEquipPanel` runtime-built canvas. Auto-opens on `PlayerLeveledUp`. Lists unlocked perks, tap to toggle equip (max 3). Persists via SaveSystem. Calls `AutoShooter.RefreshLoadout()` so mid-run perk change takes effect |
 
-Phase 2 remaining: drone swarm / shielded / splitter / mini-boss enemies, AI behavior trees, sprint+slide, ragdoll death, Cinemachine kill cam, perk equip UI.
+L1_W5 now mixes Flanker+Shielded+Splitter. L1_W8 mixes Flanker+Sniper. L1_W6 mixes Elite+Charger. L1_W4/W7/W9 mixed earlier.
+
+Phase 2 remaining: drone swarm / mini-boss enemies, AI behavior trees, sprint+slide, ragdoll death, Cinemachine kill cam.
 
 ### Phase 1 — Foundation Refactor (COMPLETE ✅)
 

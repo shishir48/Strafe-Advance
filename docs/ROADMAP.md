@@ -46,11 +46,11 @@ Goal: stop fighting the codebase. Lay senior-grade plumbing.
 ## Phase 2 — Gameplay Depth (4 weeks)
 
 - [x] **Mixed-type waves** — `WaveConfig.entries[]` shipped P1.3; L1_W4/W6/W7/W9 converted to mixed (P2.5/P2.6)
-- [x] **Enemy variety** — Charger (P2.6), Sniper (P2.10) added; remaining: drone swarm, shielded, splitter, mini-boss
+- [x] **Enemy variety** — Charger (P2.6), Sniper (P2.10), Shielded (P2.12), Splitter (P2.13); remaining: drone swarm, mini-boss
 - [ ] **Enemy AI** — proper behavior trees (NodeCanvas free), not Update timers
 - [x] **Weapons** — 5 weapons in catalog (P2.11): Standard Blaster, Rapid SMG, Heavy Cannon, Scatter Gun (5-bullet spread), Tracker Pistol (homing). AutoShooter reads equipped. Alt-fire/reload still pending.
 - [x] **Player progression (foundation)** — `PlayerProgression` service (P2.8): XP per kill, quadratic level curve, auto-unlock perks, 5-perk catalog with stat multipliers, persisted in SaveData
-- [ ] **Perk equip UI** — Phase 4
+- [x] **Perk equip UI** — `PerkEquipPanel` (P2.14): runtime canvas auto-opens on level-up, lists unlocked perks, tap-toggle equip (max 3), persists via SaveSystem, live-refreshes AutoShooter
 - [x] **Combat juice** — hitstop (P2.3, 0.04s grunt / 0.10s elite / 0.06s player hit), screen shake (P2.2, Perlin trauma model), damage numbers (P2.1, pooled TMP), slow-mo via hitstop chain
 - [ ] **Combat juice (remaining)** — ragdoll death, Cinemachine impulse upgrade, slow-mo on boss kill
 - [x] **Movement** — dodge roll (P2.9: 0.25s dash + 1.5s cooldown + i-frames); sprint/slide/aim-assist still pending
