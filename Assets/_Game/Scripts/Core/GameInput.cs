@@ -51,5 +51,29 @@ namespace StrafAdvance
         /// <summary>True when a touch is currently registered (vs mouse).</summary>
         public static bool HasActiveTouch =>
             Touchscreen.current != null && Touchscreen.current.primaryTouch.press.isPressed;
+
+        // ─── Dodge ──────────────────────────────────────────────────────────────
+
+        /// <summary>Spacebar / gamepad B / two-finger tap pressed this frame.</summary>
+        public static bool DodgePressedThisFrame =>
+            (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame) ||
+            (Gamepad.current  != null && Gamepad.current.buttonEast.wasPressedThisFrame) ||
+            TwoFingerTapThisFrame;
+
+        static bool TwoFingerTapThisFrame
+        {
+            get
+            {
+                if (Touchscreen.current == null) return false;
+                int active = 0;
+                foreach (var t in Touchscreen.current.touches)
+                {
+                    if (!t.press.isPressed) continue;
+                    active++;
+                    if (active >= 2 && t.press.wasPressedThisFrame) return true;
+                }
+                return false;
+            }
+        }
     }
 }

@@ -16,6 +16,8 @@ namespace StrafAdvance
         [SerializeField] private EliteEnemy elitePrefab;
         [SerializeField] private ChargerEnemy chargerPrefab;
         [SerializeField] private EnemyConfig chargerConfig;
+        [SerializeField] private SniperEnemy sniperPrefab;
+        [SerializeField] private EnemyConfig sniperConfig;
         [SerializeField] private Bullet enemyBulletPrefab;
 
         private ObjectPool<Bullet> _enemyBulletPool;
@@ -129,6 +131,14 @@ namespace StrafAdvance
                     charger.InitCharger(playerTransform);
                     charger.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.Charger, 250)); };
                     charger.OnEscaped += _ => ReportKill();
+                    break;
+                case EnemyType.Sniper:
+                    if (sniperPrefab == null) return;
+                    SniperEnemy sniper = Instantiate(sniperPrefab, spawnPos, Quaternion.identity, spawnParent);
+                    sniper.Initialize(sniperConfig != null ? sniperConfig : gruntConfig);
+                    sniper.InitSniper(playerTransform, _enemyBulletPool);
+                    sniper.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.Sniper, 400)); };
+                    sniper.OnEscaped += _ => ReportKill();
                     break;
             }
         }

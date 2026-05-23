@@ -37,8 +37,16 @@ namespace StrafAdvance
             Instance = null;
             EventBus<GameStateChanged>.Clear();
             EventBus<EnemyKilled>.Clear();
+            EventBus<EnemyDamaged>.Clear();
             EventBus<WaveStarted>.Clear();
             EventBus<PlayerDamaged>.Clear();
+            EventBus<DodgePerformed>.Clear();
+            EventBus<ComboChanged>.Clear();
+            EventBus<HitstopRequest>.Clear();
+            EventBus<ShakeRequest>.Clear();
+            EventBus<XpGained>.Clear();
+            EventBus<PlayerLeveledUp>.Clear();
+            EventBus<PerkUnlocked>.Clear();
         }
 
         void Awake()

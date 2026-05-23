@@ -38,6 +38,8 @@ namespace StrafAdvance
         public List<int>    completedLevels = new List<int>();
         public List<string> unlockedPerkIds = new List<string>();
         public List<string> equippedPerkIds = new List<string>();
+        public string equippedWeaponId = "blaster_default";
+        public List<string> unlockedWeaponIds = new List<string> { "blaster_default" };
     }
 
     [Serializable]

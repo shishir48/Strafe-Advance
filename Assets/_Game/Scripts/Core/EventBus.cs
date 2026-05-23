@@ -76,4 +76,10 @@ namespace StrafAdvance
         public readonly int RemainingHp;
         public PlayerDamaged(int amount, int remainingHp) { Amount = amount; RemainingHp = remainingHp; }
     }
+
+    public readonly struct DodgePerformed
+    {
+        public readonly float DirectionX;
+        public DodgePerformed(float dx) { DirectionX = dx; }
+    }
 }

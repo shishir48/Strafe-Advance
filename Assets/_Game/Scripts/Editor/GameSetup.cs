@@ -980,6 +980,7 @@ namespace StrafAdvance.Editor
             CreateEnemyConfig("FlankerConfig",  maxHp: 20,  contact: 10, speed: 4f, fireRate: 0f,  bullet: 0);
             CreateEnemyConfig("EliteConfig",    maxHp: 80,  contact: 15, speed: 2f, fireRate: 0f,  bullet: 0);
             CreateEnemyConfig("ChargerConfig",  maxHp: 40,  contact: 25, speed: 6f, fireRate: 0f,  bullet: 0);
+            CreateEnemyConfig("SniperConfig",   maxHp: 50,  contact: 5,  speed: 1.2f, fireRate: 2.5f, bullet: 25);
             CreateEnemyConfig("BossConfig",     maxHp: 200, contact: 20, speed: 1.5f, fireRate: 3f, bullet: 15);
 
             // Level 1 waves — 10 waves, progressive difficulty curve
@@ -998,7 +999,9 @@ namespace StrafAdvance.Editor
                 CreateMixedWave  ("L1_Wave7",                                 // fast horde + escort
                     Entry(EnemyType.Grunt,   6, 0.7f),
                     Entry(EnemyType.Flanker, 3, 1.0f, startDelay: 1.5f)),
-                CreateWaveConfig("L1_Wave8",  EnemyType.Flanker, 6, 0.9f), // flanker swarm
+                CreateMixedWave  ("L1_Wave8",                                 // flanker swarm + sniper support
+                    Entry(EnemyType.Flanker, 5, 0.9f),
+                    Entry(EnemyType.Sniper,  2, 2.5f, startDelay: 0.5f)),
                 CreateMixedWave  ("L1_Wave9",                                 // elite squad + grunt support
                     Entry(EnemyType.Elite, 2, 1.5f),
                     Entry(EnemyType.Grunt, 4, 0.9f, startDelay: 1.0f)),
@@ -1061,6 +1064,7 @@ namespace StrafAdvance.Editor
             CreateEnemyPrefab<FlankerEnemy>("FlankerEnemy", "Enemies/FlankerEnemy");
             CreateEnemyPrefab<EliteEnemy>("EliteEnemy",     "Enemies/EliteEnemy");
             CreateEnemyPrefab<ChargerEnemy>("ChargerEnemy", "Enemies/ChargerEnemy");
+            CreateSniperPrefab();
             CreateBossPrefab();
 
             AssetDatabase.SaveAssets();
@@ -1114,10 +1118,12 @@ namespace StrafAdvance.Editor
             SetField(ws, "flankerConfig",  LoadSO<EnemyConfig>("FlankerConfig"));
             SetField(ws, "eliteConfig",    LoadSO<EnemyConfig>("EliteConfig"));
             SetField(ws, "chargerConfig",  LoadSO<EnemyConfig>("ChargerConfig"));
+            SetField(ws, "sniperConfig",   LoadSO<EnemyConfig>("SniperConfig"));
             SetField(ws, "gruntPrefab",    LoadPrefab<GruntEnemy>("Enemies/GruntEnemy"));
             SetField(ws, "flankerPrefab",  LoadPrefab<FlankerEnemy>("Enemies/FlankerEnemy"));
             SetField(ws, "elitePrefab",    LoadPrefab<EliteEnemy>("Enemies/EliteEnemy"));
             SetField(ws, "chargerPrefab",  LoadPrefab<ChargerEnemy>("Enemies/ChargerEnemy"));
+            SetField(ws, "sniperPrefab",   LoadPrefab<SniperEnemy>("Enemies/SniperEnemy"));
             SetField(ws, "enemyBulletPrefab", LoadPrefab<Bullet>("Combat/EnemyBullet"));
 
             // CorridorScroller
@@ -1372,6 +1378,26 @@ namespace StrafAdvance.Editor
             go.layer = LayerMask.NameToLayer("Enemy");
             go.transform.localScale = new Vector3(1.5f, 2f, 1.5f);
             go.AddComponent<BossController>();
+            PrefabUtility.SaveAsPrefabAsset(go, path);
+            Object.DestroyImmediate(go);
+        }
+
+        static void CreateSniperPrefab()
+        {
+            string path = $"{PrefabPath}/Enemies/SniperEnemy.prefab";
+            if (AssetDatabase.LoadAssetAtPath<GameObject>(path) != null) return;
+
+            var go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            go.name  = "SniperEnemy";
+            go.tag   = "Enemy";
+            go.layer = LayerMask.NameToLayer("Enemy");
+            go.transform.localScale = new Vector3(0.8f, 1.2f, 0.8f);
+            go.AddComponent<SniperEnemy>();
+            var lr = go.AddComponent<LineRenderer>();
+            lr.positionCount  = 2;
+            lr.startWidth     = 0.04f;
+            lr.endWidth       = 0.01f;
+            lr.useWorldSpace  = true;
             PrefabUtility.SaveAsPrefabAsset(go, path);
             Object.DestroyImmediate(go);
         }
