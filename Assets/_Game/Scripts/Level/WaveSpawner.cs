@@ -101,7 +101,7 @@ namespace StrafAdvance
                     GruntEnemy grunt = Instantiate(gruntPrefab, spawnPos, Quaternion.identity, spawnParent);
                     grunt.Initialize(gruntConfig);
                     grunt.InitGrunt(playerTransform, _enemyBulletPool);
-                    grunt.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); };
+                    grunt.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.Grunt, 100)); };
                     grunt.OnEscaped += _ => ReportKill();
                     break;
                 case EnemyType.Flanker:
@@ -109,7 +109,7 @@ namespace StrafAdvance
                     FlankerEnemy flanker = Instantiate(flankerPrefab, spawnPos, Quaternion.identity, spawnParent);
                     flanker.Initialize(flankerConfig != null ? flankerConfig : gruntConfig);
                     flanker.InitFlanker(playerTransform);
-                    flanker.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); };
+                    flanker.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.Flanker, 200)); };
                     flanker.OnEscaped += _ => ReportKill();
                     break;
                 case EnemyType.Elite:
@@ -117,7 +117,7 @@ namespace StrafAdvance
                     EliteEnemy elite = Instantiate(elitePrefab, spawnPos, Quaternion.identity, spawnParent);
                     elite.Initialize(eliteConfig != null ? eliteConfig : gruntConfig);
                     elite.InitElite(playerTransform);
-                    elite.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); };
+                    elite.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.Elite, 500)); };
                     elite.OnEscaped += _ => ReportKill();
                     break;
             }

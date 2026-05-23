@@ -61,8 +61,11 @@ namespace StrafAdvance
         public void AddKill()
         {
             KillCount++;
+            // Base award; ComboTracker adds multiplier-scaled bonus via AddScore.
             Score += 100;
         }
+
+        public void AddScore(int amount) => Score = Mathf.Max(0, Score + amount);
 
         IEnumerator InitFlow()
         {

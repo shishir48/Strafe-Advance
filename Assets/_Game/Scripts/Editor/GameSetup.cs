@@ -987,12 +987,18 @@ namespace StrafAdvance.Editor
                 CreateWaveConfig("L1_Wave1",  EnemyType.Grunt,   4, 1.6f), // tutorial: easy
                 CreateWaveConfig("L1_Wave2",  EnemyType.Grunt,   6, 1.3f), // volume
                 CreateWaveConfig("L1_Wave3",  EnemyType.Flanker, 3, 1.5f), // intro flanker
-                CreateWaveConfig("L1_Wave4",  EnemyType.Grunt,   7, 1.0f), // pressure
+                CreateMixedWave  ("L1_Wave4",                                 // pressure mix
+                    Entry(EnemyType.Grunt,   5, 1.0f),
+                    Entry(EnemyType.Flanker, 2, 1.2f, startDelay: 2.0f)),
                 CreateWaveConfig("L1_Wave5",  EnemyType.Flanker, 5, 1.0f), // flanker rush
                 CreateWaveConfig("L1_Wave6",  EnemyType.Elite,   2, 2.0f), // first tank — breather + threat
-                CreateWaveConfig("L1_Wave7",  EnemyType.Grunt,   8, 0.8f), // fast horde
+                CreateMixedWave  ("L1_Wave7",                                 // fast horde + escort
+                    Entry(EnemyType.Grunt,   6, 0.7f),
+                    Entry(EnemyType.Flanker, 3, 1.0f, startDelay: 1.5f)),
                 CreateWaveConfig("L1_Wave8",  EnemyType.Flanker, 6, 0.9f), // flanker swarm
-                CreateWaveConfig("L1_Wave9",  EnemyType.Elite,   3, 1.5f), // elite squad
+                CreateMixedWave  ("L1_Wave9",                                 // elite squad + grunt support
+                    Entry(EnemyType.Elite, 2, 1.5f),
+                    Entry(EnemyType.Grunt, 4, 0.9f, startDelay: 1.0f)),
                 CreateWaveConfig("L1_Wave10", EnemyType.Elite,   4, 1.2f), // finale before boss
             };
             CreateLevelConfig("Level1", "Level 1", l1w, 4f,   "free",  180f);
@@ -1084,6 +1090,11 @@ namespace StrafAdvance.Editor
             // DI scope — created early, wired below once dependencies exist
             var scopeGO = MakeGO<GameLifetimeScope>("GameLifetimeScope");
 
+            // Combat juice — damage numbers, screen shake, hitstop, combo (added in P2)
+            MakeGO<DamageNumberSpawner>("DamageNumberSpawner");
+            MakeGO<Hitstop>("Hitstop");
+            MakeGO<ComboTracker>("ComboTracker");
+
             // Spawn parent
             var spawnParent = new GameObject("SpawnParent");
 
@@ -1125,6 +1136,7 @@ namespace StrafAdvance.Editor
             cam.backgroundColor = new Color(0.05f, 0.05f, 0.1f);
             camGO.transform.SetPositionAndRotation(new Vector3(1.5f, 2.5f, -3f), Quaternion.Euler(15f, -15f, 0f));
             camGO.AddComponent<AudioListener>();
+            camGO.AddComponent<ScreenShake>();
 
             // Directional Light
             var lightGO = new GameObject("Directional Light");
@@ -1409,15 +1421,33 @@ namespace StrafAdvance.Editor
         static WaveConfig CreateWaveConfig(string name, EnemyType type, int count, float interval)
         {
             string path = $"{SOPath}/{name}.asset";
-            var existing = AssetDatabase.LoadAssetAtPath<WaveConfig>(path);
-            if (existing != null) return existing;
-            var cfg = ScriptableObject.CreateInstance<WaveConfig>();
+            var cfg = AssetDatabase.LoadAssetAtPath<WaveConfig>(path);
+            bool isNew = cfg == null;
+            if (isNew) cfg = ScriptableObject.CreateInstance<WaveConfig>();
             cfg.enemyType     = type;
             cfg.count         = count;
             cfg.spawnInterval = interval;
-            AssetDatabase.CreateAsset(cfg, path);
+            cfg.entries       = System.Array.Empty<WaveEntry>();
+            if (isNew) AssetDatabase.CreateAsset(cfg, path);
+            else       EditorUtility.SetDirty(cfg);
             return cfg;
         }
+
+        /// <summary>Mixed-entry wave: spawn multiple enemy groups in parallel.</summary>
+        static WaveConfig CreateMixedWave(string name, params WaveEntry[] entries)
+        {
+            string path = $"{SOPath}/{name}.asset";
+            var cfg = AssetDatabase.LoadAssetAtPath<WaveConfig>(path);
+            bool isNew = cfg == null;
+            if (isNew) cfg = ScriptableObject.CreateInstance<WaveConfig>();
+            cfg.entries = entries;
+            if (isNew) AssetDatabase.CreateAsset(cfg, path);
+            else       EditorUtility.SetDirty(cfg);
+            return cfg;
+        }
+
+        static WaveEntry Entry(EnemyType type, int count, float interval = 1.0f, float startDelay = 0f) =>
+            new WaveEntry { enemyType = type, count = count, spawnInterval = interval, startDelay = startDelay };
 
         static void CreateLevelConfig(string name, string levelName, WaveConfig[] waves, float speed, string iapId, float parTime)
         {

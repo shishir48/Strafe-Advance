@@ -32,6 +32,7 @@ namespace StrafAdvance
             if (CurrentHp <= 0) return;
             CurrentHp = Mathf.Max(0, CurrentHp - amount);
             OnDamageTaken();
+            EventBus<EnemyDamaged>.Publish(new EnemyDamaged(transform.position, amount, false));
             if (CurrentHp == 0)
             {
                 OnDeath?.Invoke(this);
