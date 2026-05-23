@@ -1108,7 +1108,7 @@ namespace StrafAdvance.Editor
             var cam = camGO.AddComponent<Camera>();
             cam.clearFlags   = CameraClearFlags.SolidColor;
             cam.backgroundColor = new Color(0.05f, 0.05f, 0.1f);
-            camGO.transform.SetPositionAndRotation(new Vector3(0, 2, -6), Quaternion.Euler(8, 0, 0));
+            camGO.transform.SetPositionAndRotation(new Vector3(0, 4, -6), Quaternion.Euler(22, 0, 0));
             camGO.AddComponent<AudioListener>();
 
             // Directional Light
