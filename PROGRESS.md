@@ -21,6 +21,18 @@
 - URP post-processing: bloom 0.35 threshold 1.2, vignette 0.35, ACES tonemap, cool blue grade
 - Camera 3/4 over-shoulder: pos (1.5, 2.5, -3), rot (15, -15, 0)
 
+### Phase 2 — Gameplay Depth (PARTIAL — combat juice batch ✅)
+
+| # | Item | Outcome |
+|---|------|---------|
+| P2.1 | Damage numbers | Floating TMP, world-space, pooled, color = white normal / gold crit. Subscribes `EnemyDamaged` |
+| P2.2 | Screen shake | Perlin-driven trauma model on Main Camera. Hooks `EnemyKilled` (×0.18/0.45), `PlayerDamaged` (×0.55), `ShakeRequest` for custom |
+| P2.3 | Hitstop | Time.timeScale freeze 0.04s grunt / 0.10s elite / 0.06s player-hit. `HitstopRequest` event for custom |
+| P2.4 | Combo + multiplier | ×1→×2 at 5 kills, ×4 at 10, ×8 at 20. Resets on miss-timeout (2s) or PlayerDamaged. Publishes `ComboChanged`. +5 tests |
+| P2.5 | Mixed waves | L1_W4 (Grunt×5 + Flanker×2 @ 2s delay), L1_W7 (Grunt×6 + Flanker×3 @ 1.5s), L1_W9 (Elite×2 + Grunt×4 @ 1s) — uses `WaveEntry[]` |
+
+Phase 2 remaining: enemy variety (6+ types), AI behavior trees, weapons (5+ blasters w/ alt-fire), perk tree, dodge roll, power-ups, ragdoll, Cinemachine kill cam.
+
 ### Phase 1 — Foundation Refactor (COMPLETE ✅)
 
 | # | Item | Outcome |

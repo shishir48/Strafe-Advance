@@ -45,15 +45,16 @@ Goal: stop fighting the codebase. Lay senior-grade plumbing.
 
 ## Phase 2 — Gameplay Depth (4 weeks)
 
-- [ ] **Mixed-type waves** — `WaveConfig.entries[]` (enemy type + count + delay), boss intros
+- [x] **Mixed-type waves** — `WaveConfig.entries[]` shipped P1.3; L1_W4/W7/W9 converted to mixed (P2.5)
 - [ ] **Enemy variety** — add: melee charger, sniper, drone swarm, shielded, splitter, mini-boss
 - [ ] **Enemy AI** — proper behavior trees (NodeCanvas free), not Update timers
 - [ ] **Weapons** — 5+ blasters, alt-fire, reload, recoil patterns, ammo/heat
 - [ ] **Player progression** — XP, level cap 50, perk tree (3 branches × 8 nodes)
-- [ ] **Combat juice** — hitstop (0.05s on hit), screen shake (Cinemachine impulse), ragdoll, damage numbers, slow-mo on boss kill
+- [x] **Combat juice** — hitstop (P2.3, 0.04s grunt / 0.10s elite / 0.06s player hit), screen shake (P2.2, Perlin trauma model), damage numbers (P2.1, pooled TMP), slow-mo via hitstop chain
+- [ ] **Combat juice (remaining)** — ragdoll death, Cinemachine impulse upgrade, slow-mo on boss kill
 - [ ] **Movement** — dodge roll, sprint, slide, aim assist on controller
 - [ ] **Power-ups** — shields, damage burst, time-slow, drone companion
-- [ ] **Combo + score multiplier** — kill streak → multiplier, fades on miss/hit
+- [x] **Combo + score multiplier** — `ComboTracker` (P2.4): ×1→×2 at 5, ×4 at 10, ×8 at 20; resets on miss-timeout (2s) or PlayerDamaged
 
 ---
 
