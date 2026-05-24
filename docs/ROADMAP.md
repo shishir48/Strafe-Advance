@@ -4,7 +4,7 @@
 **Target:** Premium mobile shooter (Android/iOS), $4.99 with IAP cosmetic shop
 **KPIs to hit before global launch:** D1 ≥ 35%, D7 ≥ 12%, D30 ≥ 5%, ARPDAU ≥ $0.10
 
-> **Session checkpoint (last touched):** Phase 1 ✅ complete, Phase 2 ✅ 22/24 done, Phase 4 ✅ 3/8 done (HUD/Pause/RunSummary), Phase 5 ✅ event-routing done (clips TODO), Phase 6 ✅ soft currency done. **65/65 tests green.** Full session log + file map in `PROGRESS.md`.
+> **Session checkpoint (last touched 2026-05-24):** Phase 1 ✅, Phase 2 ✅ 22/24, Phase 4 ✅ 5/8 (HUD/Pause/RunSummary/MainHub+Loadout/Settings), Phase 5 ✅ event-routing (clips TODO), Phase 6 ✅ soft currency + shop with currency-spend. **76/76 tests green.** Full session log + file map in `PROGRESS.md`.
 
 ---
 
@@ -77,11 +77,11 @@ Goal: stop fighting the codebase. Lay senior-grade plumbing.
 
 ## Phase 4 — UI / UX (3 weeks)
 
-- [ ] **Main menu** — animated, parallax background, hub scene
-- [ ] **Loadout screen** — weapons + perks + cosmetics before each run
+- [x] **Main menu** (P4.3) — runtime-built `MainHubController`: animated title pulse, currency chip, Play/Loadout/Shop/Settings/Quit, auto-shown when `GameState=Menu`
+- [x] **Loadout screen** (P4.3) — `LoadoutPanel`: weapon picker from unlocked catalog + equipped perks display + Start Run; persists `equippedWeaponId` and live-refreshes AutoShooter
 - [x] **In-run HUD** (P4.1) — HP + stamina + dodge pip + wave + combo + rolling score (`ModernHUD`)
 - [x] **Pause menu** (P4.2) — Esc/Start toggle, Resume/Perks/Restart/Quit, freezes time
-- [ ] **Settings** — graphics quality, audio mixers, sensitivity, colorblind mode, subtitle, sfx volume per channel
+- [x] **Settings** (P4.5) — `SettingsPanel`: Music/SFX/UI sliders, aim sensitivity slider, Vibration/InvertY/Colorblind toggles, Low/Med/High Quality dropdown, Reset Profile. Persists to `SaveData.settings` and applies live to AudioManager + QualitySettings
 - [ ] **Tutorial** — first 3 waves scripted with prompt overlays (move, shoot, dodge)
 - [ ] **Localization** — SmartLocalization, ship EN + ES + JP + ZH-CN
 - [ ] **UI Toolkit (UXML)** for menus — faster iteration than uGUI for complex layouts
@@ -103,8 +103,9 @@ Goal: stop fighting the codebase. Lay senior-grade plumbing.
 ## Phase 6 — Monetization + Live Ops (3 weeks)
 
 - [x] **Soft currency** (P6.1) — `CurrencyService` awards per-enemy drop, persists in SaveData, exposes EarnedThisRun for summary. `CurrencyEarned` event for HUD popups
+- [x] **Shop w/ soft currency** (P6.2) — `ShopController` tabbed (Weapons / Cosmetics). Weapons tab spends `CurrencyService.TrySpend(price)` to unlock from `WeaponCatalog`. Equip/Buy/Locked states reactive to balance + ownership. Persists `unlockedWeaponIds` and `equippedWeaponId`
 - [ ] **Hard currency** — IAP gems (Phase 6 actual)
-- [ ] **Store** — cosmetic skins (player, blaster, corridor theme), weekly featured rotation
+- [ ] **Store cosmetics** — cosmetic skins (player, blaster, corridor theme), weekly featured rotation (current Cosmetics tab is IAP bundles only)
 - [ ] **IAP products** — gem packs ($1.99/$4.99/$9.99/$19.99), starter bundle, season pass, no-ads removal
 - [ ] **Rewarded ads** — IronSource/AppLovin: revive on death, 2x reward on run end
 - [ ] **Battle Pass** — 30-tier seasonal, free + premium lanes, weekly challenges

@@ -1127,6 +1127,11 @@ namespace StrafAdvance.Editor
             MakeGO<SfxRouter>("SfxRouter");
             MakeGO<CurrencyService>("CurrencyService");
             MakeGO<RunSummaryPanel>("RunSummaryPanel");
+            // Front-end (P4.3/P4.5/P6.2): main hub, loadout, shop (currency), settings
+            MakeGO<MainHubController>("MainHubController");
+            MakeGO<LoadoutPanel>("LoadoutPanel");
+            MakeGO<ShopController>("ShopController");
+            MakeGO<SettingsPanel>("SettingsPanel");
 
             // Spawn parent
             var spawnParent = new GameObject("SpawnParent");
@@ -1238,8 +1243,7 @@ namespace StrafAdvance.Editor
             var gameOverCtrl = canvasGO.AddComponent<GameOverController>();
             SetField(gameOverCtrl, "panel", gameOverPanel);
 
-            var shopCtrl = canvasGO.AddComponent<ShopController>();
-            SetField(shopCtrl, "panel", shopPanel);
+            // Legacy ShopController canvas wiring removed — ShopController is now a runtime-built singleton (see MakeGO above).
 
             // EventSystem (required for UI input)
             var eventSystemGO = new GameObject("EventSystem");
@@ -1256,6 +1260,26 @@ namespace StrafAdvance.Editor
 
             EditorSceneManager.SaveScene(scene, path);
             Debug.Log($"[GameSetup] GameScene saved to {path}. Wire Slider/TMP references in Inspector.");
+        }
+
+        // ─── Step 13: Setup Main Menu (additive — drops menu/loadout/shop/settings GOs into current scene) ───
+        [MenuItem("StrafAdvance/13. Setup Main Menu", priority = 130)]
+        public static void SetupMainMenu()
+        {
+            EnsureSingleton<MainHubController>("MainHubController");
+            EnsureSingleton<LoadoutPanel>("LoadoutPanel");
+            EnsureSingleton<ShopController>("ShopController");
+            EnsureSingleton<SettingsPanel>("SettingsPanel");
+            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+            Debug.Log("[GameSetup] Main Menu singletons added/verified in active scene.");
+        }
+
+        static void EnsureSingleton<T>(string name) where T : Component
+        {
+            var existing = Object.FindFirstObjectByType<T>();
+            if (existing != null) return;
+            var go = new GameObject(name);
+            go.AddComponent<T>();
         }
 
         // ─── Step 5: Bootstrap Scene ─────────────────────────────────────────────
