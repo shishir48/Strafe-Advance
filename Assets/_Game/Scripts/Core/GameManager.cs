@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace StrafAdvance
 {
@@ -68,7 +66,14 @@ namespace StrafAdvance
         public int Score { get; private set; }
         public int KillCount { get; private set; }
 
-        void Start() => StartCoroutine(InitFlow());
+        private bool _runLoopWired;
+
+        void Start()
+        {
+            // Stay in Menu — MainHubController/MainHub UX handle the Play button.
+            // If MainHub never spawns (e.g. legacy GameScene) we still auto-start after a short delay so the scene is playable.
+            StartCoroutine(LegacyFallbackAutoStart());
+        }
 
         public void AddKill()
         {
@@ -79,9 +84,23 @@ namespace StrafAdvance
 
         public void AddScore(int amount) => Score = Mathf.Max(0, Score + amount);
 
-        IEnumerator InitFlow()
+        IEnumerator LegacyFallbackAutoStart()
         {
+            // Give MainHub a frame to register. If it's missing, fall back to auto-start so the project still boots into a run.
             yield return null;
+            if (MainHubController.Instance != null) yield break;
+            yield return new WaitForSeconds(0.5f);
+            if (MainHubController.Instance == null && State == GameState.Menu)
+            {
+                Debug.LogWarning("[GameManager] No MainHubController found — auto-starting Level 1.");
+                BeginRunFromMenu();
+            }
+        }
+
+        /// <summary>Transition from Menu → Playing. Loads Level 1, wires the game loop, starts spawning.</summary>
+        public void BeginRunFromMenu()
+        {
+            if (State != GameState.Menu) return;
 
             var waveSpawner      = FindAnyObjectByType<WaveSpawner>();
             var corridorScroller = FindAnyObjectByType<CorridorScroller>();
@@ -89,21 +108,22 @@ namespace StrafAdvance
 
             if (waveSpawner == null || corridorScroller == null || l1 == null)
             {
-                Debug.LogWarning("[GameManager] Missing required components for auto-start.");
-                yield break;
+                Debug.LogWarning("[GameManager] Missing required components for BeginRunFromMenu.");
+                return;
             }
 
-            // Show tap-to-start screen
-            var tapCanvas = CreateTapToStartScreen();
-            yield return WaitForTap();
-            Destroy(tapCanvas);
+            Score = 0;
+            KillCount = 0;
 
             corridorScroller.Initialize(l1.worldScrollSpeed);
             waveSpawner.LoadLevel(l1);
             SetState(GameState.Playing);
             waveSpawner.StartSpawning();
 
-            // Wire game loop events
+            if (_runLoopWired) return;
+            _runLoopWired = true;
+
+            // Wire game loop events (idempotent guard above prevents double-subscription on retry).
             var playerHealth = FindAnyObjectByType<PlayerHealth>();
             if (playerHealth != null)
                 playerHealth.OnDeath += () => SetState(GameState.GameOver);
@@ -136,8 +156,6 @@ namespace StrafAdvance
                 else
                     SetState(GameState.LevelComplete); // no boss — skip to complete
             };
-
-            Debug.Log("[GameManager] Auto-started Level 1.");
         }
 
         public void SetState(GameState state)
@@ -150,100 +168,7 @@ namespace StrafAdvance
             }
             OnStateChanged?.Invoke(state);
             EventBus<GameStateChanged>.Publish(new GameStateChanged(prev, state));
-            if (state == GameState.GameOver)      ShowOverlay("GAME OVER\nTap to retry",  OnRetryTap);
-            if (state == GameState.LevelComplete) ShowOverlay("YOU WIN!\nTap to continue", OnWinTap);
-        }
-
-        // ── Tap-to-start ────────────────────────────────────────────────────────
-        GameObject CreateTapToStartScreen()
-        {
-            var go = new GameObject("TapToStart");
-            var canvas = go.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 99;
-            go.AddComponent<UnityEngine.UI.CanvasScaler>().uiScaleMode =
-                UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            go.AddComponent<UnityEngine.UI.GraphicRaycaster>();
-
-            var bg = new GameObject("BG");
-            bg.transform.SetParent(go.transform, false);
-            var bgImg = bg.AddComponent<UnityEngine.UI.Image>();
-            bgImg.color = new Color(0, 0, 0, 0.75f);
-            var bgRT = bg.GetComponent<RectTransform>();
-            bgRT.anchorMin = Vector2.zero; bgRT.anchorMax = Vector2.one;
-            bgRT.offsetMin = bgRT.offsetMax = Vector2.zero;
-
-            var label = new GameObject("Label");
-            label.transform.SetParent(go.transform, false);
-            var tmp = label.AddComponent<TextMeshProUGUI>();
-            tmp.text = "STRAFE ADVANCE\n\nTap to Start";
-            tmp.fontSize = 52; tmp.color = Color.white;
-            tmp.alignment = TMPro.TextAlignmentOptions.Center;
-            var rt = label.GetComponent<RectTransform>();
-            rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one;
-            rt.offsetMin = rt.offsetMax = Vector2.zero;
-
-            return go;
-        }
-
-        IEnumerator WaitForTap()
-        {
-            yield return null;
-#if UNITY_EDITOR
-            // Editor: unconditional 3s auto-start so iteration is fast.
-            yield return new WaitForSeconds(3f);
-#else
-            while (!GameInput.AnyInputThisFrame) yield return null;
-#endif
-        }
-
-        void ShowOverlay(string message, Action onTap)
-        {
-            StartCoroutine(OverlayRoutine(message, onTap));
-        }
-
-        IEnumerator OverlayRoutine(string message, Action onTap)
-        {
-            var go = new GameObject("Overlay");
-            var canvas = go.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 100;
-            go.AddComponent<UnityEngine.UI.CanvasScaler>();
-            go.AddComponent<UnityEngine.UI.GraphicRaycaster>();
-
-            var bg = new GameObject("BG"); bg.transform.SetParent(go.transform, false);
-            var bgImg = bg.AddComponent<UnityEngine.UI.Image>(); bgImg.color = new Color(0, 0, 0, 0.8f);
-            var bgRT = bg.GetComponent<RectTransform>();
-            bgRT.anchorMin = Vector2.zero; bgRT.anchorMax = Vector2.one;
-            bgRT.offsetMin = bgRT.offsetMax = Vector2.zero;
-
-            var label = new GameObject("Label"); label.transform.SetParent(go.transform, false);
-            var tmp = label.AddComponent<TextMeshProUGUI>();
-            tmp.text = message; tmp.fontSize = 52; tmp.color = Color.white;
-            tmp.alignment = TMPro.TextAlignmentOptions.Center;
-            var rt = label.GetComponent<RectTransform>();
-            rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one;
-            rt.offsetMin = rt.offsetMax = Vector2.zero;
-
-            yield return new WaitForSeconds(0.5f);
-            while (!GameInput.AnyInputThisFrame) yield return null;
-
-            Destroy(go);
-            onTap?.Invoke();
-        }
-
-        void OnRetryTap()
-        {
-            SetState(GameState.Menu);
-            UnityEngine.SceneManagement.SceneManager.LoadScene(
-                UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
-        }
-
-        void OnWinTap()
-        {
-            SetState(GameState.Menu);
-            UnityEngine.SceneManagement.SceneManager.LoadScene(
-                UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+            // RunSummaryPanel listens for GameOver/LevelComplete and presents Restart/Menu — no extra overlay needed.
         }
     }
 }
