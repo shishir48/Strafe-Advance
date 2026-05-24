@@ -1330,15 +1330,15 @@ MonoBehaviour:
   elitePrefab: {fileID: 2242873352256747738, guid: 4a2534240d76f485a88bc6177879dee0, type: 3}
   chargerPrefab: {fileID: 3492530815992066211, guid: df1731ae73aea4df4ac57b4757b06a28, type: 3}
   chargerConfig: {fileID: 11400000, guid: 334fcc9ec085849c5993c4f71c34dadb, type: 2}
-  sniperPrefab: {fileID: 0}
+  sniperPrefab: {fileID: 573768735703197838, guid: 49ef8d8b6402b4f56b18c1d3542e7f03, type: 3}
   sniperConfig: {fileID: 11400000, guid: d525f551674654928aeaac358d4dbfec, type: 2}
-  shieldedPrefab: {fileID: 0}
+  shieldedPrefab: {fileID: 3314176838503574219, guid: 61ca76b7ed6354c428137e543049b06b, type: 3}
   shieldedConfig: {fileID: 11400000, guid: 72a490f1cf4f946fb987c94cffdea36a, type: 2}
-  splitterPrefab: {fileID: 0}
+  splitterPrefab: {fileID: 3375488818502310062, guid: c6a273d0bf2ba49acbe1b9a9ce95de21, type: 3}
   splitterConfig: {fileID: 11400000, guid: f808cce00119446f4a643b219e43e3b9, type: 2}
-  dronePrefab: {fileID: 0}
+  dronePrefab: {fileID: 2860423013388010492, guid: b1c25414e0cd94a1298447465934b9cd, type: 3}
   droneConfig: {fileID: 11400000, guid: b8aa49fa617724da19eba533624067a5, type: 2}
-  miniBossPrefab: {fileID: 0}
+  miniBossPrefab: {fileID: 4813688618535099477, guid: 81fc06a19103140569bffb4a1b8a4555, type: 3}
   miniBossConfig: {fileID: 11400000, guid: 49dde052b928c4e20beaba538fbb37ee, type: 2}
   enemyBulletPrefab: {fileID: 1450849163508314680, guid: 5b0fce7a8607d40da98504559f3dcbdc, type: 3}
 --- !u!4 &1670161693
@@ -1683,10 +1683,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a036bf0086a0b437d97a68ca30b501c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: _Game.Scripts::StrafAdvance.ShopController
-  panel: {fileID: 408805492}
-  skinsGrid: {fileID: 0}
-  levelsGrid: {fileID: 0}
-  itemPrefab: {fileID: 0}
 --- !u!114 &2132236055
 MonoBehaviour:
   m_ObjectHideFlags: 0

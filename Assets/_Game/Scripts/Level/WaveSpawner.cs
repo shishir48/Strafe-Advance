@@ -70,8 +70,7 @@ namespace StrafAdvance
             {
                 for (int i = 0; i < wave.count; i++)
                 {
-                    SpawnEnemy(wave.enemyType);
-                    ReportEnemySpawned(1);
+                    if (TrySpawnEnemy(wave.enemyType)) ReportEnemySpawned(1);
                     if (wave.spawnInterval > 0f)
                         yield return new WaitForSeconds(wave.spawnInterval);
                 }
@@ -94,15 +93,20 @@ namespace StrafAdvance
             if (entry.startDelay > 0f) yield return new WaitForSeconds(entry.startDelay);
             for (int i = 0; i < entry.count; i++)
             {
-                SpawnEnemy(entry.enemyType);
-                ReportEnemySpawned(1);
+                if (TrySpawnEnemy(entry.enemyType)) ReportEnemySpawned(1);
                 if (entry.spawnInterval > 0f)
                     yield return new WaitForSeconds(entry.spawnInterval);
             }
             onDone?.Invoke();
         }
 
-        void SpawnEnemy(EnemyType type)
+        /// <summary>
+        /// Atomic spawn: Instantiates + wires the requested enemy type. Returns false (and logs an
+        /// error once per type per scene) if the required prefab is missing in the inspector — the
+        /// caller must skip <see cref="ReportEnemySpawned"/> so the wave doesn't dead-lock waiting
+        /// for kills that will never be reported.
+        /// </summary>
+        bool TrySpawnEnemy(EnemyType type)
         {
             float spawnX = UnityEngine.Random.Range(-2.5f, 2.5f);
             Vector3 spawnPos = new Vector3(spawnX, 0f, 25f);
@@ -114,78 +118,116 @@ namespace StrafAdvance
             switch (type)
             {
                 case EnemyType.Grunt:
-                    if (gruntPrefab == null) return;
-                    GruntEnemy grunt = Instantiate(gruntPrefab, spawnPos, Quaternion.identity, spawnParent);
-                    grunt.Initialize(ScaledOr(gruntConfig));
-                    grunt.InitGrunt(playerTransform, _enemyBulletPool);
-                    grunt.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.Grunt, 100)); };
-                    grunt.OnEscaped += _ => ReportKill();
-                    break;
+                {
+                    if (gruntPrefab == null) { WarnMissingPrefab(type); return false; }
+                    GruntEnemy e = Instantiate(gruntPrefab, spawnPos, Quaternion.identity, spawnParent);
+                    e.Initialize(ScaledOr(gruntConfig));
+                    e.InitGrunt(playerTransform, _enemyBulletPool);
+                    WireDeathAndEscape(e, EnemyType.Grunt, 100);
+                    return true;
+                }
                 case EnemyType.Flanker:
-                    if (flankerPrefab == null) { Debug.LogWarning("[WaveSpawner] flankerPrefab null, skipping"); ReportKill(); return; }
-                    FlankerEnemy flanker = Instantiate(flankerPrefab, spawnPos, Quaternion.identity, spawnParent);
-                    flanker.Initialize(ScaledOr(flankerConfig != null ? flankerConfig : gruntConfig));
-                    flanker.InitFlanker(playerTransform);
-                    flanker.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.Flanker, 200)); };
-                    flanker.OnEscaped += _ => ReportKill();
-                    break;
+                {
+                    if (flankerPrefab == null) { WarnMissingPrefab(type); return false; }
+                    FlankerEnemy e = Instantiate(flankerPrefab, spawnPos, Quaternion.identity, spawnParent);
+                    e.Initialize(ScaledOr(flankerConfig != null ? flankerConfig : gruntConfig));
+                    e.InitFlanker(playerTransform);
+                    WireDeathAndEscape(e, EnemyType.Flanker, 200);
+                    return true;
+                }
                 case EnemyType.Elite:
-                    if (elitePrefab == null) { Debug.LogWarning("[WaveSpawner] elitePrefab null, skipping"); ReportKill(); return; }
-                    EliteEnemy elite = Instantiate(elitePrefab, spawnPos, Quaternion.identity, spawnParent);
-                    elite.Initialize(ScaledOr(eliteConfig != null ? eliteConfig : gruntConfig));
-                    elite.InitElite(playerTransform);
-                    elite.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.Elite, 500)); };
-                    elite.OnEscaped += _ => ReportKill();
-                    break;
+                {
+                    if (elitePrefab == null) { WarnMissingPrefab(type); return false; }
+                    EliteEnemy e = Instantiate(elitePrefab, spawnPos, Quaternion.identity, spawnParent);
+                    e.Initialize(ScaledOr(eliteConfig != null ? eliteConfig : gruntConfig));
+                    e.InitElite(playerTransform);
+                    WireDeathAndEscape(e, EnemyType.Elite, 500);
+                    return true;
+                }
                 case EnemyType.Charger:
-                    if (chargerPrefab == null) return;
-                    ChargerEnemy charger = Instantiate(chargerPrefab, spawnPos, Quaternion.identity, spawnParent);
-                    charger.Initialize(ScaledOr(chargerConfig != null ? chargerConfig : gruntConfig));
-                    charger.InitCharger(playerTransform);
-                    charger.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.Charger, 250)); };
-                    charger.OnEscaped += _ => ReportKill();
-                    break;
+                {
+                    if (chargerPrefab == null) { WarnMissingPrefab(type); return false; }
+                    ChargerEnemy e = Instantiate(chargerPrefab, spawnPos, Quaternion.identity, spawnParent);
+                    e.Initialize(ScaledOr(chargerConfig != null ? chargerConfig : gruntConfig));
+                    e.InitCharger(playerTransform);
+                    WireDeathAndEscape(e, EnemyType.Charger, 250);
+                    return true;
+                }
                 case EnemyType.Sniper:
-                    if (sniperPrefab == null) return;
-                    SniperEnemy sniper = Instantiate(sniperPrefab, spawnPos, Quaternion.identity, spawnParent);
-                    sniper.Initialize(ScaledOr(sniperConfig != null ? sniperConfig : gruntConfig));
-                    sniper.InitSniper(playerTransform, _enemyBulletPool);
-                    sniper.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.Sniper, 400)); };
-                    sniper.OnEscaped += _ => ReportKill();
-                    break;
+                {
+                    if (sniperPrefab == null) { WarnMissingPrefab(type); return false; }
+                    SniperEnemy e = Instantiate(sniperPrefab, spawnPos, Quaternion.identity, spawnParent);
+                    e.Initialize(ScaledOr(sniperConfig != null ? sniperConfig : gruntConfig));
+                    e.InitSniper(playerTransform, _enemyBulletPool);
+                    WireDeathAndEscape(e, EnemyType.Sniper, 400);
+                    return true;
+                }
                 case EnemyType.Shielded:
-                    if (shieldedPrefab == null) return;
-                    ShieldedEnemy shielded = Instantiate(shieldedPrefab, spawnPos, Quaternion.identity, spawnParent);
-                    shielded.Initialize(ScaledOr(shieldedConfig != null ? shieldedConfig : gruntConfig));
-                    shielded.InitShielded(playerTransform);
-                    shielded.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.Shielded, 350)); };
-                    shielded.OnEscaped += _ => ReportKill();
-                    break;
+                {
+                    if (shieldedPrefab == null) { WarnMissingPrefab(type); return false; }
+                    ShieldedEnemy e = Instantiate(shieldedPrefab, spawnPos, Quaternion.identity, spawnParent);
+                    e.Initialize(ScaledOr(shieldedConfig != null ? shieldedConfig : gruntConfig));
+                    e.InitShielded(playerTransform);
+                    WireDeathAndEscape(e, EnemyType.Shielded, 350);
+                    return true;
+                }
                 case EnemyType.Splitter:
-                    if (splitterPrefab == null) return;
-                    SplitterEnemy splitter = Instantiate(splitterPrefab, spawnPos, Quaternion.identity, spawnParent);
-                    splitter.Initialize(ScaledOr(splitterConfig != null ? splitterConfig : gruntConfig));
-                    splitter.InitSplitter(gruntPrefab, gruntConfig, playerTransform, _enemyBulletPool, spawnParent);
-                    splitter.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.Splitter, 300)); };
-                    splitter.OnEscaped += _ => ReportKill();
-                    break;
+                {
+                    if (splitterPrefab == null) { WarnMissingPrefab(type); return false; }
+                    SplitterEnemy e = Instantiate(splitterPrefab, spawnPos, Quaternion.identity, spawnParent);
+                    e.Initialize(ScaledOr(splitterConfig != null ? splitterConfig : gruntConfig));
+                    e.InitSplitter(gruntPrefab, gruntConfig, playerTransform, _enemyBulletPool, spawnParent);
+                    WireDeathAndEscape(e, EnemyType.Splitter, 300);
+                    return true;
+                }
                 case EnemyType.Drone:
-                    if (dronePrefab == null) return;
-                    DroneEnemy drone = Instantiate(dronePrefab, spawnPos, Quaternion.identity, spawnParent);
-                    drone.Initialize(ScaledOr(droneConfig != null ? droneConfig : gruntConfig));
-                    drone.InitDrone(playerTransform);
-                    drone.OnDeath += _ => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.Drone, 120)); };
-                    drone.OnEscaped += _ => ReportKill();
-                    break;
+                {
+                    if (dronePrefab == null) { WarnMissingPrefab(type); return false; }
+                    DroneEnemy e = Instantiate(dronePrefab, spawnPos, Quaternion.identity, spawnParent);
+                    e.Initialize(ScaledOr(droneConfig != null ? droneConfig : gruntConfig));
+                    e.InitDrone(playerTransform);
+                    WireDeathAndEscape(e, EnemyType.Drone, 120);
+                    return true;
+                }
                 case EnemyType.MiniBoss:
-                    if (miniBossPrefab == null) return;
+                {
+                    if (miniBossPrefab == null) { WarnMissingPrefab(type); return false; }
                     MiniBossEnemy mb = Instantiate(miniBossPrefab, spawnPos, Quaternion.identity, spawnParent);
                     mb.Initialize(ScaledOr(miniBossConfig != null ? miniBossConfig : eliteConfig));
                     mb.InitMiniBoss(playerTransform, _enemyBulletPool);
-                    mb.OnDeath += e => { ReportKill(); GameManager.Instance?.AddKill(); EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.MiniBoss, 1500)); EventBus<ShakeRequest>.Publish(new ShakeRequest(0.9f)); EventBus<HitstopRequest>.Publish(new HitstopRequest(0.2f)); EventBus<KillCamRequest>.Publish(new KillCamRequest(e.transform.position)); };
+                    mb.OnDeath += e =>
+                    {
+                        ReportKill();
+                        GameManager.Instance?.AddKill();
+                        EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.MiniBoss, 1500));
+                        EventBus<ShakeRequest>.Publish(new ShakeRequest(0.9f));
+                        EventBus<HitstopRequest>.Publish(new HitstopRequest(0.2f));
+                        EventBus<KillCamRequest>.Publish(new KillCamRequest(e.transform.position));
+                    };
                     mb.OnEscaped += _ => ReportKill();
-                    break;
+                    return true;
+                }
             }
+            return false;
+        }
+
+        void WireDeathAndEscape(EnemyBase enemy, EnemyType type, int scoreReward)
+        {
+            enemy.OnDeath += _ =>
+            {
+                ReportKill();
+                GameManager.Instance?.AddKill();
+                EventBus<EnemyKilled>.Publish(new EnemyKilled(type, scoreReward));
+            };
+            enemy.OnEscaped += _ => ReportKill();
+        }
+
+        // Deduplicate warnings so a missing-drone-prefab wave doesn't spam the console.
+        readonly System.Collections.Generic.HashSet<EnemyType> _warnedTypes = new System.Collections.Generic.HashSet<EnemyType>();
+        void WarnMissingPrefab(EnemyType type)
+        {
+            if (!_warnedTypes.Add(type)) return;
+            Debug.LogError($"[WaveSpawner] {type}Prefab is not assigned. Wave entries of this type will be skipped. Run StrafAdvance/4. Setup GameScene (or StrafAdvance/15. Rewire WaveSpawner Prefabs) to fix.");
         }
 
         public void ReportEnemySpawned(int count) => _enemiesAlive += count;

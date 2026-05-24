@@ -1294,6 +1294,41 @@ namespace StrafAdvance.Editor
             go.AddComponent<T>();
         }
 
+        // ─── Step 15: Rewire WaveSpawner Prefabs (additive — fixes wave-3 hang etc) ─────
+        [MenuItem("StrafAdvance/15. Rewire WaveSpawner Prefabs", priority = 150)]
+        public static void RewireWaveSpawnerPrefabs()
+        {
+            var ws = Object.FindFirstObjectByType<WaveSpawner>();
+            if (ws == null)
+            {
+                Debug.LogError("[GameSetup] No WaveSpawner in active scene. Run StrafAdvance/4. Setup GameScene first.");
+                return;
+            }
+
+            SetField(ws, "gruntConfig",       LoadSO<EnemyConfig>("GruntConfig"));
+            SetField(ws, "flankerConfig",     LoadSO<EnemyConfig>("FlankerConfig"));
+            SetField(ws, "eliteConfig",       LoadSO<EnemyConfig>("EliteConfig"));
+            SetField(ws, "chargerConfig",     LoadSO<EnemyConfig>("ChargerConfig"));
+            SetField(ws, "sniperConfig",      LoadSO<EnemyConfig>("SniperConfig"));
+            SetField(ws, "shieldedConfig",    LoadSO<EnemyConfig>("ShieldedConfig"));
+            SetField(ws, "splitterConfig",    LoadSO<EnemyConfig>("SplitterConfig"));
+            SetField(ws, "droneConfig",       LoadSO<EnemyConfig>("DroneConfig"));
+            SetField(ws, "miniBossConfig",    LoadSO<EnemyConfig>("MiniBossConfig"));
+            SetField(ws, "gruntPrefab",       LoadPrefab<GruntEnemy>("Enemies/GruntEnemy"));
+            SetField(ws, "flankerPrefab",     LoadPrefab<FlankerEnemy>("Enemies/FlankerEnemy"));
+            SetField(ws, "elitePrefab",       LoadPrefab<EliteEnemy>("Enemies/EliteEnemy"));
+            SetField(ws, "chargerPrefab",     LoadPrefab<ChargerEnemy>("Enemies/ChargerEnemy"));
+            SetField(ws, "sniperPrefab",      LoadPrefab<SniperEnemy>("Enemies/SniperEnemy"));
+            SetField(ws, "shieldedPrefab",    LoadPrefab<ShieldedEnemy>("Enemies/ShieldedEnemy"));
+            SetField(ws, "splitterPrefab",    LoadPrefab<SplitterEnemy>("Enemies/SplitterEnemy"));
+            SetField(ws, "dronePrefab",       LoadPrefab<DroneEnemy>("Enemies/DroneEnemy"));
+            SetField(ws, "miniBossPrefab",    LoadPrefab<MiniBossEnemy>("Enemies/MiniBossEnemy"));
+            SetField(ws, "enemyBulletPrefab", LoadPrefab<Bullet>("Combat/EnemyBullet"));
+
+            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+            Debug.Log("[GameSetup] WaveSpawner prefabs + configs rewired. Save scene to persist.");
+        }
+
         // ─── Step 5: Bootstrap Scene ─────────────────────────────────────────────
         [MenuItem("StrafAdvance/5. Setup Bootstrap Scene", priority = 50)]
         public static void SetupBootstrapScene()
