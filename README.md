@@ -48,6 +48,23 @@ Output: `StrafeAdvance.apk` in the parent directory.
 adb install StrafeAdvance.apk
 ```
 
+## Continuous Integration
+
+GitHub Actions workflows live under `.github/workflows/`:
+
+- **`tests.yml`** — runs Unity EditMode tests on every push/PR to `main`.
+- **`build-android.yml`** — builds the Android APK when a tag matching `v*` is pushed (e.g. `git tag v0.2.0 && git push --tags`) and attaches the APK to the GitHub release.
+
+Both workflows require these repository secrets (Settings → Secrets and variables → Actions):
+
+| Secret | How to obtain |
+|---|---|
+| `UNITY_LICENSE` | Run `game-ci/unity-request-activation-file` action once, email the `.alf`, receive a `.ulf` from license.unity3d.com, paste its full XML here |
+| `UNITY_EMAIL` | Your Unity account email |
+| `UNITY_PASSWORD` | Your Unity account password |
+
+To trigger a build manually: Actions tab → **Build Android APK** → Run workflow.
+
 ## Tech Stack
 
 | | |
