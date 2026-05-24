@@ -42,6 +42,13 @@ namespace StrafAdvance
         public List<string> equippedPerkIds = new List<string>();
         public string equippedWeaponId = "blaster_default";
         public List<string> unlockedWeaponIds = new List<string> { "blaster_default" };
+
+        // Daily login streak (P6.3). Stored as ISO date YYYY-MM-DD in UTC; empty = never logged in.
+        public string lastLoginDateUtc = "";
+        public int    loginStreak;
+
+        // Achievement progress (P6.4). Just the set of completed IDs — counters live in their catalog.
+        public List<string> unlockedAchievementIds = new List<string>();
     }
 
     [Serializable]
