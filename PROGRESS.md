@@ -5,7 +5,7 @@
 - **GitHub:** https://github.com/shishir48/Strafe-Advance
 - **Engine:** Unity 6 (6000.4.7f1), URP, Android target
 - **APK:** `/Users/shishirsingh/StrafeAdvance.apk` (last built 2026-05-22, Mono2x)
-- **Tests:** **79 passing / 0 failing** (EditMode, with CI workflow on PR/push)
+- **Tests:** **95 passing / 0 failing** (EditMode, with CI workflow on PR/push)
 - **Branch:** main (all committed)
 
 ---
@@ -83,7 +83,7 @@ Highest impact remaining items, picked by ROI:
 | P2.22 | Ragdoll-lite death | physics tumble + fade + auto-destroy skip |
 | P2.23 | KillCam | slow-mo 0.28× + camera zoom on MiniBoss/Boss death |
 
-## Done — Phase 4/5/6/7 essentials — 11 items ✅
+## Done — Phase 4/5/6/7 essentials — 15 items ✅
 
 | # | Item | Outcome |
 |---|------|---------|
@@ -96,8 +96,12 @@ Highest impact remaining items, picked by ROI:
 | P5.1 | SfxRouter | EventBus→AudioManager bridge, 7 new SoundIDs (Dodge/ShieldHit/ComboTier/PerkUnlock/UIClick/UIConfirm/EliteDeath) |
 | P6.1 | CurrencyService + RunSummary | soft-currency drops per enemy type + post-run screen on win/lose |
 | P6.2 | Shop w/ soft currency | Tabbed (Weapons/Cosmetics) shop; weapons use `CurrencyService.TrySpend`; cosmetics keep IAP path; Equip/Buy/Locked states reactive to balance |
+| P6.3 | DailyLoginService | UTC-day streak tracking, escalating reward curve (50→500 caps at day 7), gap resets to 1, idempotent same-day check-in, emits `DailyLoginCheckedIn` event |
+| P6.4 | Achievements (8 catalog) | Predicate-based unlocks (kill counts, level, win, wave, streak); grants currency on unlock, retroactive eligibility, emits `AchievementUnlocked` |
+| P6.4 | ToastNotifier | Queued slide-in cards at bottom-center, listens to AchievementUnlocked + DailyLoginCheckedIn, non-blocking (no raycast capture) |
 | P7.1 | CI: EditMode tests | `.github/workflows/tests.yml` — Unity Test Runner on PR + push to main via `game-ci/unity-test-runner@v4`, Library cached |
 | P7.1 | CI: Android APK build | `.github/workflows/build-android.yml` — Android build on `v*` tag via `game-ci/unity-builder@v4`, APK attached to GitHub release + uploaded as artifact |
+| P7.2 | CrashReporter | In-process unhandled-exception capture, 50-entry breadcrumb ring, atomic crash-report.json persistence, pluggable `ICrashUploader` (default no-op, Sentry/Crashlytics adapter slots in via `SetUploader`); auto-breadcrumbs state changes + waves + damage |
 
 ## Skipped (low ROI)
 - P2.17 unified EnemyBrain — local FSMs (Charger/MiniBoss) cover the cases that needed it
@@ -112,12 +116,12 @@ Assets/_Game/Scripts/
 ├── Core/
 │   ├── AssetLoader.cs           — Addressables → Resources fallback
 │   ├── ComboTracker.cs          — kill streak + multiplier
-│   ├── CurrencyService.cs       — (NEW) soft-currency on kill + persist
+│   ├── CrashReporter.cs         — (NEW P7.2) breadcrumb ring + crash persistence + pluggable upload
 │   ├── DifficultyService.cs     — per-level multiplier
 │   ├── EventBus.cs              — typed pub/sub
 │   ├── GameInput.cs             — Input System facade
 │   ├── GameLifetimeScope.cs     — VContainer DI scope
-│   ├── GameManager.cs           — FSM-driven state + InitFlow
+│   ├── GameManager.cs           — FSM-driven state + BeginRunFromMenu
 │   ├── KillCam.cs               — boss-death slow-mo + zoom
 │   ├── SaveData.cs              — schema (versioned)
 │   ├── SaveSystem.cs            — AES + atomic + migrate
@@ -149,6 +153,10 @@ Assets/_Game/Scripts/
 │   ├── AutoShooter.cs (Combat ref) — weapon-driven
 │   └── PlayerBuffs.cs
 ├── Progression/
+│   ├── Achievement.cs           — (NEW P6.4) Achievement struct + 8-entry catalog
+│   ├── AchievementService.cs    — (NEW P6.4) predicate-driven re-evaluator
+│   ├── CurrencyService.cs       — soft-currency on kill + persist + TrySpend/Grant
+│   ├── DailyLoginService.cs     — (NEW P6.3) UTC streak + reward curve
 │   ├── Perk.cs                  + PerkCatalog (5)
 │   └── PlayerProgression.cs     — XP + level + unlocks
 ├── Audio/
@@ -165,7 +173,8 @@ Assets/_Game/Scripts/
 │   ├── SettingsPanel.cs         — (NEW) audio + sensitivity + toggles + quality + reset
 │   ├── PerkEquipPanel.cs        — level-up perk picker
 │   ├── RunSummaryPanel.cs       — post-run screen
-│   ├── TutorialController.cs    — (NEW P4.6) first-run 4-step overlay
+│   ├── ToastNotifier.cs         — (NEW P6.4) queued bottom-center popups for achievements + daily login
+│   ├── TutorialController.cs    — first-run 4-step overlay
 │   ├── MainMenuController.cs / LevelSelectController.cs (legacy)
 │   └── GameOverController.cs / LevelCompleteController.cs (legacy)
 ├── Level/
@@ -212,6 +221,8 @@ Assets/_Game/Scripts/
 - **Combat juice**: damage numbers, screen shake, hitstop, kill cam, ragdolls
 - **Progression**: XP per kill → level → perk unlock → equip via panel → live AutoShooter refresh
 - **Currency**: soft-currency drops per enemy type, persists, **spend in shop on weapons**, run summary screen
+- **Daily login + Achievements**: UTC streak rewards (50→500), 8 achievements (kill/level/win/wave/streak) with retroactive unlock + toast popups
+- **Crash + breadcrumbs**: in-process unhandled-exception capture, 50-entry ring buffer, atomic persistence; pluggable Sentry/Crashlytics adapter slot
 - **Front-end**: Main Hub → Play / Loadout / Shop / Settings / Quit (full pre-run flow)
 - **Loadout**: pick equipped weapon from unlocked catalog, see equipped perks, Start Run
 - **Shop**: Weapons tab (currency spend, Buy/Equip/Locked states reactive) + Cosmetics tab (IAP bundles)
@@ -225,12 +236,13 @@ Assets/_Game/Scripts/
 
 ## Known issues / TODO
 - AudioManager `sounds[]` empty — SFX routes fire but play nothing. Drop in AudioClips next.
-- ~~Main menu / loadout screen still legacy stubs~~ → ✅ P4.3 shipped MainHub + Loadout
 - Coplay MCP requires new claude session to attach
 - No PlayMode tests yet (Phase 7)
 - Run summary score "XP earned" is `score / 10` — derive properly when reward economy is finalized
 - Aim Sensitivity slider persists but PlayerController doesn't read it yet (no aim input — strafe is drag-based). Wire when controller/aim added.
-- Tutorial / Localization / Battle Pass / CI still untouched
+- Localization / Battle Pass / leaderboards / store cosmetics still untouched
+- CrashReporter ships with no-op uploader. Add Sentry Unity SDK (OpenUPM `io.sentry.unity`) + adapter class implementing `ICrashUploader` when ready for symbolicated native crashes
+- CI workflows live but won't run until `UNITY_LICENSE` / `UNITY_EMAIL` / `UNITY_PASSWORD` secrets are added to GitHub repo settings
 
 ---
 
@@ -238,9 +250,12 @@ Assets/_Game/Scripts/
 
 ```
 Assets/_Game/Tests/EditMode/
+├── AchievementServiceTests.cs      (P6.4 — NEW: unlock/no-double-grant/retroactive)
 ├── BossControllerTests.cs
 ├── ComboTrackerTests.cs            (P2.4)
-├── CurrencyServiceTests.cs         (P6.2: TrySpend/Grant/Persist)
+├── CrashReporterTests.cs           (P7.2 — NEW: ring buffer / JSON roundtrip / pluggable uploader)
+├── CurrencyServiceTests.cs         (P6.2)
+├── DailyLoginServiceTests.cs       (P6.3 — NEW: streak/gap/idempotent/curve)
 ├── DamageSystemTests.cs
 ├── EnemyBaseTests.cs
 ├── EventBusTests.cs                (P1.7)
@@ -250,11 +265,11 @@ Assets/_Game/Tests/EditMode/
 ├── SaveSystemTests.cs              (P1.2)
 ├── ScoreCalculatorTests.cs
 ├── StateMachineTests.cs            (P1.7)
-├── TutorialControllerTests.cs      (P4.6 — NEW: Skip / ResetAndArm / persist)
+├── TutorialControllerTests.cs      (P4.6)
 ├── UnlockRegistryTests.cs
 ├── WaveSpawnerTests.cs
 ├── WeaponCatalogTests.cs           (P2.11)
-└── WeaponShopTests.cs              (P6.2: shop pipeline + price fields)
+└── WeaponShopTests.cs              (P6.2)
 ```
 
 Run via `mcp__mcp-for-unity__run_tests` or Unity Test Runner.

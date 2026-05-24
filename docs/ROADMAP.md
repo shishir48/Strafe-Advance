@@ -4,7 +4,7 @@
 **Target:** Premium mobile shooter (Android/iOS), $4.99 with IAP cosmetic shop
 **KPIs to hit before global launch:** D1 ≥ 35%, D7 ≥ 12%, D30 ≥ 5%, ARPDAU ≥ $0.10
 
-> **Session checkpoint (last touched 2026-05-24):** Phase 1 ✅, Phase 2 ✅ 22/24, Phase 4 ✅ 6/8 (HUD/Pause/RunSummary/MainHub+Loadout/Settings/**Tutorial**), Phase 5 ✅ event-routing (clips TODO), Phase 6 ✅ soft currency + shop with currency-spend, Phase 7 ✅ CI tests + Android build workflows. **79/79 tests green** + CI runs them on every PR. Full session log + file map in `PROGRESS.md`.
+> **Session checkpoint (last touched 2026-05-25):** Phase 1 ✅, Phase 2 ✅ 22/24, Phase 4 ✅ 6/8, Phase 5 ✅ event-routing (clips TODO), Phase 6 ✅ currency + shop + **daily login + achievements + toasts**, Phase 7 ✅ CI tests + Android build + **crash reporter (pluggable Sentry slot)**. **95/95 tests green** + CI runs them on every PR (pending Unity secrets). Full session log + file map in `PROGRESS.md`.
 
 ---
 
@@ -109,7 +109,9 @@ Goal: stop fighting the codebase. Lay senior-grade plumbing.
 - [ ] **IAP products** — gem packs ($1.99/$4.99/$9.99/$19.99), starter bundle, season pass, no-ads removal
 - [ ] **Rewarded ads** — IronSource/AppLovin: revive on death, 2x reward on run end
 - [ ] **Battle Pass** — 30-tier seasonal, free + premium lanes, weekly challenges
-- [ ] **Daily login**, achievements, leaderboards (Lootlocker free tier)
+- [x] **Daily login** (P6.3) — `DailyLoginService`: UTC-day streak, escalating reward curve (50→500 capped at day 7), gap resets to 1, idempotent same-day, emits `DailyLoginCheckedIn`
+- [x] **Achievements** (P6.4) — `AchievementService` + 8-entry `AchievementCatalog` (kill counts, levels, first win, wave 10, 7-day streak); predicate-based, grants currency on unlock, retroactive eligibility, emits `AchievementUnlocked`. `ToastNotifier` renders both daily-login and achievement events as queued bottom-center cards
+- [ ] **Leaderboards** — Lootlocker free tier (not yet)
 - [ ] **Remote config** (Firebase) — tune wave difficulty + IAP prices + drop rates without app update
 - [ ] **Analytics** — GameAnalytics or Firebase: funnel, D1/D7/D30 retention, ARPDAU, churn cohorts
 
@@ -119,7 +121,7 @@ Goal: stop fighting the codebase. Lay senior-grade plumbing.
 
 - [ ] **Performance** target: 60 FPS iPhone 12 / Pixel 6, 30 FPS low-end. SRP Batcher, GPU Instancing, LOD groups, occlusion culling
 - [ ] **Memory** — ASTC/ETC2 textures, audio compression, asset bundle splits
-- [ ] **Crash reporting** — Crashlytics + Sentry
+- [x] **Crash reporting (in-process)** (P7.2) — `CrashReporter` hooks `Application.logMessageReceivedThreaded`, keeps a 50-entry breadcrumb ring, persists crash report atomically to disk on Exception/Error, detects "previous session crashed" on next boot. Pluggable `ICrashUploader` (default no-op `LocalFileUploader`); to enable Sentry/Crashlytics, install the SDK and call `CrashReporter.SetUploader(new SentryAdapter())` before `Awake` (e.g. from Bootstrap scene). Native NDK crashes still need a real SDK
 - [x] **CI/CD** (P7.1) — GitHub Actions: `.github/workflows/tests.yml` runs Unity EditMode test runner on every PR + push to main; `.github/workflows/build-android.yml` builds Android APK on `v*` tag via `game-ci/unity-builder@v4` and attaches to GitHub release. Requires `UNITY_LICENSE` / `UNITY_EMAIL` / `UNITY_PASSWORD` secrets in repo settings. PlayMode tests + iOS pipeline still TODO
 - [ ] **Bug bash** — controller test, accessibility audit, age rating, store metadata + screenshots
 - [ ] **Soft launch** — Philippines/Vietnam 4 weeks, optimize KPIs

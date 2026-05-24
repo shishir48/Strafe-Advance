@@ -1134,6 +1134,11 @@ namespace StrafAdvance.Editor
             MakeGO<SettingsPanel>("SettingsPanel");
             // Onboarding (P4.6): first-run tutorial overlay
             MakeGO<TutorialController>("TutorialController");
+            // Crash + retention infra (P7.2 / P6.3 / P6.4)
+            MakeGO<CrashReporter>("CrashReporter");
+            MakeGO<DailyLoginService>("DailyLoginService");
+            MakeGO<AchievementService>("AchievementService");
+            MakeGO<ToastNotifier>("ToastNotifier");
 
             // Spawn parent
             var spawnParent = new GameObject("SpawnParent");
@@ -1273,6 +1278,10 @@ namespace StrafAdvance.Editor
             EnsureSingleton<ShopController>("ShopController");
             EnsureSingleton<SettingsPanel>("SettingsPanel");
             EnsureSingleton<TutorialController>("TutorialController");
+            EnsureSingleton<CrashReporter>("CrashReporter");
+            EnsureSingleton<DailyLoginService>("DailyLoginService");
+            EnsureSingleton<AchievementService>("AchievementService");
+            EnsureSingleton<ToastNotifier>("ToastNotifier");
             EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
             Debug.Log("[GameSetup] Main Menu singletons added/verified in active scene.");
         }
