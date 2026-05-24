@@ -4,7 +4,7 @@
 **Target:** Premium mobile shooter (Android/iOS), $4.99 with IAP cosmetic shop
 **KPIs to hit before global launch:** D1 ≥ 35%, D7 ≥ 12%, D30 ≥ 5%, ARPDAU ≥ $0.10
 
-> **Session checkpoint (last touched 2026-05-24):** Phase 1 ✅, Phase 2 ✅ 22/24, Phase 4 ✅ 5/8 (HUD/Pause/RunSummary/MainHub+Loadout/Settings), Phase 5 ✅ event-routing (clips TODO), Phase 6 ✅ soft currency + shop with currency-spend. **76/76 tests green.** Full session log + file map in `PROGRESS.md`.
+> **Session checkpoint (last touched 2026-05-24):** Phase 1 ✅, Phase 2 ✅ 22/24, Phase 4 ✅ 6/8 (HUD/Pause/RunSummary/MainHub+Loadout/Settings/**Tutorial**), Phase 5 ✅ event-routing (clips TODO), Phase 6 ✅ soft currency + shop with currency-spend, Phase 7 ✅ CI tests + Android build workflows. **79/79 tests green** + CI runs them on every PR. Full session log + file map in `PROGRESS.md`.
 
 ---
 
@@ -82,7 +82,7 @@ Goal: stop fighting the codebase. Lay senior-grade plumbing.
 - [x] **In-run HUD** (P4.1) — HP + stamina + dodge pip + wave + combo + rolling score (`ModernHUD`)
 - [x] **Pause menu** (P4.2) — Esc/Start toggle, Resume/Perks/Restart/Quit, freezes time
 - [x] **Settings** (P4.5) — `SettingsPanel`: Music/SFX/UI sliders, aim sensitivity slider, Vibration/InvertY/Colorblind toggles, Low/Med/High Quality dropdown, Reset Profile. Persists to `SaveData.settings` and applies live to AudioManager + QualitySettings
-- [ ] **Tutorial** — first 3 waves scripted with prompt overlays (move, shoot, dodge)
+- [x] **Tutorial** (P4.6) — `TutorialController`: 4 FSM-driven steps (Strafe → Sprint → Dodge → Combo) that advance on action detection (player x-delta, `IsSprinting`, `DodgePerformed` event, `ComboChanged.Multiplier ≥ 2`). Skip button + Settings → Reset Tutorial. Persists `profile.tutorialCompleted` so it only fires on first run
 - [ ] **Localization** — SmartLocalization, ship EN + ES + JP + ZH-CN
 - [ ] **UI Toolkit (UXML)** for menus — faster iteration than uGUI for complex layouts
 - [x] **Post-run summary** (P6.1, lives in UI) — score, kills, XP, currency, best, restart/menu buttons
@@ -120,7 +120,7 @@ Goal: stop fighting the codebase. Lay senior-grade plumbing.
 - [ ] **Performance** target: 60 FPS iPhone 12 / Pixel 6, 30 FPS low-end. SRP Batcher, GPU Instancing, LOD groups, occlusion culling
 - [ ] **Memory** — ASTC/ETC2 textures, audio compression, asset bundle splits
 - [ ] **Crash reporting** — Crashlytics + Sentry
-- [ ] **CI/CD** — GitHub Actions: build Android/iOS on tag, upload to Play Console internal / TestFlight, run PlayMode tests
+- [x] **CI/CD** (P7.1) — GitHub Actions: `.github/workflows/tests.yml` runs Unity EditMode test runner on every PR + push to main; `.github/workflows/build-android.yml` builds Android APK on `v*` tag via `game-ci/unity-builder@v4` and attaches to GitHub release. Requires `UNITY_LICENSE` / `UNITY_EMAIL` / `UNITY_PASSWORD` secrets in repo settings. PlayMode tests + iOS pipeline still TODO
 - [ ] **Bug bash** — controller test, accessibility audit, age rating, store metadata + screenshots
 - [ ] **Soft launch** — Philippines/Vietnam 4 weeks, optimize KPIs
 - [ ] **Global launch** — Apple/Google editorial pitch, launch trailer, press kit

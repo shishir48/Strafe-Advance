@@ -5,7 +5,7 @@
 - **GitHub:** https://github.com/shishir48/Strafe-Advance
 - **Engine:** Unity 6 (6000.4.7f1), URP, Android target
 - **APK:** `/Users/shishirsingh/StrafeAdvance.apk` (last built 2026-05-22, Mono2x)
-- **Tests:** **76 passing / 0 failing** (EditMode)
+- **Tests:** **79 passing / 0 failing** (EditMode, with CI workflow on PR/push)
 - **Branch:** main (all committed)
 
 ---
@@ -36,10 +36,10 @@ Highest impact remaining items, picked by ROI:
 
 1. **Phase 3 — Mixamo rig + 3-4 player animations** (needs Adobe login on user side)
 2. **Phase 5 — Wire actual SFX audio clips** to AudioManager `sounds[]` list (SfxRouter calls PlaySFX but clips are empty)
-3. **Phase 4 — Tutorial overlay** for first 3 waves (move/shoot/dodge prompts)
-4. **Phase 4 — Localization** (SmartLocalization, EN+ES+JP+ZH-CN)
-5. **Phase 6 — Battle Pass + daily login + leaderboards**
-6. **Phase 7 — CI/CD GitHub Actions** + crash reporting (Crashlytics/Sentry)
+3. **Phase 4 — Localization** (SmartLocalization, EN+ES+JP+ZH-CN)
+4. **Phase 6 — Battle Pass + daily login + leaderboards**
+5. **Phase 7 — Crash reporting** (Crashlytics or Sentry)
+6. **Phase 7 — Performance profiling pass** (SRP Batcher, GPU Instancing, LOD groups, occlusion)
 7. **Leftover P2** — slide movement, aim-assist, unified EnemyBrain (low value)
 
 ---
@@ -83,7 +83,7 @@ Highest impact remaining items, picked by ROI:
 | P2.22 | Ragdoll-lite death | physics tumble + fade + auto-destroy skip |
 | P2.23 | KillCam | slow-mo 0.28× + camera zoom on MiniBoss/Boss death |
 
-## Done — Phase 4/5/6 essentials — 8 items ✅
+## Done — Phase 4/5/6/7 essentials — 11 items ✅
 
 | # | Item | Outcome |
 |---|------|---------|
@@ -91,10 +91,13 @@ Highest impact remaining items, picked by ROI:
 | P4.2 | PauseMenu | Esc/Start toggle, Resume/Perks/Restart/Quit, freezes time |
 | P4.3 | MainHubController | runtime-built front door — animated title, currency chip, Play/Loadout/Shop/Settings/Quit; auto-shown when `GameState=Menu` |
 | P4.3 | LoadoutPanel | weapon picker from unlocked catalog + equipped-perks display + Start Run; persists `equippedWeaponId` and live-refreshes AutoShooter |
-| P4.5 | SettingsPanel | sliders (Music/SFX/UI/Sensitivity) + toggles (Vibration/InvertY/Colorblind) + Quality dropdown + Reset Profile; persists `SaveData.settings` and applies to AudioManager + QualitySettings live |
+| P4.5 | SettingsPanel | sliders (Music/SFX/UI/Sensitivity) + toggles (Vibration/InvertY/Colorblind) + Quality dropdown + Reset Profile / Reset Tutorial; persists `SaveData.settings` and applies to AudioManager + QualitySettings live |
+| P4.6 | TutorialController | first-run 4-step overlay (Strafe→Sprint→Dodge→Combo). FSM-driven, advances on action detection, persists `profile.tutorialCompleted`. Skip button. Reset via Settings |
 | P5.1 | SfxRouter | EventBus→AudioManager bridge, 7 new SoundIDs (Dodge/ShieldHit/ComboTier/PerkUnlock/UIClick/UIConfirm/EliteDeath) |
 | P6.1 | CurrencyService + RunSummary | soft-currency drops per enemy type + post-run screen on win/lose |
 | P6.2 | Shop w/ soft currency | Tabbed (Weapons/Cosmetics) shop; weapons use `CurrencyService.TrySpend`; cosmetics keep IAP path; Equip/Buy/Locked states reactive to balance |
+| P7.1 | CI: EditMode tests | `.github/workflows/tests.yml` — Unity Test Runner on PR + push to main via `game-ci/unity-test-runner@v4`, Library cached |
+| P7.1 | CI: Android APK build | `.github/workflows/build-android.yml` — Android build on `v*` tag via `game-ci/unity-builder@v4`, APK attached to GitHub release + uploaded as artifact |
 
 ## Skipped (low ROI)
 - P2.17 unified EnemyBrain — local FSMs (Charger/MiniBoss) cover the cases that needed it
@@ -162,6 +165,7 @@ Assets/_Game/Scripts/
 │   ├── SettingsPanel.cs         — (NEW) audio + sensitivity + toggles + quality + reset
 │   ├── PerkEquipPanel.cs        — level-up perk picker
 │   ├── RunSummaryPanel.cs       — post-run screen
+│   ├── TutorialController.cs    — (NEW P4.6) first-run 4-step overlay
 │   ├── MainMenuController.cs / LevelSelectController.cs (legacy)
 │   └── GameOverController.cs / LevelCompleteController.cs (legacy)
 ├── Level/
@@ -236,7 +240,7 @@ Assets/_Game/Scripts/
 Assets/_Game/Tests/EditMode/
 ├── BossControllerTests.cs
 ├── ComboTrackerTests.cs            (P2.4)
-├── CurrencyServiceTests.cs         (P6.2 — NEW: TrySpend/Grant/Persist)
+├── CurrencyServiceTests.cs         (P6.2: TrySpend/Grant/Persist)
 ├── DamageSystemTests.cs
 ├── EnemyBaseTests.cs
 ├── EventBusTests.cs                (P1.7)
@@ -246,10 +250,11 @@ Assets/_Game/Tests/EditMode/
 ├── SaveSystemTests.cs              (P1.2)
 ├── ScoreCalculatorTests.cs
 ├── StateMachineTests.cs            (P1.7)
+├── TutorialControllerTests.cs      (P4.6 — NEW: Skip / ResetAndArm / persist)
 ├── UnlockRegistryTests.cs
 ├── WaveSpawnerTests.cs
 ├── WeaponCatalogTests.cs           (P2.11)
-└── WeaponShopTests.cs              (P6.2 — NEW: shop pipeline + price fields)
+└── WeaponShopTests.cs              (P6.2: shop pipeline + price fields)
 ```
 
 Run via `mcp__mcp-for-unity__run_tests` or Unity Test Runner.
