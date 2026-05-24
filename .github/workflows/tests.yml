@@ -15,10 +15,15 @@ env:
   UNITY_VERSION: 6000.4.7f1
 
 jobs:
-  editmode:
-    name: EditMode Tests
+  tests:
+    name: ${{ matrix.testMode }} Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
+
+    strategy:
+      fail-fast: false
+      matrix:
+        testMode: [EditMode, PlayMode]
 
     steps:
       - name: Checkout
@@ -30,12 +35,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: Library
-          key: Library-${{ env.UNITY_VERSION }}-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          key: Library-${{ env.UNITY_VERSION }}-${{ matrix.testMode }}-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
+            Library-${{ env.UNITY_VERSION }}-${{ matrix.testMode }}-
             Library-${{ env.UNITY_VERSION }}-
             Library-
 
-      - name: Run EditMode tests
+      - name: Run ${{ matrix.testMode }} tests
         uses: game-ci/unity-test-runner@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
@@ -43,15 +49,15 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           unityVersion: ${{ env.UNITY_VERSION }}
-          testMode: EditMode
+          testMode: ${{ matrix.testMode }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
-          checkName: EditMode Results
-          artifactsPath: artifacts/editmode
+          checkName: ${{ matrix.testMode }} Results
+          artifactsPath: artifacts/${{ matrix.testMode }}
 
-      - name: Upload EditMode artifacts
+      - name: Upload ${{ matrix.testMode }} artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: editmode-results
-          path: artifacts/editmode
+          name: ${{ matrix.testMode }}-results
+          path: artifacts/${{ matrix.testMode }}
           retention-days: 14
