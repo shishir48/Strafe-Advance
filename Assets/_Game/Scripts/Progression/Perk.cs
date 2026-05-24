@@ -14,6 +14,8 @@ namespace StrafAdvance
         public float  fireRateMultiplier = 1f;
         public float  maxHpMultiplier    = 1f;
         public float  strafeSpeedMultiplier = 1f;
+        // Shop price in soft currency. Perks unlock through leveling for free; shop is the alternate path.
+        public int    price              = 0;
     }
 
     /// <summary>Hard-coded perk catalogue. Will move to ScriptableObject + Addressables once perk count > 10.</summary>

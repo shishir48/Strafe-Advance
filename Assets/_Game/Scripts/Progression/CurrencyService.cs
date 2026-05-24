@@ -24,6 +24,31 @@ namespace StrafAdvance
         /// <summary>Soft currency earned this run (resets when run ends).</summary>
         public int EarnedThisRun { get; private set; }
 
+        /// <summary>Persisted total soft currency.</summary>
+        public int Balance => SaveSystem.Current.progress.softCurrency;
+
+        /// <summary>Deduct <paramref name="amount"/>. Returns false (no-op) if balance is insufficient.</summary>
+        public bool TrySpend(int amount)
+        {
+            if (amount <= 0) return false;
+            var p = SaveSystem.Current.progress;
+            if (p.softCurrency < amount) return false;
+            p.softCurrency -= amount;
+            SaveSystem.Save();
+            EventBus<CurrencyEarned>.Publish(new CurrencyEarned(-amount, p.softCurrency));
+            return true;
+        }
+
+        /// <summary>Grant currency outside of kill drops (debug / IAP). Persists.</summary>
+        public void Grant(int amount)
+        {
+            if (amount <= 0) return;
+            var p = SaveSystem.Current.progress;
+            p.softCurrency += amount;
+            SaveSystem.Save();
+            EventBus<CurrencyEarned>.Publish(new CurrencyEarned(amount, p.softCurrency));
+        }
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void ResetStatics() { Instance = null; }
 
