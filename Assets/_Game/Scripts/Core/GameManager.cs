@@ -49,6 +49,8 @@ namespace StrafAdvance
             EventBus<KillCamRequest>.Clear();
             EventBus<BossPhaseChanged>.Clear();
             EventBus<CurrencyEarned>.Clear();
+            EventBus<DailyLoginCheckedIn>.Clear();
+            EventBus<AchievementUnlocked>.Clear();
         }
 
         void Awake()
