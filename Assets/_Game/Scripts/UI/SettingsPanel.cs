@@ -113,13 +113,18 @@ namespace StrafAdvance
             });
 
             // Buttons
-            MakeButton(panel.transform, "RESET PROFILE", new Vector2(0.06f, 0.02f), new Vector2(0.38f, 0.10f), new Color(0.4f, 0.1f, 0.1f, 0.9f), () =>
+            MakeButton(panel.transform, "RESET PROFILE", new Vector2(0.04f, 0.02f), new Vector2(0.30f, 0.10f), new Color(0.4f, 0.1f, 0.1f, 0.9f), () =>
             {
                 SaveSystem.Reset();
                 ApplySavedToControls();
                 ApplyToSystems();
             });
-            MakeButton(panel.transform, "CLOSE", new Vector2(0.62f, 0.02f), new Vector2(0.94f, 0.10f), new Color(0.15f, 0.2f, 0.3f, 0.95f), Hide);
+            MakeButton(panel.transform, "RESET TUTORIAL", new Vector2(0.33f, 0.02f), new Vector2(0.65f, 0.10f), new Color(0.2f, 0.2f, 0.4f, 0.9f), () =>
+            {
+                if (TutorialController.Instance != null) TutorialController.Instance.ResetAndArm();
+                else { SaveSystem.Current.profile.tutorialCompleted = false; SaveSystem.Save(); }
+            });
+            MakeButton(panel.transform, "CLOSE", new Vector2(0.68f, 0.02f), new Vector2(0.94f, 0.10f), new Color(0.15f, 0.2f, 0.3f, 0.95f), Hide);
         }
 
         // ─── Widget Factories ───────────────────────────────────────────────────

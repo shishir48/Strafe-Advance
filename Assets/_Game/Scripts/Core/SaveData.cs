@@ -22,6 +22,8 @@ namespace StrafAdvance
         public string displayName = "Pilot";
         public long createdUtcMs  = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         public long lastPlayedUtcMs;
+        // Set true after the player finishes (or skips) the in-run tutorial.
+        public bool tutorialCompleted;
     }
 
     [Serializable]
