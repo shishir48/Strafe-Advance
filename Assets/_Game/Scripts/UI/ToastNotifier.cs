@@ -37,6 +37,7 @@ namespace StrafAdvance
             BuildUI();
             EventBus<AchievementUnlocked>.Subscribe(OnAchievement);
             EventBus<DailyLoginCheckedIn>.Subscribe(OnDaily);
+            EventBus<BattlePassTierReached>.Subscribe(OnTier);
             Hide();
         }
 
@@ -44,6 +45,7 @@ namespace StrafAdvance
         {
             EventBus<AchievementUnlocked>.Unsubscribe(OnAchievement);
             EventBus<DailyLoginCheckedIn>.Unsubscribe(OnDaily);
+            EventBus<BattlePassTierReached>.Unsubscribe(OnTier);
             if (Instance == this) Instance = null;
         }
 
@@ -52,6 +54,9 @@ namespace StrafAdvance
 
         void OnDaily(DailyLoginCheckedIn d)
             => Enqueue($"DAY {d.Streak} LOGIN", $"+{d.Reward} credits", new Color(0.4f, 1f, 0.6f));
+
+        void OnTier(BattlePassTierReached t)
+            => Enqueue($"BATTLE PASS TIER {t.Tier}", t.Tier >= t.MaxTier ? "Season complete!" : "Claim rewards in the Battle Pass screen", new Color(0.5f, 0.9f, 1f));
 
         public void Enqueue(string title, string sub, Color accent)
         {

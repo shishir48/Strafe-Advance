@@ -16,6 +16,7 @@ namespace StrafAdvance
         private GameObject _root;
         private TMP_Text   _credits;
         private TMP_Text   _bestScoreLabel;
+        private TMP_Text   _bpTierChip;
         private float      _titlePulseTime;
         private TMP_Text   _title;
 
@@ -30,6 +31,7 @@ namespace StrafAdvance
             BuildUI();
             EventBus<GameStateChanged>.Subscribe(OnState);
             EventBus<CurrencyEarned>.Subscribe(OnCurrencyChanged);
+            EventBus<BattlePassTierReached>.Subscribe(_ => RefreshCredits());
             ApplyVisibility(GameManager.Instance != null ? GameManager.Instance.State : GameState.Menu);
             RefreshCredits();
         }
@@ -64,6 +66,11 @@ namespace StrafAdvance
             int bal = CurrencyService.Instance != null ? CurrencyService.Instance.Balance : SaveSystem.Current.progress.softCurrency;
             if (_credits != null)        _credits.text        = $"<color=#ffd166>◆</color>  {bal:N0}";
             if (_bestScoreLabel != null) _bestScoreLabel.text = $"Best: {SaveSystem.Current.progress.bestScore:N0}   ·   Lvl {SaveSystem.Current.progress.playerLevel}";
+            if (_bpTierChip != null)
+            {
+                int tier = BattlePassService.Instance != null ? BattlePassService.Instance.Tier : SaveSystem.Current.progress.battlePassTier;
+                _bpTierChip.text = $"<color=#7ed957>BP</color>  Tier {tier}/{BattlePassCatalog.MaxTier}";
+            }
         }
 
         // ─── Actions ────────────────────────────────────────────────────────────
@@ -74,9 +81,10 @@ namespace StrafAdvance
             else BeginRunDirect();
         }
 
-        void OnLoadout()  { if (LoadoutPanel.Instance != null) LoadoutPanel.Instance.Show(); }
-        void OnShop()     { if (ShopController.Instance != null) ShopController.Instance.Show(); }
-        void OnSettings() { if (SettingsPanel.Instance != null) SettingsPanel.Instance.Show(); }
+        void OnLoadout()    { if (LoadoutPanel.Instance != null) LoadoutPanel.Instance.Show(); }
+        void OnShop()       { if (ShopController.Instance != null) ShopController.Instance.Show(); }
+        void OnBattlePass() { if (BattlePassPanel.Instance != null) BattlePassPanel.Instance.Show(); }
+        void OnSettings()   { if (SettingsPanel.Instance != null) SettingsPanel.Instance.Show(); }
         void OnQuit()
         {
 #if UNITY_EDITOR
@@ -133,12 +141,20 @@ namespace StrafAdvance
             _credits = AddText(creditsRT.gameObject, "◆  0", 32, new Color(1f, 0.85f, 0.3f), TextAlignmentOptions.Center);
             _credits.richText = true;
 
-            // Center column buttons
-            float cy = 80f, gap = 130f;
-            MakeButton(canvasGO.transform, "PLAY",     new Vector2(0, cy + gap * 1.5f), new Color(0.31f, 0.76f, 0.97f), OnPlay);
-            MakeButton(canvasGO.transform, "LOADOUT",  new Vector2(0, cy + gap * 0.5f), new Color(0.06f, 0.13f, 0.22f), OnLoadout);
-            MakeButton(canvasGO.transform, "SHOP",     new Vector2(0, cy - gap * 0.5f), new Color(0.06f, 0.13f, 0.22f), OnShop);
-            MakeButton(canvasGO.transform, "SETTINGS", new Vector2(0, cy - gap * 1.5f), new Color(0.06f, 0.13f, 0.22f), OnSettings);
+            // Center column buttons (5 stacked — tightened gap)
+            float cy = 60f, gap = 116f;
+            MakeButton(canvasGO.transform, "PLAY",         new Vector2(0, cy + gap * 2f), new Color(0.31f, 0.76f, 0.97f), OnPlay);
+            MakeButton(canvasGO.transform, "LOADOUT",      new Vector2(0, cy + gap * 1f), new Color(0.06f, 0.13f, 0.22f), OnLoadout);
+            MakeButton(canvasGO.transform, "SHOP",         new Vector2(0, cy + gap * 0f), new Color(0.06f, 0.13f, 0.22f), OnShop);
+            MakeButton(canvasGO.transform, "BATTLE PASS",  new Vector2(0, cy - gap * 1f), new Color(0.15f, 0.30f, 0.18f), OnBattlePass);
+            MakeButton(canvasGO.transform, "SETTINGS",     new Vector2(0, cy - gap * 2f), new Color(0.06f, 0.13f, 0.22f), OnSettings);
+
+            // BP tier chip — left of credits chip (top-right area)
+            var bpRT = MakeRect(canvasGO.transform, "BpChip", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-370f, -30f), Vector2.zero, new Vector2(280, 60));
+            bpRT.pivot = new Vector2(1f, 1f);
+            bpRT.gameObject.AddComponent<Image>().color = new Color(0.04f, 0.14f, 0.10f, 0.92f);
+            _bpTierChip = AddText(bpRT.gameObject, "BP  Tier 0/10", 26, new Color(0.7f, 1f, 0.85f), TextAlignmentOptions.Center);
+            _bpTierChip.richText = true;
 
             // Bottom-right quit
             var quitRT = MakeRect(canvasGO.transform, "Quit", new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-30f, 30f), Vector2.zero, new Vector2(180, 70));

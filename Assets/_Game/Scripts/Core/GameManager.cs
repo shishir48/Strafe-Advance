@@ -51,6 +51,7 @@ namespace StrafAdvance
             EventBus<CurrencyEarned>.Clear();
             EventBus<DailyLoginCheckedIn>.Clear();
             EventBus<AchievementUnlocked>.Clear();
+            EventBus<BattlePassTierReached>.Clear();
         }
 
         void Awake()

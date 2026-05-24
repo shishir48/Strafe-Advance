@@ -5,7 +5,7 @@
 - **GitHub:** https://github.com/shishir48/Strafe-Advance
 - **Engine:** Unity 6 (6000.4.7f1), URP, Android target
 - **APK:** `/Users/shishirsingh/StrafeAdvance.apk` (last built 2026-05-22, Mono2x)
-- **Tests:** **95 passing / 0 failing** (EditMode, with CI workflow on PR/push)
+- **Tests:** **105 EditMode + 2 PlayMode = 107 passing / 0 failing** (CI matrix runs both on PR/push)
 - **Branch:** main (all committed)
 
 ---
@@ -83,7 +83,7 @@ Highest impact remaining items, picked by ROI:
 | P2.22 | Ragdoll-lite death | physics tumble + fade + auto-destroy skip |
 | P2.23 | KillCam | slow-mo 0.28× + camera zoom on MiniBoss/Boss death |
 
-## Done — Phase 4/5/6/7 essentials — 15 items ✅
+## Done — Phase 4/5/6/7 essentials — 17 items ✅
 
 | # | Item | Outcome |
 |---|------|---------|
@@ -102,6 +102,8 @@ Highest impact remaining items, picked by ROI:
 | P7.1 | CI: EditMode tests | `.github/workflows/tests.yml` — Unity Test Runner on PR + push to main via `game-ci/unity-test-runner@v4`, Library cached |
 | P7.1 | CI: Android APK build | `.github/workflows/build-android.yml` — Android build on `v*` tag via `game-ci/unity-builder@v4`, APK attached to GitHub release + uploaded as artifact |
 | P7.2 | CrashReporter | In-process unhandled-exception capture, 50-entry breadcrumb ring, atomic crash-report.json persistence, pluggable `ICrashUploader` (default no-op, Sentry/Crashlytics adapter slots in via `SetUploader`); auto-breadcrumbs state changes + waves + damage |
+| P6.5 | BattlePassService + Panel | 10-tier Season 1 with linear XP curve. Per-lane claim state (free vs premium) so retroactive premium unlock works. UI: scrollable tier list, XP-to-next bar, Unlock Premium CTA (500 credits). MainHub button + top-right tier chip + ToastNotifier tier-up popup |
+| P7.4 | PlayMode smoke tests | `GameSceneSmokeTests` loads the actual scene, asserts boot is error-free, reflects all 19 WaveSpawner prefab/config slots to assert none are null. Catches scene-wiring regressions EditMode tests can't (e.g. the wave-3 dead-lock from missing Drone prefab). CI matrix runs EditMode + PlayMode in parallel |
 
 ## Skipped (low ROI)
 - P2.17 unified EnemyBrain — local FSMs (Charger/MiniBoss) cover the cases that needed it
@@ -153,10 +155,12 @@ Assets/_Game/Scripts/
 │   ├── AutoShooter.cs (Combat ref) — weapon-driven
 │   └── PlayerBuffs.cs
 ├── Progression/
-│   ├── Achievement.cs           — (NEW P6.4) Achievement struct + 8-entry catalog
-│   ├── AchievementService.cs    — (NEW P6.4) predicate-driven re-evaluator
+│   ├── Achievement.cs           — Achievement struct + 8-entry catalog
+│   ├── AchievementService.cs    — predicate-driven re-evaluator
+│   ├── BattlePass.cs            — (NEW P6.5) BattlePassReward / BattlePassTier / BattlePassCatalog (10-tier Season 1)
+│   ├── BattlePassService.cs     — (NEW P6.5) XP tracking + per-lane claim + UnlockPremium
 │   ├── CurrencyService.cs       — soft-currency on kill + persist + TrySpend/Grant
-│   ├── DailyLoginService.cs     — (NEW P6.3) UTC streak + reward curve
+│   ├── DailyLoginService.cs     — UTC streak + reward curve
 │   ├── Perk.cs                  + PerkCatalog (5)
 │   └── PlayerProgression.cs     — XP + level + unlocks
 ├── Audio/
@@ -175,6 +179,7 @@ Assets/_Game/Scripts/
 │   ├── RunSummaryPanel.cs       — post-run screen
 │   ├── ToastNotifier.cs         — (NEW P6.4) queued bottom-center popups for achievements + daily login
 │   ├── TutorialController.cs    — first-run 4-step overlay
+│   ├── BattlePassPanel.cs       — (NEW P6.5) scrollable tier list, claim buttons, premium CTA
 │   ├── MainMenuController.cs / LevelSelectController.cs (legacy)
 │   └── GameOverController.cs / LevelCompleteController.cs (legacy)
 ├── Level/
@@ -207,7 +212,8 @@ Assets/_Game/Scripts/
 | 10 | Apply Sci-Fi Upgrade | Materials + post-fx + VFX + corridor + bullet trail |
 | 11 | Bootstrap Addressables | Register Resources/ as Addressables |
 | 12 | Add HitReact To Enemies | Retrofit HitReact + Ragdoll on every enemy prefab |
-| 13 | Setup Main Menu | (NEW) Additive — drop MainHub/Loadout/Shop/Settings singletons into the active scene without rebuilding |
+| 13 | Setup Main Menu | Additive — drop MainHub/Loadout/Shop/Settings + Tutorial + Crash/Daily/Achievement/Toast + BP singletons into the active scene without rebuilding |
+| 15 | Rewire WaveSpawner Prefabs | (NEW) Additive fix for the wave-3 dead-lock — re-runs the full prefab+config SetField pass on the existing WaveSpawner in the active scene |
 |   | Build Android APK | Mono2x APK via BuildPipeline |
 |   | Rewire Player Prefab | Re-assign serialized refs |
 
@@ -222,6 +228,7 @@ Assets/_Game/Scripts/
 - **Progression**: XP per kill → level → perk unlock → equip via panel → live AutoShooter refresh
 - **Currency**: soft-currency drops per enemy type, persists, **spend in shop on weapons**, run summary screen
 - **Daily login + Achievements**: UTC streak rewards (50→500), 8 achievements (kill/level/win/wave/streak) with retroactive unlock + toast popups
+- **Battle Pass**: 10-tier Season 1, XP per kill, free+premium lanes, scrollable claim UI, MainHub tier chip
 - **Crash + breadcrumbs**: in-process unhandled-exception capture, 50-entry ring buffer, atomic persistence; pluggable Sentry/Crashlytics adapter slot
 - **Front-end**: Main Hub → Play / Loadout / Shop / Settings / Quit (full pre-run flow)
 - **Loadout**: pick equipped weapon from unlocked catalog, see equipped perks, Start Run
@@ -237,12 +244,13 @@ Assets/_Game/Scripts/
 ## Known issues / TODO
 - AudioManager `sounds[]` empty — SFX routes fire but play nothing. Drop in AudioClips next.
 - Coplay MCP requires new claude session to attach
-- No PlayMode tests yet (Phase 7)
+- ~~No PlayMode tests yet~~ → ✅ P7.4 shipped GameSceneSmokeTests (2 tests in CI matrix); add more as scenarios accrue
 - Run summary score "XP earned" is `score / 10` — derive properly when reward economy is finalized
 - Aim Sensitivity slider persists but PlayerController doesn't read it yet (no aim input — strafe is drag-based). Wire when controller/aim added.
-- Localization / Battle Pass / leaderboards / store cosmetics still untouched
+- Localization / leaderboards / store cosmetics still untouched
 - CrashReporter ships with no-op uploader. Add Sentry Unity SDK (OpenUPM `io.sentry.unity`) + adapter class implementing `ICrashUploader` when ready for symbolicated native crashes
 - CI workflows live but won't run until `UNITY_LICENSE` / `UNITY_EMAIL` / `UNITY_PASSWORD` secrets are added to GitHub repo settings
+- Battle Pass premium IAP not real yet (uses soft currency for Unlock Premium); wire to IAPManager when premium SKU exists
 
 ---
 
@@ -250,12 +258,13 @@ Assets/_Game/Scripts/
 
 ```
 Assets/_Game/Tests/EditMode/
-├── AchievementServiceTests.cs      (P6.4 — NEW: unlock/no-double-grant/retroactive)
+├── AchievementServiceTests.cs      (P6.4)
+├── BattlePassTests.cs              (P6.5 — NEW: tier-up/claim/premium gating/weapon reward)
 ├── BossControllerTests.cs
 ├── ComboTrackerTests.cs            (P2.4)
-├── CrashReporterTests.cs           (P7.2 — NEW: ring buffer / JSON roundtrip / pluggable uploader)
+├── CrashReporterTests.cs           (P7.2)
 ├── CurrencyServiceTests.cs         (P6.2)
-├── DailyLoginServiceTests.cs       (P6.3 — NEW: streak/gap/idempotent/curve)
+├── DailyLoginServiceTests.cs       (P6.3)
 ├── DamageSystemTests.cs
 ├── EnemyBaseTests.cs
 ├── EventBusTests.cs                (P1.7)
@@ -270,6 +279,9 @@ Assets/_Game/Tests/EditMode/
 ├── WaveSpawnerTests.cs
 ├── WeaponCatalogTests.cs           (P2.11)
 └── WeaponShopTests.cs              (P6.2)
+
+Assets/_Game/Tests/PlayMode/
+└── GameSceneSmokeTests.cs          (P7.4 — NEW: scene-boot error capture + WaveSpawner slot reflection)
 ```
 
 Run via `mcp__mcp-for-unity__run_tests` or Unity Test Runner.

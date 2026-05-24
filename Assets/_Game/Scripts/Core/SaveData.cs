@@ -49,6 +49,14 @@ namespace StrafAdvance
 
         // Achievement progress (P6.4). Just the set of completed IDs — counters live in their catalog.
         public List<string> unlockedAchievementIds = new List<string>();
+
+        // Battle Pass (P6.5). XP accumulates per kill, tier crosses thresholds; rewards claimed
+        // separately per lane so premium upgrade retroactively unlocks previously-passed tiers.
+        public int  battlePassXp;
+        public int  battlePassTier;             // 0..maxTier; 0 = pre-tier-1
+        public bool premiumPassOwned;
+        public List<int> claimedFreeTiers    = new List<int>();
+        public List<int> claimedPremiumTiers = new List<int>();
     }
 
     [Serializable]

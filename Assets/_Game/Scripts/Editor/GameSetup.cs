@@ -1139,6 +1139,9 @@ namespace StrafAdvance.Editor
             MakeGO<DailyLoginService>("DailyLoginService");
             MakeGO<AchievementService>("AchievementService");
             MakeGO<ToastNotifier>("ToastNotifier");
+            // Battle Pass (P6.5)
+            MakeGO<BattlePassService>("BattlePassService");
+            MakeGO<BattlePassPanel>("BattlePassPanel");
 
             // Spawn parent
             var spawnParent = new GameObject("SpawnParent");
@@ -1282,6 +1285,8 @@ namespace StrafAdvance.Editor
             EnsureSingleton<DailyLoginService>("DailyLoginService");
             EnsureSingleton<AchievementService>("AchievementService");
             EnsureSingleton<ToastNotifier>("ToastNotifier");
+            EnsureSingleton<BattlePassService>("BattlePassService");
+            EnsureSingleton<BattlePassPanel>("BattlePassPanel");
             EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
             Debug.Log("[GameSetup] Main Menu singletons added/verified in active scene.");
         }
