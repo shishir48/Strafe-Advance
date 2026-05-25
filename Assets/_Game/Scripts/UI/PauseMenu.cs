@@ -30,6 +30,15 @@ namespace StrafAdvance
             if (Application.isPlaying) DontDestroyOnLoad(gameObject);
             BuildUI();
             Close();
+            EventBus<LanguageChanged>.Subscribe(_ => Rebuild());
+        }
+
+        void Rebuild()
+        {
+            bool wasOpen = _open;
+            if (_canvas != null) Destroy(_canvas.gameObject);
+            BuildUI();
+            if (wasOpen) Open(); else Close();
         }
 
         void Update()
@@ -114,13 +123,13 @@ namespace StrafAdvance
             var bg = _panel.AddComponent<Image>();
             bg.color = new Color(0.03f, 0.07f, 0.13f, 0.95f);
 
-            MakeTitle(_panel.transform, "PAUSED");
+            MakeTitle(_panel.transform, Loc.Tr("pause.title"));
             float y = -120f, gap = 95f;
-            MakeButton(_panel.transform, "RESUME",   y, Resume);        y -= gap;
-            MakeButton(_panel.transform, "PERKS",    y, OpenPerks);     y -= gap;
-            MakeButton(_panel.transform, "SETTINGS", y, OpenSettings);  y -= gap;
-            MakeButton(_panel.transform, "RESTART",  y, RestartLevel);  y -= gap;
-            MakeButton(_panel.transform, "QUIT",     y, QuitToMenu);
+            MakeButton(_panel.transform, Loc.Tr("pause.resume"),   y, Resume);        y -= gap;
+            MakeButton(_panel.transform, Loc.Tr("pause.perks"),    y, OpenPerks);     y -= gap;
+            MakeButton(_panel.transform, Loc.Tr("pause.settings"), y, OpenSettings);  y -= gap;
+            MakeButton(_panel.transform, Loc.Tr("pause.restart"),  y, RestartLevel);  y -= gap;
+            MakeButton(_panel.transform, Loc.Tr("pause.quit"),     y, QuitToMenu);
         }
 
         void OpenSettings()

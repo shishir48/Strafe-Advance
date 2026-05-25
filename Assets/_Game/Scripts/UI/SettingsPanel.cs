@@ -16,6 +16,7 @@ namespace StrafAdvance
         private Slider _music, _sfx, _ui, _sensitivity;
         private Toggle _vibration, _invertY, _colorblind;
         private TMP_Dropdown _quality;
+        private TMP_Dropdown _language;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void ResetStatics() { Instance = null; }
@@ -29,6 +30,16 @@ namespace StrafAdvance
             ApplySavedToControls();
             ApplyToSystems();
             Hide();
+            EventBus<LanguageChanged>.Subscribe(_ => Rebuild());
+        }
+
+        void Rebuild()
+        {
+            bool wasOpen = _root != null && _root.activeSelf;
+            if (_root != null) Destroy(_root);
+            BuildUI();
+            ApplySavedToControls();
+            if (wasOpen) Show(); else Hide();
         }
 
         void OnDestroy() { if (Instance == this) Instance = null; }
@@ -47,6 +58,7 @@ namespace StrafAdvance
             if (_invertY != null)     _invertY.SetIsOnWithoutNotify(s.invertY);
             if (_colorblind != null)  _colorblind.SetIsOnWithoutNotify(s.colorblindMode);
             if (_quality != null)     _quality.SetValueWithoutNotify(Mathf.Clamp(QualitySettings.GetQualityLevel(), 0, _quality.options.Count - 1));
+            if (_language != null)    _language.SetValueWithoutNotify(Mathf.Max(0, Loc.LanguageIndex));
         }
 
         void ApplyToSystems()
@@ -94,37 +106,43 @@ namespace StrafAdvance
             prt.offsetMin = prt.offsetMax = Vector2.zero;
             panel.AddComponent<Image>().color = new Color(0.03f, 0.07f, 0.13f, 0.97f);
 
-            MakeTitle(panel.transform, "SETTINGS");
+            MakeTitle(panel.transform, Loc.Tr("settings.title"));
 
-            float yStart = -130f, gap = 95f;
+            float yStart = -130f, gap = 85f;
 
-            _music       = MakeSlider(panel.transform, "Music Volume",    yStart - gap * 0, 0f, 1f, v => { SaveSystem.Current.settings.musicVolume = v; PersistAndApply(); });
-            _sfx         = MakeSlider(panel.transform, "SFX Volume",      yStart - gap * 1, 0f, 1f, v => { SaveSystem.Current.settings.sfxVolume   = v; PersistAndApply(); });
-            _ui          = MakeSlider(panel.transform, "UI Volume",       yStart - gap * 2, 0f, 1f, v => { SaveSystem.Current.settings.uiVolume    = v; PersistAndApply(); });
-            _sensitivity = MakeSlider(panel.transform, "Aim Sensitivity", yStart - gap * 3, 0.25f, 2.5f, v => { SaveSystem.Current.settings.aimSensitivity = v; PersistAndApply(); });
+            _music       = MakeSlider(panel.transform, Loc.Tr("settings.music_volume"),    yStart - gap * 0, 0f, 1f, v => { SaveSystem.Current.settings.musicVolume = v; PersistAndApply(); });
+            _sfx         = MakeSlider(panel.transform, Loc.Tr("settings.sfx_volume"),      yStart - gap * 1, 0f, 1f, v => { SaveSystem.Current.settings.sfxVolume   = v; PersistAndApply(); });
+            _ui          = MakeSlider(panel.transform, Loc.Tr("settings.ui_volume"),       yStart - gap * 2, 0f, 1f, v => { SaveSystem.Current.settings.uiVolume    = v; PersistAndApply(); });
+            _sensitivity = MakeSlider(panel.transform, Loc.Tr("settings.aim_sensitivity"), yStart - gap * 3, 0.25f, 2.5f, v => { SaveSystem.Current.settings.aimSensitivity = v; PersistAndApply(); });
 
-            _vibration  = MakeToggle(panel.transform, "Vibration",       yStart - gap * 4 + 10f, v => { SaveSystem.Current.settings.vibration      = v; SaveSystem.Save(); });
-            _invertY    = MakeToggle(panel.transform, "Invert Y",        yStart - gap * 4 + 10f - 60f, v => { SaveSystem.Current.settings.invertY        = v; SaveSystem.Save(); });
-            _colorblind = MakeToggle(panel.transform, "Colorblind Mode", yStart - gap * 4 + 10f - 120f, v => { SaveSystem.Current.settings.colorblindMode = v; SaveSystem.Save(); });
+            _vibration  = MakeToggle(panel.transform, Loc.Tr("settings.vibration"),  yStart - gap * 4 + 10f,        v => { SaveSystem.Current.settings.vibration      = v; SaveSystem.Save(); });
+            _invertY    = MakeToggle(panel.transform, Loc.Tr("settings.invert_y"),   yStart - gap * 4 + 10f - 56f,  v => { SaveSystem.Current.settings.invertY        = v; SaveSystem.Save(); });
+            _colorblind = MakeToggle(panel.transform, Loc.Tr("settings.colorblind"), yStart - gap * 4 + 10f - 112f, v => { SaveSystem.Current.settings.colorblindMode = v; SaveSystem.Save(); });
 
-            _quality = MakeDropdown(panel.transform, "Quality", yStart - gap * 4 + 10f - 200f, new[] { "Low", "Medium", "High" }, idx =>
+            _quality  = MakeDropdown(panel.transform, Loc.Tr("settings.quality"),  yStart - gap * 4 + 10f - 180f, new[] { "Low", "Medium", "High" }, idx =>
             {
                 QualitySettings.SetQualityLevel(idx, true);
             });
+            _language = MakeDropdown(panel.transform, Loc.Tr("settings.language"), yStart - gap * 4 + 10f - 240f, new[] { "English", "Español", "日本語", "中文" }, idx =>
+            {
+                if (idx < 0 || idx >= Loc.SupportedLanguages.Length) return;
+                Loc.SetLanguage(Loc.SupportedLanguages[idx]);
+            });
 
             // Buttons
-            MakeButton(panel.transform, "RESET PROFILE", new Vector2(0.04f, 0.02f), new Vector2(0.30f, 0.10f), new Color(0.4f, 0.1f, 0.1f, 0.9f), () =>
+            MakeButton(panel.transform, Loc.Tr("settings.reset_profile"),  new Vector2(0.04f, 0.02f), new Vector2(0.30f, 0.10f), new Color(0.4f, 0.1f, 0.1f, 0.9f), () =>
             {
                 SaveSystem.Reset();
+                Loc.Init();
                 ApplySavedToControls();
                 ApplyToSystems();
             });
-            MakeButton(panel.transform, "RESET TUTORIAL", new Vector2(0.33f, 0.02f), new Vector2(0.65f, 0.10f), new Color(0.2f, 0.2f, 0.4f, 0.9f), () =>
+            MakeButton(panel.transform, Loc.Tr("settings.reset_tutorial"), new Vector2(0.33f, 0.02f), new Vector2(0.65f, 0.10f), new Color(0.2f, 0.2f, 0.4f, 0.9f), () =>
             {
                 if (TutorialController.Instance != null) TutorialController.Instance.ResetAndArm();
                 else { SaveSystem.Current.profile.tutorialCompleted = false; SaveSystem.Save(); }
             });
-            MakeButton(panel.transform, "CLOSE", new Vector2(0.68f, 0.02f), new Vector2(0.94f, 0.10f), new Color(0.15f, 0.2f, 0.3f, 0.95f), Hide);
+            MakeButton(panel.transform, Loc.Tr("settings.close"),          new Vector2(0.68f, 0.02f), new Vector2(0.94f, 0.10f), new Color(0.15f, 0.2f, 0.3f, 0.95f), Hide);
         }
 
         // ─── Widget Factories ───────────────────────────────────────────────────

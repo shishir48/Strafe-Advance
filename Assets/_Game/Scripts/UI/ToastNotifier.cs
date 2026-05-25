@@ -50,13 +50,19 @@ namespace StrafAdvance
         }
 
         void OnAchievement(AchievementUnlocked a)
-            => Enqueue($"ACHIEVEMENT: {a.DisplayName}", $"+{a.Reward} credits", new Color(1f, 0.85f, 0.3f));
+            => Enqueue(string.Format(Loc.Tr("toast.achievement"), a.DisplayName),
+                       string.Format(Loc.Tr("toast.reward_credits"), a.Reward),
+                       new Color(1f, 0.85f, 0.3f));
 
         void OnDaily(DailyLoginCheckedIn d)
-            => Enqueue($"DAY {d.Streak} LOGIN", $"+{d.Reward} credits", new Color(0.4f, 1f, 0.6f));
+            => Enqueue(string.Format(Loc.Tr("toast.daily_login"), d.Streak),
+                       string.Format(Loc.Tr("toast.reward_credits"), d.Reward),
+                       new Color(0.4f, 1f, 0.6f));
 
         void OnTier(BattlePassTierReached t)
-            => Enqueue($"BATTLE PASS TIER {t.Tier}", t.Tier >= t.MaxTier ? "Season complete!" : "Claim rewards in the Battle Pass screen", new Color(0.5f, 0.9f, 1f));
+            => Enqueue(string.Format(Loc.Tr("toast.tier_reached"), t.Tier),
+                       t.Tier >= t.MaxTier ? "" : "",
+                       new Color(0.5f, 0.9f, 1f));
 
         public void Enqueue(string title, string sub, Color accent)
         {

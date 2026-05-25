@@ -52,6 +52,8 @@ namespace StrafAdvance
             EventBus<DailyLoginCheckedIn>.Clear();
             EventBus<AchievementUnlocked>.Clear();
             EventBus<BattlePassTierReached>.Clear();
+            EventBus<LanguageChanged>.Clear();
+            EventBus<SkinEquipped>.Clear();
         }
 
         void Awake()
@@ -59,6 +61,8 @@ namespace StrafAdvance
             if (Instance != null && Instance != this) { Destroy(gameObject); return; }
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            // Initialize localization once per process. Auto-detects + persists on first run.
+            Loc.Init();
         }
 
         void OnDestroy()

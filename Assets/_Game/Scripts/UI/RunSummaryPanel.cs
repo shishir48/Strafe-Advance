@@ -43,7 +43,9 @@ namespace StrafAdvance
             if (kills > p.totalKills) p.totalKills = kills;
             SaveSystem.Save();
 
-            _title.text       = won ? "<color=#4fc3f7>LEVEL COMPLETE</color>" : "<color=#ff6b6b>GAME OVER</color>";
+            _title.text       = won
+                ? $"<color=#4fc3f7>{Loc.Tr("run_summary.win")}</color>"
+                : $"<color=#ff6b6b>{Loc.Tr("run_summary.loss")}</color>";
             _scoreText.text   = $"Score:     <b>{score:N0}</b>";
             _killsText.text   = $"Kills:     <b>{kills}</b>";
             _xpText.text      = $"XP earned: <b>{xpGain}</b>";
@@ -105,8 +107,8 @@ namespace StrafAdvance
             _currencyText = MakeLine(_panel.transform, "Currency", -320f, 36f);
             _bestText     = MakeLine(_panel.transform, "Best",     -390f, 32f);
 
-            MakeButton(_panel.transform, "RESTART", 30f,  -60f, Restart);
-            MakeButton(_panel.transform, "MENU",    280f, -60f, Menu);
+            MakeButton(_panel.transform, Loc.Tr("run_summary.restart"), 30f,  -60f, Restart);
+            MakeButton(_panel.transform, Loc.Tr("run_summary.menu"),    280f, -60f, Menu);
         }
 
         static TMP_Text MakeLine(Transform parent, string name, float y, float size)

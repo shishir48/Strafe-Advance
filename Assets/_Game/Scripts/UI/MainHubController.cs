@@ -32,6 +32,7 @@ namespace StrafAdvance
             EventBus<GameStateChanged>.Subscribe(OnState);
             EventBus<CurrencyEarned>.Subscribe(OnCurrencyChanged);
             EventBus<BattlePassTierReached>.Subscribe(_ => RefreshCredits());
+            EventBus<LanguageChanged>.Subscribe(_ => Rebuild());
             ApplyVisibility(GameManager.Instance != null ? GameManager.Instance.State : GameState.Menu);
             RefreshCredits();
         }
@@ -41,6 +42,14 @@ namespace StrafAdvance
             EventBus<GameStateChanged>.Unsubscribe(OnState);
             EventBus<CurrencyEarned>.Unsubscribe(OnCurrencyChanged);
             if (Instance == this) Instance = null;
+        }
+
+        void Rebuild()
+        {
+            if (_root != null) Destroy(_root);
+            BuildUI();
+            ApplyVisibility(GameManager.Instance != null ? GameManager.Instance.State : GameState.Menu);
+            RefreshCredits();
         }
 
         void Update()
@@ -65,7 +74,7 @@ namespace StrafAdvance
         {
             int bal = CurrencyService.Instance != null ? CurrencyService.Instance.Balance : SaveSystem.Current.progress.softCurrency;
             if (_credits != null)        _credits.text        = $"<color=#ffd166>◆</color>  {bal:N0}";
-            if (_bestScoreLabel != null) _bestScoreLabel.text = $"Best: {SaveSystem.Current.progress.bestScore:N0}   ·   Lvl {SaveSystem.Current.progress.playerLevel}";
+            if (_bestScoreLabel != null) _bestScoreLabel.text = string.Format(Loc.Tr("menu.best_score"), SaveSystem.Current.progress.bestScore.ToString("N0"), SaveSystem.Current.progress.playerLevel);
             if (_bpTierChip != null)
             {
                 int tier = BattlePassService.Instance != null ? BattlePassService.Instance.Tier : SaveSystem.Current.progress.battlePassTier;
@@ -131,7 +140,7 @@ namespace StrafAdvance
             // Subtitle
             var subRT = MakeRect(canvasGO.transform, "Subtitle", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0, -310f), Vector2.zero, new Vector2(720, 40));
             subRT.pivot = new Vector2(0.5f, 0.5f);
-            AddText(subRT.gameObject, "CORRIDOR SHOOTER  ·  v0.1", 22, new Color(0.6f, 0.7f, 0.85f, 0.9f), TextAlignmentOptions.Center);
+            AddText(subRT.gameObject, Loc.Tr("menu.subtitle"), 22, new Color(0.6f, 0.7f, 0.85f, 0.9f), TextAlignmentOptions.Center);
 
             // Top-right currency chip
             var creditsRT = MakeRect(canvasGO.transform, "Credits", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-30f, -30f), Vector2.zero, new Vector2(320, 60));
@@ -143,11 +152,11 @@ namespace StrafAdvance
 
             // Center column buttons (5 stacked — tightened gap)
             float cy = 60f, gap = 116f;
-            MakeButton(canvasGO.transform, "PLAY",         new Vector2(0, cy + gap * 2f), new Color(0.31f, 0.76f, 0.97f), OnPlay);
-            MakeButton(canvasGO.transform, "LOADOUT",      new Vector2(0, cy + gap * 1f), new Color(0.06f, 0.13f, 0.22f), OnLoadout);
-            MakeButton(canvasGO.transform, "SHOP",         new Vector2(0, cy + gap * 0f), new Color(0.06f, 0.13f, 0.22f), OnShop);
-            MakeButton(canvasGO.transform, "BATTLE PASS",  new Vector2(0, cy - gap * 1f), new Color(0.15f, 0.30f, 0.18f), OnBattlePass);
-            MakeButton(canvasGO.transform, "SETTINGS",     new Vector2(0, cy - gap * 2f), new Color(0.06f, 0.13f, 0.22f), OnSettings);
+            MakeButton(canvasGO.transform, Loc.Tr("menu.play"),        new Vector2(0, cy + gap * 2f), new Color(0.31f, 0.76f, 0.97f), OnPlay);
+            MakeButton(canvasGO.transform, Loc.Tr("menu.loadout"),     new Vector2(0, cy + gap * 1f), new Color(0.06f, 0.13f, 0.22f), OnLoadout);
+            MakeButton(canvasGO.transform, Loc.Tr("menu.shop"),        new Vector2(0, cy + gap * 0f), new Color(0.06f, 0.13f, 0.22f), OnShop);
+            MakeButton(canvasGO.transform, Loc.Tr("menu.battle_pass"), new Vector2(0, cy - gap * 1f), new Color(0.15f, 0.30f, 0.18f), OnBattlePass);
+            MakeButton(canvasGO.transform, Loc.Tr("menu.settings"),    new Vector2(0, cy - gap * 2f), new Color(0.06f, 0.13f, 0.22f), OnSettings);
 
             // BP tier chip — left of credits chip (top-right area)
             var bpRT = MakeRect(canvasGO.transform, "BpChip", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-370f, -30f), Vector2.zero, new Vector2(280, 60));
@@ -163,7 +172,7 @@ namespace StrafAdvance
             quitImg.color = new Color(0.15f, 0.04f, 0.06f, 0.92f);
             var quitBtn = quitRT.gameObject.AddComponent<Button>();
             quitBtn.onClick.AddListener(OnQuit);
-            AddText(quitRT.gameObject, "QUIT", 26, new Color(1f, 0.5f, 0.5f), TextAlignmentOptions.Center);
+            AddText(quitRT.gameObject, Loc.Tr("menu.quit"), 26, new Color(1f, 0.5f, 0.5f), TextAlignmentOptions.Center);
 
             // Bottom-left status line (best score + level)
             var bestRT = MakeRect(canvasGO.transform, "BestScore", new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(30f, 30f), Vector2.zero, new Vector2(520, 60));
