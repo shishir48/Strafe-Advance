@@ -13,6 +13,7 @@ namespace StrafAdvance
     {
         public static RunSummaryPanel Instance { get; private set; }
 
+        private GameObject _canvasGO;
         private GameObject _panel;
         private TMP_Text _title, _scoreText, _killsText, _xpText, _currencyText, _bestText;
 
@@ -52,10 +53,16 @@ namespace StrafAdvance
             _currencyText.text = $"Credits:   <b>{currency:N0}</b>";
             _bestText.text    = $"Best:      <b>{p.bestScore:N0}</b>";
 
+            if (_canvasGO != null) _canvasGO.SetActive(true);
             _panel.SetActive(true);
         }
 
-        public void Hide() { if (_panel != null) _panel.SetActive(false); }
+        public void Hide()
+        {
+            // Hide whole canvas so the full-screen dim Image doesn't intercept clicks meant for MainHub/HUD.
+            if (_canvasGO != null) _canvasGO.SetActive(false);
+            if (_panel != null)    _panel.SetActive(false);
+        }
 
         void Restart()
         {
@@ -75,6 +82,7 @@ namespace StrafAdvance
         void BuildUI()
         {
             var canvasGO = new GameObject("RunSummaryCanvas");
+            _canvasGO = canvasGO;
             canvasGO.transform.SetParent(transform, false);
             var c = canvasGO.AddComponent<Canvas>();
             c.renderMode = RenderMode.ScreenSpaceOverlay;

@@ -60,7 +60,9 @@ namespace StrafAdvance
             _open = true;
             _savedScale = Time.timeScale > 0f ? Time.timeScale : 1f;
             Time.timeScale = 0f;
-            _panel.SetActive(true);
+            // Toggle the whole canvas so the dim background ALSO appears (and blocks input only when open).
+            if (_canvas != null) _canvas.gameObject.SetActive(true);
+            if (_panel != null)  _panel.SetActive(true);
         }
 
         public void Resume()
@@ -68,7 +70,9 @@ namespace StrafAdvance
             if (!_open) return;
             _open = false;
             Time.timeScale = _savedScale;
-            _panel.SetActive(false);
+            // Hide the whole canvas — full-screen dim Image would otherwise eat clicks on the MainHub / HUD beneath us.
+            if (_canvas != null) _canvas.gameObject.SetActive(false);
+            if (_panel != null)  _panel.SetActive(false);
         }
 
         void RestartLevel()
@@ -139,7 +143,12 @@ namespace StrafAdvance
             SettingsPanel.Instance?.Show();
         }
 
-        public void Close() { if (_panel != null) _panel.SetActive(false); _open = false; }
+        public void Close()
+        {
+            if (_canvas != null) _canvas.gameObject.SetActive(false);
+            if (_panel != null)  _panel.SetActive(false);
+            _open = false;
+        }
 
         static void MakeTitle(Transform parent, string text)
         {
