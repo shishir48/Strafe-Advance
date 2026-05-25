@@ -199,7 +199,7 @@ namespace StrafAdvance
                     {
                         ReportKill();
                         GameManager.Instance?.AddKill();
-                        EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.MiniBoss, 1500));
+                        EventBus<EnemyKilled>.Publish(new EnemyKilled(EnemyType.MiniBoss, 1500, e.transform.position));
                         EventBus<ShakeRequest>.Publish(new ShakeRequest(0.9f));
                         EventBus<HitstopRequest>.Publish(new HitstopRequest(0.2f));
                         EventBus<KillCamRequest>.Publish(new KillCamRequest(e.transform.position));
@@ -213,11 +213,12 @@ namespace StrafAdvance
 
         void WireDeathAndEscape(EnemyBase enemy, EnemyType type, int scoreReward)
         {
-            enemy.OnDeath += _ =>
+            enemy.OnDeath += e =>
             {
                 ReportKill();
                 GameManager.Instance?.AddKill();
-                EventBus<EnemyKilled>.Publish(new EnemyKilled(type, scoreReward));
+                Vector3 pos = e != null ? e.transform.position : Vector3.zero;
+                EventBus<EnemyKilled>.Publish(new EnemyKilled(type, scoreReward, pos));
             };
             enemy.OnEscaped += _ => ReportKill();
         }

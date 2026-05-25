@@ -115,11 +115,19 @@ namespace StrafAdvance
             bg.color = new Color(0.03f, 0.07f, 0.13f, 0.95f);
 
             MakeTitle(_panel.transform, "PAUSED");
-            float y = -130f;
-            MakeButton(_panel.transform, "RESUME",  y, Resume);        y -= 110f;
-            MakeButton(_panel.transform, "PERKS",   y, OpenPerks);     y -= 110f;
-            MakeButton(_panel.transform, "RESTART", y, RestartLevel);  y -= 110f;
-            MakeButton(_panel.transform, "QUIT",    y, QuitToMenu);
+            float y = -120f, gap = 95f;
+            MakeButton(_panel.transform, "RESUME",   y, Resume);        y -= gap;
+            MakeButton(_panel.transform, "PERKS",    y, OpenPerks);     y -= gap;
+            MakeButton(_panel.transform, "SETTINGS", y, OpenSettings);  y -= gap;
+            MakeButton(_panel.transform, "RESTART",  y, RestartLevel);  y -= gap;
+            MakeButton(_panel.transform, "QUIT",     y, QuitToMenu);
+        }
+
+        void OpenSettings()
+        {
+            // Settings panel uses its own Show/Hide; do NOT resume here so closing settings
+            // returns the player to the still-paused menu.
+            SettingsPanel.Instance?.Show();
         }
 
         public void Close() { if (_panel != null) _panel.SetActive(false); _open = false; }
@@ -148,7 +156,7 @@ namespace StrafAdvance
             var rt = go.AddComponent<RectTransform>();
             rt.anchorMin = new Vector2(0.5f, 1); rt.anchorMax = new Vector2(0.5f, 1);
             rt.pivot = new Vector2(0.5f, 1f);
-            rt.anchoredPosition = new Vector2(0, y); rt.sizeDelta = new Vector2(420, 90);
+            rt.anchoredPosition = new Vector2(0, y); rt.sizeDelta = new Vector2(420, 80);
             var img = go.AddComponent<Image>();
             img.color = new Color(0.06f, 0.13f, 0.22f, 0.9f);
             var btn = go.AddComponent<Button>();

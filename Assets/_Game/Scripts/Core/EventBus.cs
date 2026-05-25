@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace StrafAdvance
 {
@@ -60,7 +61,9 @@ namespace StrafAdvance
     {
         public readonly EnemyType Type;
         public readonly int       ScoreReward;
-        public EnemyKilled(EnemyType type, int scoreReward) { Type = type; ScoreReward = scoreReward; }
+        public readonly Vector3   WorldPos;
+        public EnemyKilled(EnemyType type, int scoreReward) : this(type, scoreReward, Vector3.zero) { }
+        public EnemyKilled(EnemyType type, int scoreReward, Vector3 worldPos) { Type = type; ScoreReward = scoreReward; WorldPos = worldPos; }
     }
 
     public readonly struct WaveStarted
