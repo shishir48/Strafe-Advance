@@ -11,7 +11,7 @@ namespace StrafAdvance
     /// </summary>
     public class ShopController : MonoBehaviour
     {
-        public enum Tab { Weapons, Cosmetics }
+        public enum Tab { Weapons, Skins, Cosmetics }
 
         public static ShopController Instance { get; private set; }
 
@@ -20,7 +20,7 @@ namespace StrafAdvance
         private TMP_Text _balanceLabel;
         private Tab _activeTab = Tab.Weapons;
         private readonly List<GameObject> _rowPool = new List<GameObject>();
-        private Button _tabWeaponsBtn, _tabCosmeticsBtn;
+        private Button _tabWeaponsBtn, _tabSkinsBtn, _tabCosmeticsBtn;
 
         // Legacy IAP cosmetic items (kept as the Cosmetics tab data).
         private static readonly (string id, string name, string price)[] CosmeticItems =
@@ -69,6 +69,7 @@ namespace StrafAdvance
         {
             _activeTab = t;
             HighlightTab(_tabWeaponsBtn,   t == Tab.Weapons);
+            HighlightTab(_tabSkinsBtn,     t == Tab.Skins);
             HighlightTab(_tabCosmeticsBtn, t == Tab.Cosmetics);
             RebuildContent();
         }
@@ -78,8 +79,80 @@ namespace StrafAdvance
             foreach (var go in _rowPool) Destroy(go);
             _rowPool.Clear();
 
-            if (_activeTab == Tab.Weapons) BuildWeaponList();
-            else                            BuildCosmeticsList();
+            switch (_activeTab)
+            {
+                case Tab.Weapons:   BuildWeaponList();    break;
+                case Tab.Skins:     BuildSkinsList();     break;
+                case Tab.Cosmetics: BuildCosmeticsList(); break;
+            }
+        }
+
+        void BuildSkinsList()
+        {
+            var owned = SaveSystem.Current.progress.unlockedSkins;
+            float y = 0f;
+            foreach (var s in CosmeticCatalog.All)
+            {
+                bool isOwned   = owned.Contains(s.Id) || s.Price == 0;
+                bool isEquipped = SlotEquipped(s.Slot) == s.Id;
+                bool canAfford = CurrencyService.Instance != null && CurrencyService.Instance.Balance >= s.Price;
+                string priceLine = isOwned
+                    ? (isEquipped ? "<color=#4fc3f7>EQUIPPED</color>" : "<color=#7ed957>OWNED</color>")
+                    : (canAfford ? $"<color=#ffd166>◆ {s.Price:N0}</color>" : $"<color=#888>◆ {s.Price:N0}</color>");
+                string action = isOwned ? (isEquipped ? "EQUIPPED" : "EQUIP") : (canAfford ? "BUY" : "LOCKED");
+
+                string colorHex = ColorUtility.ToHtmlStringRGB(s.TintColor);
+                var rowSkin = s;
+                var row = MakeShopRow(
+                    $"<b>{s.DisplayName}</b>  <size=18><color=#aab>{s.Slot}</color></size>\n<size=18><color=#{colorHex}>■■■</color>  <color=#aab>tint preview</color></size>",
+                    priceLine,
+                    action,
+                    enabled: isOwned || canAfford,
+                    new Vector2(0, y),
+                    () => OnSkinAction(rowSkin));
+                _rowPool.Add(row);
+                y -= 130f;
+            }
+        }
+
+        void OnSkinAction(CosmeticSkin s)
+        {
+            var p = SaveSystem.Current.progress;
+            if (!p.unlockedSkins.Contains(s.Id) && s.Price > 0)
+            {
+                if (CurrencyService.Instance == null) return;
+                if (!CurrencyService.Instance.TrySpend(s.Price)) return;
+                p.unlockedSkins.Add(s.Id);
+                SaveSystem.Save();
+                RebuildContent();
+                return;
+            }
+            if (!p.unlockedSkins.Contains(s.Id) && s.Price == 0)
+                p.unlockedSkins.Add(s.Id);
+
+            // Already owned (or just unlocked) → equip into the slot.
+            EquipSlot(s.Slot, s.Id);
+            SaveSystem.Save();
+            EventBus<SkinEquipped>.Publish(new SkinEquipped(s.Slot, s.Id));
+            RebuildContent();
+        }
+
+        static string SlotEquipped(CosmeticSlot slot) => slot switch
+        {
+            CosmeticSlot.Player => SaveSystem.Current.progress.equippedPlayerSkinId,
+            CosmeticSlot.Bullet => SaveSystem.Current.progress.equippedBulletSkinId,
+            CosmeticSlot.Trail  => SaveSystem.Current.progress.equippedTrailSkinId,
+            _                    => "",
+        };
+
+        static void EquipSlot(CosmeticSlot slot, string id)
+        {
+            switch (slot)
+            {
+                case CosmeticSlot.Player: SaveSystem.Current.progress.equippedPlayerSkinId = id; break;
+                case CosmeticSlot.Bullet: SaveSystem.Current.progress.equippedBulletSkinId = id; break;
+                case CosmeticSlot.Trail:  SaveSystem.Current.progress.equippedTrailSkinId  = id; break;
+            }
         }
 
         void BuildWeaponList()
@@ -199,9 +272,10 @@ namespace StrafAdvance
             balRT.gameObject.AddComponent<Image>().color = new Color(0.04f, 0.08f, 0.14f, 0.92f);
             _balanceLabel = AttachText(balRT.gameObject, "◆  0", 28, new Color(1f, 0.85f, 0.3f), TextAlignmentOptions.Center);
 
-            // Tab buttons
-            _tabWeaponsBtn   = MakeTabButton(panel.transform, "WEAPONS",   new Vector2(0.06f, 0.82f), new Vector2(0.30f, 0.90f), () => SwitchTab(Tab.Weapons));
-            _tabCosmeticsBtn = MakeTabButton(panel.transform, "COSMETICS", new Vector2(0.32f, 0.82f), new Vector2(0.56f, 0.90f), () => SwitchTab(Tab.Cosmetics));
+            // Tab buttons (3-up — Weapons / Skins / Cosmetics)
+            _tabWeaponsBtn   = MakeTabButton(panel.transform, "WEAPONS",   new Vector2(0.04f, 0.82f), new Vector2(0.27f, 0.90f), () => SwitchTab(Tab.Weapons));
+            _tabSkinsBtn     = MakeTabButton(panel.transform, "SKINS",     new Vector2(0.29f, 0.82f), new Vector2(0.52f, 0.90f), () => SwitchTab(Tab.Skins));
+            _tabCosmeticsBtn = MakeTabButton(panel.transform, "COSMETICS", new Vector2(0.54f, 0.82f), new Vector2(0.77f, 0.90f), () => SwitchTab(Tab.Cosmetics));
 
             // Content region
             var cGO = new GameObject("Content");

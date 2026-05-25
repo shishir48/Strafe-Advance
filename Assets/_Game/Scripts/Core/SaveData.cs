@@ -57,6 +57,11 @@ namespace StrafAdvance
         public bool premiumPassOwned;
         public List<int> claimedFreeTiers    = new List<int>();
         public List<int> claimedPremiumTiers = new List<int>();
+
+        // Cosmetic skins (P6.7). Discrete per-slot equip — JsonUtility-friendly (no Dictionary).
+        public string equippedPlayerSkinId = "";
+        public string equippedBulletSkinId = "";
+        public string equippedTrailSkinId  = "";
     }
 
     [Serializable]
