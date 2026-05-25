@@ -83,7 +83,7 @@ Goal: stop fighting the codebase. Lay senior-grade plumbing.
 - [x] **Pause menu** (P4.2) — Esc/Start toggle, Resume/Perks/Restart/Quit, freezes time
 - [x] **Settings** (P4.5) — `SettingsPanel`: Music/SFX/UI sliders, aim sensitivity slider, Vibration/InvertY/Colorblind toggles, Low/Med/High Quality dropdown, Reset Profile. Persists to `SaveData.settings` and applies live to AudioManager + QualitySettings
 - [x] **Tutorial** (P4.6) — `TutorialController`: 4 FSM-driven steps (Strafe → Sprint → Dodge → Combo) that advance on action detection (player x-delta, `IsSprinting`, `DodgePerformed` event, `ComboChanged.Multiplier ≥ 2`). Skip button + Settings → Reset Tutorial. Persists `profile.tutorialCompleted` so it only fires on first run
-- [ ] **Localization** — SmartLocalization, ship EN + ES + JP + ZH-CN
+- [x] **Localization** (P4.8) — In-house `Loc.Tr(key)` static + `LocalizationCatalog` covering EN / ES / JA / ZH-CN, auto-detects system language on first run, persists to `SaveData.settings.language`, publishes `LanguageChanged` on switch so subscribed panels destroy+rebuild their canvas with new strings. Settings panel exposes a Language dropdown. Catalog is ~30 keys (Main Hub / Pause / Settings / RunSummary / Toast); fall-back chain is `requested-lang -> en -> raw-key`
 - [ ] **UI Toolkit (UXML)** for menus — faster iteration than uGUI for complex layouts
 - [x] **Post-run summary** (P6.1, lives in UI) — score, kills, XP, currency, best, restart/menu buttons
 
@@ -105,7 +105,8 @@ Goal: stop fighting the codebase. Lay senior-grade plumbing.
 - [x] **Soft currency** (P6.1) — `CurrencyService` awards per-enemy drop, persists in SaveData, exposes EarnedThisRun for summary. `CurrencyEarned` event for HUD popups
 - [x] **Shop w/ soft currency** (P6.2) — `ShopController` tabbed (Weapons / Cosmetics). Weapons tab spends `CurrencyService.TrySpend(price)` to unlock from `WeaponCatalog`. Equip/Buy/Locked states reactive to balance + ownership. Persists `unlockedWeaponIds` and `equippedWeaponId`
 - [ ] **Hard currency** — IAP gems (Phase 6 actual)
-- [ ] **Store cosmetics** — cosmetic skins (player, blaster, corridor theme), weekly featured rotation (current Cosmetics tab is IAP bundles only)
+- [x] **Store cosmetics (currency)** (P6.7) — `CosmeticCatalog` with 8 starter skins across 3 slots (Player / Bullet / Trail). Shop has a new **SKINS** tab with the same Buy / Owned / Equip state machine the Weapons tab uses. `SkinApplyService` listens to `SkinEquipped` + `GameStateChanged` and tints the in-scene Player renderer on equip; bullet/trail tints exposed via `TintFor(slot)` for spawn-time visual sampling. Placeholder color tints stand in until real per-skin meshes/materials land
+- [ ] **Weekly featured rotation** — not yet
 - [ ] **IAP products** — gem packs ($1.99/$4.99/$9.99/$19.99), starter bundle, season pass, no-ads removal
 - [ ] **Rewarded ads** — IronSource/AppLovin: revive on death, 2x reward on run end
 - [x] **Battle Pass** (P6.5) — `BattlePassService` + 10-tier `BattlePassCatalog` (Season 1, linear XP curve 500 per tier, free+premium lanes; tier 3/5/7/9 premium grants weapon unlocks). `BattlePassPanel` runtime UI: scrollable tier list, XP-to-next progress bar, per-lane claim buttons, Unlock Premium CTA (500 credits placeholder until IAP wired). MainHub gains a `BATTLE PASS` button + a `BP Tier N/10` chip top-right. ToastNotifier announces tier-ups

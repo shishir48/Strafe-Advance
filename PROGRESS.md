@@ -5,7 +5,7 @@
 - **GitHub:** https://github.com/shishir48/Strafe-Advance
 - **Engine:** Unity 6 (6000.4.7f1), URP, Android target
 - **APK:** `/Users/shishirsingh/StrafeAdvance.apk` (last built 2026-05-22, Mono2x)
-- **Tests:** **105 EditMode + 6 PlayMode = 111 passing / 0 failing** (CI matrix runs both on PR/push)
+- **Tests:** **118 EditMode + 6 PlayMode = 124 passing / 0 failing** (CI matrix runs both on PR/push)
 - **Branch:** main (all committed)
 
 ---
@@ -83,7 +83,7 @@ Highest impact remaining items, picked by ROI:
 | P2.22 | Ragdoll-lite death | physics tumble + fade + auto-destroy skip |
 | P2.23 | KillCam | slow-mo 0.28× + camera zoom on MiniBoss/Boss death |
 
-## Done — Phase 4/5/6/7 essentials — 19 items ✅
+## Done — Phase 4/5/6/7 essentials — 21 items ✅
 
 | # | Item | Outcome |
 |---|------|---------|
@@ -107,6 +107,8 @@ Highest impact remaining items, picked by ROI:
 | P7.4 | PlayMode integration tests | `GameplayIntegrationTests` drives `EventBus<EnemyKilled>` publishes against the live scene + asserts BattlePass XP grows, CurrencyService grants the per-type drop, CurrencyPopupSpawner spawns a visible popup, all core singletons (Player/HUD/MainHub/BP) are wired. Validates the event-routing graph end-to-end |
 | P6.6 | Currency drop popups | `CurrencyPopup` + `CurrencyPopupSpawner`: pooled world-space "+N ◆" floating text at every enemy death (uses new `EnemyKilled.WorldPos` field). Billboarded to main camera, fade-out over 0.85s. Defensive lazy-init handles inactive-Instantiate Awake-delay |
 | P4.7 | PauseMenu Settings button | Pause menu now has Resume/Perks/Settings/Restart/Quit (5 buttons). Settings opens `SettingsPanel` without leaving pause — closing returns to the still-paused menu |
+| P4.8 | Localization | `Loc` static + 4-language `LocalizationCatalog` (EN/ES/JA/ZH-CN, ~30 keys covering Main Hub / Pause / Settings / RunSummary / Toast). Auto-detects system language on first run, persists to `SaveData.settings.language`, live-refreshes refactored panels via `LanguageChanged` event. New Language dropdown in Settings |
+| P6.7 | Cosmetic skins shop | `CosmeticCatalog` (3 slots × 2-3 skins: Player / Bullet / Trail), Shop gains a third **SKINS** tab with currency-spend + per-slot Equip state. `SkinApplyService` tints the in-scene Player on equip (placeholder visuals until real art) and exposes `TintFor(slot)` so bullet/trail systems can sample the active tint at spawn time |
 
 ## Skipped (low ROI)
 - P2.17 unified EnemyBrain — local FSMs (Charger/MiniBoss) cover the cases that needed it
@@ -121,8 +123,9 @@ Assets/_Game/Scripts/
 ├── Core/
 │   ├── AssetLoader.cs           — Addressables → Resources fallback
 │   ├── ComboTracker.cs          — kill streak + multiplier
-│   ├── CrashReporter.cs         — (NEW P7.2) breadcrumb ring + crash persistence + pluggable upload
+│   ├── CrashReporter.cs         — breadcrumb ring + crash persistence + pluggable upload
 │   ├── DifficultyService.cs     — per-level multiplier
+│   ├── LocalizationService.cs   — (NEW P4.8) `Loc.Tr(key)` + EN/ES/JA/ZH-CN catalog
 │   ├── EventBus.cs              — typed pub/sub
 │   ├── GameInput.cs             — Input System facade
 │   ├── GameLifetimeScope.cs     — VContainer DI scope
@@ -134,7 +137,10 @@ Assets/_Game/Scripts/
 ├── Combat/
 │   ├── AutoShooter.cs           — reads equipped weapon + perks
 │   ├── Bullet.cs                — pooled, layer + IDamageable detection
+│   ├── CosmeticSkin.cs          — (NEW P6.7) skin struct + 8-entry catalog
+│   ├── CurrencyPopup.cs         + CurrencyPopupSpawner.cs (P6.6 — "+N ◆" world-space drop)
 │   ├── DamageNumber.cs          + DamageNumberSpawner.cs
+│   ├── SkinApplyService.cs      — (NEW P6.7) tints player renderer + exposes TintFor(slot)
 │   ├── Hitstop.cs               — Time.timeScale freeze
 │   ├── PowerUp.cs               + PowerUpDropper.cs
 │   ├── ScreenShake.cs           — Perlin trauma model
@@ -233,6 +239,8 @@ Assets/_Game/Scripts/
 - **Currency**: soft-currency drops per enemy type, persists, **spend in shop on weapons**, run summary screen
 - **Daily login + Achievements**: UTC streak rewards (50→500), 8 achievements (kill/level/win/wave/streak) with retroactive unlock + toast popups
 - **Battle Pass**: 10-tier Season 1, XP per kill, free+premium lanes, scrollable claim UI, MainHub tier chip
+- **Localization**: EN/ES/JA/ZH-CN with auto-detect + Settings dropdown + live UI refresh
+- **Cosmetic skins**: Player/Bullet/Trail slots, currency spend, equip persists, player tint applied on equip
 - **Crash + breadcrumbs**: in-process unhandled-exception capture, 50-entry ring buffer, atomic persistence; pluggable Sentry/Crashlytics adapter slot
 - **Front-end**: Main Hub → Play / Loadout / Shop / Settings / Quit (full pre-run flow)
 - **Loadout**: pick equipped weapon from unlocked catalog, see equipped perks, Start Run
@@ -251,7 +259,9 @@ Assets/_Game/Scripts/
 - ~~No PlayMode tests yet~~ → ✅ P7.4 shipped GameSceneSmokeTests (2 tests in CI matrix); add more as scenarios accrue
 - Run summary score "XP earned" is `score / 10` — derive properly when reward economy is finalized
 - Aim Sensitivity slider persists but PlayerController doesn't read it yet (no aim input — strafe is drag-based). Wire when controller/aim added.
-- Localization / leaderboards / store cosmetics still untouched
+- ~~Localization~~ → ✅ P4.8 (EN/ES/JA/ZH); ~~store cosmetics~~ → ✅ P6.7 (placeholder tints, real art TBD)
+- Leaderboards / Sentry SDK install still untouched
+- Cosmetic skins use color tints only — real art swap requires per-skin Mesh/Material assets
 - CrashReporter ships with no-op uploader. Add Sentry Unity SDK (OpenUPM `io.sentry.unity`) + adapter class implementing `ICrashUploader` when ready for symbolicated native crashes
 - CI workflows live but won't run until `UNITY_LICENSE` / `UNITY_EMAIL` / `UNITY_PASSWORD` secrets are added to GitHub repo settings
 - Battle Pass premium IAP not real yet (uses soft currency for Unlock Premium); wire to IAPManager when premium SKU exists
@@ -263,8 +273,9 @@ Assets/_Game/Scripts/
 ```
 Assets/_Game/Tests/EditMode/
 ├── AchievementServiceTests.cs      (P6.4)
-├── BattlePassTests.cs              (P6.5 — NEW: tier-up/claim/premium gating/weapon reward)
+├── BattlePassTests.cs              (P6.5: tier-up/claim/premium gating/weapon reward)
 ├── BossControllerTests.cs
+├── CosmeticSkinTests.cs            (P6.7 — NEW: catalog coverage / unlock / persist)
 ├── ComboTrackerTests.cs            (P2.4)
 ├── CrashReporterTests.cs           (P7.2)
 ├── CurrencyServiceTests.cs         (P6.2)
@@ -272,6 +283,7 @@ Assets/_Game/Tests/EditMode/
 ├── DamageSystemTests.cs
 ├── EnemyBaseTests.cs
 ├── EventBusTests.cs                (P1.7)
+├── LocalizationTests.cs            (P4.8 — NEW: fallback / persist / event / per-lang divergence)
 ├── ObjectPoolTests.cs
 ├── PlayerHealthTests.cs
 ├── PlayerProgressionTests.cs       (P2.8)

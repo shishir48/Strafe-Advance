@@ -1143,6 +1143,8 @@ namespace StrafAdvance.Editor
             // Battle Pass (P6.5)
             MakeGO<BattlePassService>("BattlePassService");
             MakeGO<BattlePassPanel>("BattlePassPanel");
+            // Cosmetic skins (P6.7)
+            MakeGO<SkinApplyService>("SkinApplyService");
 
             // Spawn parent
             var spawnParent = new GameObject("SpawnParent");
@@ -1341,6 +1343,9 @@ namespace StrafAdvance.Editor
 
             // Diagnostics
             EnsureSingleton<CrashReporter>("CrashReporter");
+
+            // Cosmetics
+            EnsureSingleton<SkinApplyService>("SkinApplyService");
 
             EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
             Debug.Log("[GameSetup] All service singletons synced into active scene. Save scene to persist.");
