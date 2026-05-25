@@ -1112,8 +1112,9 @@ namespace StrafAdvance.Editor
             // DI scope — created early, wired below once dependencies exist
             var scopeGO = MakeGO<GameLifetimeScope>("GameLifetimeScope");
 
-            // Combat juice — damage numbers, screen shake, hitstop, combo, power-ups (added in P2)
+            // Combat juice — damage numbers, currency popups, screen shake, hitstop, combo, power-ups (added in P2/P6.6)
             MakeGO<DamageNumberSpawner>("DamageNumberSpawner");
+            MakeGO<CurrencyPopupSpawner>("CurrencyPopupSpawner");
             MakeGO<Hitstop>("Hitstop");
             MakeGO<ComboTracker>("ComboTracker");
             var dropperGO = MakeGO<PowerUpDropper>("PowerUpDropper");
@@ -1287,6 +1288,7 @@ namespace StrafAdvance.Editor
             EnsureSingleton<ToastNotifier>("ToastNotifier");
             EnsureSingleton<BattlePassService>("BattlePassService");
             EnsureSingleton<BattlePassPanel>("BattlePassPanel");
+            EnsureSingleton<CurrencyPopupSpawner>("CurrencyPopupSpawner");
             EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
             Debug.Log("[GameSetup] Main Menu singletons added/verified in active scene.");
         }
@@ -1297,6 +1299,51 @@ namespace StrafAdvance.Editor
             if (existing != null) return;
             var go = new GameObject(name);
             go.AddComponent<T>();
+        }
+
+        // ─── Step 14: Sync All Singletons (additive — adds any missing service GameObject) ─────
+        [MenuItem("StrafAdvance/14. Sync All Singletons", priority = 140)]
+        public static void SyncAllSingletons()
+        {
+            // Core
+            EnsureSingleton<GameManager>("GameManager");
+            EnsureSingleton<IAPManager>("IAPManager");
+
+            // Combat / juice
+            EnsureSingleton<DamageNumberSpawner>("DamageNumberSpawner");
+            EnsureSingleton<CurrencyPopupSpawner>("CurrencyPopupSpawner");
+            EnsureSingleton<Hitstop>("Hitstop");
+            EnsureSingleton<ComboTracker>("ComboTracker");
+            EnsureSingleton<KillCam>("KillCam");
+            EnsureSingleton<PlayerProgression>("PlayerProgression");
+
+            // UI / Front-end
+            EnsureSingleton<ModernHUD>("ModernHUD");
+            EnsureSingleton<PauseMenu>("PauseMenu");
+            EnsureSingleton<PerkEquipPanel>("PerkEquipPanel");
+            EnsureSingleton<RunSummaryPanel>("RunSummaryPanel");
+            EnsureSingleton<MainHubController>("MainHubController");
+            EnsureSingleton<LoadoutPanel>("LoadoutPanel");
+            EnsureSingleton<ShopController>("ShopController");
+            EnsureSingleton<SettingsPanel>("SettingsPanel");
+            EnsureSingleton<TutorialController>("TutorialController");
+
+            // Audio
+            EnsureSingleton<SfxRouter>("SfxRouter");
+
+            // Retention + monetization
+            EnsureSingleton<CurrencyService>("CurrencyService");
+            EnsureSingleton<DailyLoginService>("DailyLoginService");
+            EnsureSingleton<AchievementService>("AchievementService");
+            EnsureSingleton<ToastNotifier>("ToastNotifier");
+            EnsureSingleton<BattlePassService>("BattlePassService");
+            EnsureSingleton<BattlePassPanel>("BattlePassPanel");
+
+            // Diagnostics
+            EnsureSingleton<CrashReporter>("CrashReporter");
+
+            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+            Debug.Log("[GameSetup] All service singletons synced into active scene. Save scene to persist.");
         }
 
         // ─── Step 15: Rewire WaveSpawner Prefabs (additive — fixes wave-3 hang etc) ─────

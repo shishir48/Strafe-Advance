@@ -5,7 +5,7 @@
 - **GitHub:** https://github.com/shishir48/Strafe-Advance
 - **Engine:** Unity 6 (6000.4.7f1), URP, Android target
 - **APK:** `/Users/shishirsingh/StrafeAdvance.apk` (last built 2026-05-22, Mono2x)
-- **Tests:** **105 EditMode + 2 PlayMode = 107 passing / 0 failing** (CI matrix runs both on PR/push)
+- **Tests:** **105 EditMode + 6 PlayMode = 111 passing / 0 failing** (CI matrix runs both on PR/push)
 - **Branch:** main (all committed)
 
 ---
@@ -83,7 +83,7 @@ Highest impact remaining items, picked by ROI:
 | P2.22 | Ragdoll-lite death | physics tumble + fade + auto-destroy skip |
 | P2.23 | KillCam | slow-mo 0.28× + camera zoom on MiniBoss/Boss death |
 
-## Done — Phase 4/5/6/7 essentials — 17 items ✅
+## Done — Phase 4/5/6/7 essentials — 19 items ✅
 
 | # | Item | Outcome |
 |---|------|---------|
@@ -104,6 +104,9 @@ Highest impact remaining items, picked by ROI:
 | P7.2 | CrashReporter | In-process unhandled-exception capture, 50-entry breadcrumb ring, atomic crash-report.json persistence, pluggable `ICrashUploader` (default no-op, Sentry/Crashlytics adapter slots in via `SetUploader`); auto-breadcrumbs state changes + waves + damage |
 | P6.5 | BattlePassService + Panel | 10-tier Season 1 with linear XP curve. Per-lane claim state (free vs premium) so retroactive premium unlock works. UI: scrollable tier list, XP-to-next bar, Unlock Premium CTA (500 credits). MainHub button + top-right tier chip + ToastNotifier tier-up popup |
 | P7.4 | PlayMode smoke tests | `GameSceneSmokeTests` loads the actual scene, asserts boot is error-free, reflects all 19 WaveSpawner prefab/config slots to assert none are null. Catches scene-wiring regressions EditMode tests can't (e.g. the wave-3 dead-lock from missing Drone prefab). CI matrix runs EditMode + PlayMode in parallel |
+| P7.4 | PlayMode integration tests | `GameplayIntegrationTests` drives `EventBus<EnemyKilled>` publishes against the live scene + asserts BattlePass XP grows, CurrencyService grants the per-type drop, CurrencyPopupSpawner spawns a visible popup, all core singletons (Player/HUD/MainHub/BP) are wired. Validates the event-routing graph end-to-end |
+| P6.6 | Currency drop popups | `CurrencyPopup` + `CurrencyPopupSpawner`: pooled world-space "+N ◆" floating text at every enemy death (uses new `EnemyKilled.WorldPos` field). Billboarded to main camera, fade-out over 0.85s. Defensive lazy-init handles inactive-Instantiate Awake-delay |
+| P4.7 | PauseMenu Settings button | Pause menu now has Resume/Perks/Settings/Restart/Quit (5 buttons). Settings opens `SettingsPanel` without leaving pause — closing returns to the still-paused menu |
 
 ## Skipped (low ROI)
 - P2.17 unified EnemyBrain — local FSMs (Charger/MiniBoss) cover the cases that needed it
@@ -213,7 +216,8 @@ Assets/_Game/Scripts/
 | 11 | Bootstrap Addressables | Register Resources/ as Addressables |
 | 12 | Add HitReact To Enemies | Retrofit HitReact + Ragdoll on every enemy prefab |
 | 13 | Setup Main Menu | Additive — drop MainHub/Loadout/Shop/Settings + Tutorial + Crash/Daily/Achievement/Toast + BP singletons into the active scene without rebuilding |
-| 15 | Rewire WaveSpawner Prefabs | (NEW) Additive fix for the wave-3 dead-lock — re-runs the full prefab+config SetField pass on the existing WaveSpawner in the active scene |
+| 14 | Sync All Singletons | (NEW) Additive sync of every service GameObject (use after pulling new singletons — broader than menu 13) |
+| 15 | Rewire WaveSpawner Prefabs | Additive fix for the wave-3 dead-lock — re-runs the full prefab+config SetField pass on the existing WaveSpawner in the active scene |
 |   | Build Android APK | Mono2x APK via BuildPipeline |
 |   | Rewire Player Prefab | Re-assign serialized refs |
 
@@ -281,7 +285,8 @@ Assets/_Game/Tests/EditMode/
 └── WeaponShopTests.cs              (P6.2)
 
 Assets/_Game/Tests/PlayMode/
-└── GameSceneSmokeTests.cs          (P7.4 — NEW: scene-boot error capture + WaveSpawner slot reflection)
+├── GameSceneSmokeTests.cs          (P7.4: scene-boot error capture + WaveSpawner slot reflection)
+└── GameplayIntegrationTests.cs     (P7.4 — NEW: BP-XP-on-kill, currency grant, popup spawn, core singletons present)
 ```
 
 Run via `mcp__mcp-for-unity__run_tests` or Unity Test Runner.

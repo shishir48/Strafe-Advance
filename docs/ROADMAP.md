@@ -4,7 +4,7 @@
 **Target:** Premium mobile shooter (Android/iOS), $4.99 with IAP cosmetic shop
 **KPIs to hit before global launch:** D1 ≥ 35%, D7 ≥ 12%, D30 ≥ 5%, ARPDAU ≥ $0.10
 
-> **Session checkpoint (last touched 2026-05-25):** Phase 1 ✅, Phase 2 ✅ 22/24, Phase 4 ✅ 6/8, Phase 5 ✅ event-routing (clips TODO), Phase 6 ✅ currency + shop + daily login + achievements + toasts + **battle pass**, Phase 7 ✅ CI tests + Android build + crash reporter + **PlayMode smoke tests**. **105 EditMode + 2 PlayMode = 107 tests green** + CI matrix runs both on every PR (pending Unity secrets). Full session log + file map in `PROGRESS.md`.
+> **Session checkpoint (last touched 2026-05-25):** Phase 1 ✅, Phase 2 ✅ 22/24, Phase 4 ✅ 7/8 (pause-menu settings added), Phase 5 ✅ event-routing (clips TODO), Phase 6 ✅ currency + shop + daily login + achievements + toasts + battle pass + **drop popups**, Phase 7 ✅ CI tests + Android build + crash reporter + PlayMode smoke + **PlayMode integration**. **105 EditMode + 6 PlayMode = 111 tests green** + CI matrix runs both on every PR (pending Unity secrets). Full session log + file map in `PROGRESS.md`.
 
 ---
 
