@@ -15,10 +15,11 @@ namespace StrafAdvance
         [SerializeField] private float maxFreq       = 2.0f;   // Hz near 0 HP
         [SerializeField] private float fadeOutSpeed  = 2.0f;   // intensity/second when HP > threshold
 
-        private Vignette      _vignette;
-        private PlayerHealth  _playerHealth;
-        private float         _hpRatio = 1f;
-        private float         _currentIntensity;
+        private Vignette        _vignette;
+        private PlayerHealth    _playerHealth;
+        private VolumeProfile   _runtimeProfile;
+        private float           _hpRatio = 1f;
+        private float           _currentIntensity;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void ResetStatics() { Instance = null; }
@@ -28,6 +29,7 @@ namespace StrafAdvance
             if (Instance != null && Instance != this) { Destroy(gameObject); return; }
             Instance = this;
             if (Application.isPlaying) DontDestroyOnLoad(gameObject);
+            EventBus<GameStateChanged>.Subscribe(OnStateChanged);
         }
 
         void Start()
@@ -43,6 +45,7 @@ namespace StrafAdvance
             vol.isGlobal  = true;
             vol.priority  = 10f;                    // above default scene volume
             vol.profile   = ScriptableObject.CreateInstance<VolumeProfile>();
+            _runtimeProfile = vol.profile;
             _vignette     = vol.profile.Add<Vignette>(overrides: true);
             _vignette.active = true;
             _vignette.intensity.Override(0f);
@@ -53,7 +56,20 @@ namespace StrafAdvance
         void OnDestroy()
         {
             if (_playerHealth != null) _playerHealth.OnHealthChanged -= OnHealthChanged;
+            EventBus<GameStateChanged>.Unsubscribe(OnStateChanged);
+            if (_runtimeProfile != null) Destroy(_runtimeProfile);
             if (Instance == this) Instance = null;
+        }
+
+        void OnStateChanged(GameStateChanged e)
+        {
+            if (e.Current != GameState.Playing) return;
+            if (_playerHealth != null) _playerHealth.OnHealthChanged -= OnHealthChanged;
+            _playerHealth = FindFirstObjectByType<PlayerHealth>();
+            if (_playerHealth != null) _playerHealth.OnHealthChanged += OnHealthChanged;
+            _hpRatio = _playerHealth != null && _playerHealth.MaxHp > 0
+                ? (float)_playerHealth.CurrentHp / _playerHealth.MaxHp
+                : 1f;
         }
 
         void OnHealthChanged(int cur, int max)

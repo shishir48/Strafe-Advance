@@ -39,12 +39,14 @@ namespace StrafAdvance
             BuildUI();
             EventBus<ComboChanged>.Subscribe(OnCombo);
             EventBus<WaveStarted>.Subscribe(OnWaveStarted);
+            EventBus<GameStateChanged>.Subscribe(OnStateChanged);
         }
 
         void OnDestroy()
         {
             EventBus<ComboChanged>.Unsubscribe(OnCombo);
             EventBus<WaveStarted>.Unsubscribe(OnWaveStarted);
+            EventBus<GameStateChanged>.Unsubscribe(OnStateChanged);
             if (Instance == this) Instance = null;
         }
 
@@ -120,6 +122,11 @@ namespace StrafAdvance
             }
 
             _prevMultiplier = c.Multiplier;
+        }
+
+        void OnStateChanged(GameStateChanged e)
+        {
+            if (e.Current == GameState.Playing) _prevMultiplier = 1;
         }
 
         void OnWaveStarted(WaveStarted w)

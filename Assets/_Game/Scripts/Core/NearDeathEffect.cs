@@ -65,7 +65,14 @@ namespace StrafAdvance
 
         void OnStateChanged(GameStateChanged e)
         {
-            if (e.Current == GameState.Playing) _triggered = false;
+            if (e.Current == GameState.Playing)
+            {
+                StopAllCoroutines();
+                Time.timeScale = 1f;
+                if (_flashImage != null) _flashImage.color = new Color(1f, 1f, 1f, 0f);
+                _triggered = false;
+                _playerHealth = FindFirstObjectByType<PlayerHealth>();
+            }
         }
 
         void OnDamaged(PlayerDamaged d)
@@ -85,8 +92,11 @@ namespace StrafAdvance
 
         IEnumerator NearDeathRoutine()
         {
-            float restoreScale  = Time.timeScale > 0f ? Time.timeScale : 1f;
-            Time.timeScale      = slowMoScale;
+            // Wait for any active hitstop to finish before we set our own timeScale.
+            yield return new WaitUntil(() => Mathf.Approximately(Time.timeScale, 1f) || Time.timeScale > 0.5f);
+
+            float restoreScale = 1f;
+            Time.timeScale = slowMoScale;
 
             // Fade in — 0.1s real time
             float t = 0f;
@@ -106,8 +116,8 @@ namespace StrafAdvance
                 yield return null;
             }
 
-            _flashImage.color  = new Color(1f, 1f, 1f, 0f);
-            Time.timeScale     = restoreScale;
+            _flashImage.color = new Color(1f, 1f, 1f, 0f);
+            Time.timeScale = restoreScale;
         }
     }
 }
