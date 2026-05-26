@@ -24,6 +24,8 @@ namespace StrafAdvance
 
         private int   _displayedScore;
         private float _scoreTween;
+        private int      _prevMultiplier = 1;
+        private Coroutine _popRoutine;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void ResetStatics() { Instance = null; }
@@ -98,16 +100,59 @@ namespace StrafAdvance
         void OnCombo(ComboChanged c)
         {
             if (_comboLabel == null) return;
-            if (c.Streak == 0) { _comboLabel.text = ""; return; }
+
+            if (c.Streak == 0)
+            {
+                _comboLabel.text = "";
+                _prevMultiplier  = 1;
+                return;
+            }
+
             _comboLabel.text = c.Multiplier > 1
                 ? $"<color=#ffd166>×{c.Multiplier}</color>  <size=22>x{c.Streak}</size>"
                 : $"<size=22>x{c.Streak}</size>";
+
+            if (c.Multiplier > _prevMultiplier)
+            {
+                if (_popRoutine != null) StopCoroutine(_popRoutine);
+                _popRoutine = StartCoroutine(ComboPopRoutine());
+            }
+
+            _prevMultiplier = c.Multiplier;
         }
 
         void OnWaveStarted(WaveStarted w)
         {
             if (_waveLabel == null) return;
             _waveLabel.text = $"WAVE {w.Index + 1}/{w.Total}";
+        }
+
+        IEnumerator ComboPopRoutine()
+        {
+            Transform t     = _comboLabel.transform;
+            float     upT   = 0.08f;
+            float     downT = 0.12f;
+
+            float elapsed = 0f;
+            while (elapsed < upT)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float s = Mathf.Lerp(1f, 1.5f, elapsed / upT);
+                t.localScale = new Vector3(s, s, 1f);
+                yield return null;
+            }
+
+            elapsed = 0f;
+            while (elapsed < downT)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float s = Mathf.Lerp(1.5f, 1f, elapsed / downT);
+                t.localScale = new Vector3(s, s, 1f);
+                yield return null;
+            }
+
+            t.localScale = Vector3.one;
+            _popRoutine  = null;
         }
 
         // ─── UI Construction ────────────────────────────────────────────────────
