@@ -2,28 +2,22 @@ using UnityEngine;
 
 namespace StrafAdvance
 {
-    /// <summary>
-    /// Camera shake driven by the EventBus. Attach to the Main Camera (or any camera you want
-    /// to shake). Listens for <c>ShakeRequest</c> and <c>EnemyKilled</c> / <c>PlayerDamaged</c>
-    /// for built-in feedback. Uses Perlin noise to keep direction natural.
-    /// </summary>
     public class ScreenShake : MonoBehaviour
     {
-        [SerializeField] private float trauma         = 0f;   // 0..1
-        [SerializeField] private float traumaDecay    = 1.8f; // per second
+        [SerializeField] private float traumaDecay    = 1.8f;
         [SerializeField] private float maxPosOffset   = 0.35f;
         [SerializeField] private float maxRotDegrees  = 1.5f;
         [SerializeField] private float noiseFrequency = 22f;
 
-        private Vector3 _restLocalPos;
-        private Quaternion _restLocalRot;
+        private float _trauma;
         private float _noiseSeed;
+
+        public Vector3    PositionShake { get; private set; }
+        public Quaternion RotationShake { get; private set; }
 
         void Awake()
         {
-            _restLocalPos = transform.localPosition;
-            _restLocalRot = transform.localRotation;
-            _noiseSeed    = Random.value * 1000f;
+            _noiseSeed = Random.value * 1000f;
         }
 
         void OnEnable()
@@ -44,29 +38,28 @@ namespace StrafAdvance
         void OnKill(EnemyKilled k)   => Add(k.Type == EnemyType.Elite ? 0.45f : 0.18f);
         void OnHit(PlayerDamaged d)  => Add(0.55f);
 
-        public void Add(float amount) => trauma = Mathf.Clamp01(trauma + amount);
+        public void Add(float amount) => _trauma = Mathf.Clamp01(_trauma + amount);
 
         void LateUpdate()
         {
-            if (trauma <= 0f)
+            if (_trauma <= 0f)
             {
-                transform.localPosition = _restLocalPos;
-                transform.localRotation = _restLocalRot;
+                PositionShake = Vector3.zero;
+                RotationShake = Quaternion.identity;
                 return;
             }
 
-            // Squaring trauma makes the shake feel less linear and more impactful at high values.
-            float shake = trauma * trauma;
+            float shake = _trauma * _trauma;
             float t = Time.unscaledTime * noiseFrequency + _noiseSeed;
 
             float x = (Mathf.PerlinNoise(t, 0f) - 0.5f) * 2f;
             float y = (Mathf.PerlinNoise(0f, t) - 0.5f) * 2f;
             float r = (Mathf.PerlinNoise(t, t)  - 0.5f) * 2f;
 
-            transform.localPosition = _restLocalPos + new Vector3(x, y, 0f) * maxPosOffset * shake;
-            transform.localRotation = _restLocalRot * Quaternion.Euler(0f, 0f, r * maxRotDegrees * shake);
+            PositionShake = new Vector3(x, y, 0f) * maxPosOffset * shake;
+            RotationShake = Quaternion.Euler(0f, 0f, r * maxRotDegrees * shake);
 
-            trauma = Mathf.Max(0f, trauma - traumaDecay * Time.unscaledDeltaTime);
+            _trauma = Mathf.Max(0f, _trauma - traumaDecay * Time.unscaledDeltaTime);
         }
     }
 
