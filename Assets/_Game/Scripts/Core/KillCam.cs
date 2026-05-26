@@ -18,6 +18,8 @@ namespace StrafAdvance
         [SerializeField] private float duration     = 1.4f;
         [SerializeField] private float zoomAmount   = 1.6f;       // world units forward toward target
 
+        public bool IsPlaying => _running != null;
+
         private Camera _cam;
         private Coroutine _running;
         private Vector3 _restPos;

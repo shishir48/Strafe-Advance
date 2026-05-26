@@ -28,6 +28,7 @@ namespace StrafAdvance
         private Camera           _cam;
         private PlayerController _player;
         private ScreenShake      _shake;
+        private Coroutine        _fovRoutine;
 
         private Vector3    _restLocalPos;
         private Quaternion _restLocalRot;
@@ -74,8 +75,8 @@ namespace StrafAdvance
 
         void OnDodge(DodgePerformed d)
         {
-            StopAllCoroutines();
-            StartCoroutine(FovPulseRoutine());
+            if (_fovRoutine != null) StopCoroutine(_fovRoutine);
+            _fovRoutine = StartCoroutine(FovPulseRoutine());
         }
 
         void OnPlayerHit(PlayerDamaged d)   => AddImpulse(new Vector3(0f,  0.15f, 0f));
@@ -94,6 +95,9 @@ namespace StrafAdvance
 
         void LateUpdate()
         {
+            // Yield camera control to KillCam during cinematics.
+            if (KillCam.Instance != null && KillCam.Instance.IsPlaying) return;
+
             Vector3    posOffset = Vector3.zero;
             Quaternion rotOffset = Quaternion.identity;
 
@@ -156,6 +160,7 @@ namespace StrafAdvance
                 yield return null;
             }
             _cam.fieldOfView = baseFov;
+            _fovRoutine = null;
         }
     }
 }
