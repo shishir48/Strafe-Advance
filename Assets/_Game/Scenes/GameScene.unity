@@ -2392,8 +2392,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67db3748c206c43a79391e4c383bf5e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: _Game.Scripts::StrafAdvance.Hitstop
-  gruntDuration: 0.04
-  eliteDuration: 0.1
+  gruntDuration: 0.07
+  eliteDuration: 0.15
   playerHitDuration: 0.06
 --- !u!4 &2096775888
 Transform:

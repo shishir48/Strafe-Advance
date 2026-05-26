@@ -14,8 +14,8 @@ namespace StrafAdvance
     {
         public static Hitstop Instance { get; private set; }
 
-        [SerializeField] private float gruntDuration = 0.04f;
-        [SerializeField] private float eliteDuration = 0.10f;
+        [SerializeField] private float gruntDuration = 0.07f;
+        [SerializeField] private float eliteDuration = 0.15f;
         [SerializeField] private float playerHitDuration = 0.06f;
 
         private Coroutine _running;
