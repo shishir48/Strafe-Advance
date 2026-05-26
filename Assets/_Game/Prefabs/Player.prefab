@@ -66,7 +66,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 93d9a8c7ab5824f0b96c982c5ffa2913, type: 2}
+  - {fileID: 2100000, guid: 6a261cb1c47274a698211ae674eab196, type: 2}
   - {fileID: 2100000, guid: 93d9a8c7ab5824f0b96c982c5ffa2913, type: 2}
   - {fileID: 2100000, guid: 93d9a8c7ab5824f0b96c982c5ffa2913, type: 2}
   m_StaticBatchInfo:
@@ -158,7 +158,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 93d9a8c7ab5824f0b96c982c5ffa2913, type: 2}
+  - {fileID: 2100000, guid: 6a261cb1c47274a698211ae674eab196, type: 2}
   - {fileID: 2100000, guid: 93d9a8c7ab5824f0b96c982c5ffa2913, type: 2}
   - {fileID: 2100000, guid: 93d9a8c7ab5824f0b96c982c5ffa2913, type: 2}
   m_StaticBatchInfo:
@@ -250,7 +250,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 93d9a8c7ab5824f0b96c982c5ffa2913, type: 2}
+  - {fileID: 2100000, guid: 6a261cb1c47274a698211ae674eab196, type: 2}
   - {fileID: 2100000, guid: 93d9a8c7ab5824f0b96c982c5ffa2913, type: 2}
   - {fileID: 2100000, guid: 93d9a8c7ab5824f0b96c982c5ffa2913, type: 2}
   m_StaticBatchInfo:
@@ -290,7 +290,8 @@ GameObject:
   - component: {fileID: 5556033057207159050}
   - component: {fileID: 358591644316227282}
   - component: {fileID: 4616555552890649729}
-  m_Layer: 0
+  - component: {fileID: 4357094999037432205}
+  m_Layer: 9
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -328,7 +329,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -362,6 +363,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: _Game.Scripts::StrafAdvance.PlayerController
   config: {fileID: 11400000, guid: dda2f967480b94544a198597a374ba98, type: 2}
   health: {fileID: 3426817914733554690}
+  dodgeDuration: 0.25
+  dodgeCooldown: 1.5
+  dodgeSpeedMul: 4
+  sprintSpeedMul: 1.6
+  maxStamina: 5
+  staminaRegenRate: 0.8
+  staminaRegenDelay: 1
 --- !u!114 &358591644316227282
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -391,6 +399,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: _Game.Scripts::StrafAdvance.PlayerBuffs
   autoShooter: {fileID: 358591644316227282}
   health: {fileID: 3426817914733554690}
+--- !u!114 &4357094999037432205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1233998411164090394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eca3c302aa01a4d749ad1dc3159f338a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: _Game.Scripts::StrafAdvance.PlayerDamageFlash
+  flashDuration: 0.08
 --- !u!1 &2939915616167453176
 GameObject:
   m_ObjectHideFlags: 0
@@ -496,7 +517,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 93d9a8c7ab5824f0b96c982c5ffa2913, type: 2}
+  - {fileID: 2100000, guid: 6a261cb1c47274a698211ae674eab196, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -586,7 +607,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 93d9a8c7ab5824f0b96c982c5ffa2913, type: 2}
+  - {fileID: 2100000, guid: 6a261cb1c47274a698211ae674eab196, type: 2}
   - {fileID: 2100000, guid: 93d9a8c7ab5824f0b96c982c5ffa2913, type: 2}
   - {fileID: 2100000, guid: 93d9a8c7ab5824f0b96c982c5ffa2913, type: 2}
   m_StaticBatchInfo:
@@ -678,7 +699,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 93d9a8c7ab5824f0b96c982c5ffa2913, type: 2}
+  - {fileID: 2100000, guid: 6a261cb1c47274a698211ae674eab196, type: 2}
   - {fileID: 2100000, guid: 93d9a8c7ab5824f0b96c982c5ffa2913, type: 2}
   - {fileID: 2100000, guid: 93d9a8c7ab5824f0b96c982c5ffa2913, type: 2}
   m_StaticBatchInfo:
@@ -801,7 +822,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 93d9a8c7ab5824f0b96c982c5ffa2913, type: 2}
+  - {fileID: 2100000, guid: 6a261cb1c47274a698211ae674eab196, type: 2}
   - {fileID: 2100000, guid: 93d9a8c7ab5824f0b96c982c5ffa2913, type: 2}
   - {fileID: 2100000, guid: 93d9a8c7ab5824f0b96c982c5ffa2913, type: 2}
   m_StaticBatchInfo:
