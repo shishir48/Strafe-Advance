@@ -35,6 +35,9 @@ namespace StrafAdvance
         public  float StaminaT      => maxStamina <= 0f ? 0f : Mathf.Clamp01(_stamina / maxStamina);
         public  bool  IsSprinting   { get; private set; }
 
+        private float _prevX;
+        public float VelocityX { get; private set; }
+
         public bool DodgeReady    => Time.time >= _dodgeReadyAt;
         public float DodgeCooldownT => Mathf.Clamp01(1f - (_dodgeReadyAt - Time.time) / dodgeCooldown);
 
@@ -42,10 +45,14 @@ namespace StrafAdvance
         {
             health.Initialize(config);
             _stamina = maxStamina;
+            _prevX = transform.position.x;
         }
 
         void Update()
         {
+            VelocityX = (transform.position.x - _prevX) / Mathf.Max(Time.deltaTime, 0.0001f);
+            _prevX = transform.position.x;
+
             HandleInput();
             HandleDodge();
             HandleStamina();
@@ -91,6 +98,8 @@ namespace StrafAdvance
             _dodgeUntil   = Time.time + dodgeDuration;
             _dodgeReadyAt = Time.time + dodgeCooldown;
             EventBus<DodgePerformed>.Publish(new DodgePerformed(dir));
+            var dodgeVFX = AssetLoader.Load<GameObject>("VFX/PlayerDodge");
+            if (dodgeVFX != null) Instantiate(dodgeVFX, transform.position, Quaternion.identity);
         }
 
         void HandleInput()
