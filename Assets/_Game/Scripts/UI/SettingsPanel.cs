@@ -68,6 +68,7 @@ namespace StrafAdvance
             {
                 AudioManager.Instance.SetMusicVolume(s.musicVolume);
                 AudioManager.Instance.SetSFXVolume(s.sfxVolume);
+                AudioManager.Instance.SetUIVolume(s.uiVolume);
             }
         }
 
@@ -104,7 +105,7 @@ namespace StrafAdvance
             var prt = panel.AddComponent<RectTransform>();
             prt.anchorMin = new Vector2(0.08f, 0.10f); prt.anchorMax = new Vector2(0.92f, 0.90f);
             prt.offsetMin = prt.offsetMax = Vector2.zero;
-            panel.AddComponent<Image>().color = new Color(0.03f, 0.07f, 0.13f, 0.97f);
+            panel.AddComponent<Image>().color = new Color(0.05f, 0.08f, 0.18f, 0.97f);
 
             MakeTitle(panel.transform, Loc.Tr("settings.title"));
 
@@ -137,12 +138,12 @@ namespace StrafAdvance
                 ApplySavedToControls();
                 ApplyToSystems();
             });
-            MakeButton(panel.transform, Loc.Tr("settings.reset_tutorial"), new Vector2(0.33f, 0.02f), new Vector2(0.65f, 0.10f), new Color(0.2f, 0.2f, 0.4f, 0.9f), () =>
+            MakeButton(panel.transform, Loc.Tr("settings.reset_tutorial"), new Vector2(0.33f, 0.02f), new Vector2(0.65f, 0.10f), new Color(0.1f, 0.2f, 0.5f, 0.9f), () =>
             {
                 if (TutorialController.Instance != null) TutorialController.Instance.ResetAndArm();
                 else { SaveSystem.Current.profile.tutorialCompleted = false; SaveSystem.Save(); }
             });
-            MakeButton(panel.transform, Loc.Tr("settings.close"),          new Vector2(0.68f, 0.02f), new Vector2(0.94f, 0.10f), new Color(0.15f, 0.2f, 0.3f, 0.95f), Hide);
+            MakeButton(panel.transform, Loc.Tr("settings.close"),          new Vector2(0.68f, 0.02f), new Vector2(0.94f, 0.10f), new Color(0.08f, 0.18f, 0.38f, 0.95f), Hide);
         }
 
         // ─── Widget Factories ───────────────────────────────────────────────────
@@ -161,7 +162,7 @@ namespace StrafAdvance
             if (font != null) tmp.font = font;
             tmp.text = text; tmp.fontSize = 56;
             tmp.alignment = TextAlignmentOptions.Center;
-            tmp.color = new Color(0.31f, 0.76f, 0.97f);
+            tmp.color = new Color(0.0f, 0.9f, 1.0f);
             tmp.fontStyle = FontStyles.Bold;
         }
 
@@ -197,7 +198,7 @@ namespace StrafAdvance
             bgRT.anchorMin = Vector2.zero; bgRT.anchorMax = Vector2.one;
             bgRT.offsetMin = bgRT.offsetMax = Vector2.zero;
             var bgImg = bg.AddComponent<Image>();
-            bgImg.color = new Color(0.06f, 0.13f, 0.22f, 0.95f);
+            bgImg.color = new Color(0.08f, 0.18f, 0.38f, 0.95f);
 
             var fillArea = new GameObject("FillArea");
             fillArea.transform.SetParent(sGO.transform, false);
@@ -211,7 +212,7 @@ namespace StrafAdvance
             fRT.anchorMin = Vector2.zero; fRT.anchorMax = new Vector2(1, 1);
             fRT.offsetMin = fRT.offsetMax = Vector2.zero;
             var fImg = fill.AddComponent<Image>();
-            fImg.color = new Color(0.31f, 0.76f, 0.97f);
+            fImg.color = new Color(0.0f, 0.82f, 1.0f);
 
             var handleArea = new GameObject("HandleArea");
             handleArea.transform.SetParent(sGO.transform, false);
@@ -255,7 +256,7 @@ namespace StrafAdvance
             boxRT.pivot = new Vector2(0, 0.5f);
             boxRT.anchoredPosition = new Vector2(0, 0); boxRT.sizeDelta = new Vector2(40, 40);
             var boxImg = box.AddComponent<Image>();
-            boxImg.color = new Color(0.06f, 0.13f, 0.22f, 0.95f);
+            boxImg.color = new Color(0.08f, 0.18f, 0.38f, 0.95f);
 
             var check = new GameObject("Check");
             check.transform.SetParent(box.transform, false);
@@ -263,7 +264,7 @@ namespace StrafAdvance
             cRT.anchorMin = Vector2.zero; cRT.anchorMax = Vector2.one;
             cRT.offsetMin = new Vector2(6, 6); cRT.offsetMax = new Vector2(-6, -6);
             var cImg = check.AddComponent<Image>();
-            cImg.color = new Color(0.31f, 0.76f, 0.97f);
+            cImg.color = new Color(0.0f, 0.9f, 1.0f);
 
             var labelGO = new GameObject("Label");
             labelGO.transform.SetParent(go.transform, false);
@@ -310,7 +311,7 @@ namespace StrafAdvance
             drt.anchoredPosition = new Vector2(0, y);
             drt.sizeDelta = new Vector2(-40, 50);
             var img = ddGO.AddComponent<Image>();
-            img.color = new Color(0.06f, 0.13f, 0.22f, 0.95f);
+            img.color = new Color(0.08f, 0.18f, 0.38f, 0.95f);
 
             // Label text inside dropdown (TMP_Dropdown expects child TMP_Text)
             var ddLabel = new GameObject("Label");
