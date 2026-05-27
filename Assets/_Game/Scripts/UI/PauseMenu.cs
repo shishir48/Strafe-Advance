@@ -23,6 +23,7 @@ namespace StrafAdvance
         private CanvasGroup   _dimGroup;
         private Coroutine     _dimTween;
         private RectTransform _panelRT;
+        private System.Action<LanguageChanged> _onLangChanged;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void ResetStatics() { Instance = null; }
@@ -34,7 +35,8 @@ namespace StrafAdvance
             if (Application.isPlaying) DontDestroyOnLoad(gameObject);
             BuildUI();
             Close();
-            EventBus<LanguageChanged>.Subscribe(_ => Rebuild());
+            _onLangChanged = _ => Rebuild();
+            EventBus<LanguageChanged>.Subscribe(_onLangChanged);
         }
 
         void Rebuild()
@@ -54,7 +56,11 @@ namespace StrafAdvance
             if (toggle) Toggle();
         }
 
-        void OnDestroy() { if (Instance == this) Instance = null; }
+        void OnDestroy()
+        {
+            EventBus<LanguageChanged>.Unsubscribe(_onLangChanged);
+            if (Instance == this) Instance = null;
+        }
 
         public void Toggle() { if (_open) Resume(); else Open(); }
 

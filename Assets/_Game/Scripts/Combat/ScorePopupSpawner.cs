@@ -96,7 +96,7 @@ namespace StrafAdvance
         {
             const float dur = 0.9f;
             Vector3 start = transform.position;
-            for (float t = 0; t < dur; t += Time.deltaTime)
+            for (float t = 0; t < dur; t += Time.unscaledDeltaTime)
             {
                 float p = t / dur;
                 transform.position = start + Vector3.up * (1.8f * p);

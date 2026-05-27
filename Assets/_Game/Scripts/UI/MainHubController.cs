@@ -20,6 +20,8 @@ namespace StrafAdvance
         private TMP_Text   _bpTierChip;
         private float      _titlePulseTime;
         private TMP_Text   _title;
+        private System.Action<BattlePassTierReached> _onBpTier;
+        private System.Action<LanguageChanged>       _onLangChanged;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void ResetStatics() { Instance = null; }
@@ -32,8 +34,10 @@ namespace StrafAdvance
             BuildUI();
             EventBus<GameStateChanged>.Subscribe(OnState);
             EventBus<CurrencyEarned>.Subscribe(OnCurrencyChanged);
-            EventBus<BattlePassTierReached>.Subscribe(_ => RefreshCredits());
-            EventBus<LanguageChanged>.Subscribe(_ => Rebuild());
+            _onBpTier      = _ => RefreshCredits();
+            _onLangChanged = _ => Rebuild();
+            EventBus<BattlePassTierReached>.Subscribe(_onBpTier);
+            EventBus<LanguageChanged>.Subscribe(_onLangChanged);
             ApplyVisibility(GameManager.Instance != null ? GameManager.Instance.State : GameState.Menu);
             RefreshCredits();
         }
@@ -42,6 +46,8 @@ namespace StrafAdvance
         {
             EventBus<GameStateChanged>.Unsubscribe(OnState);
             EventBus<CurrencyEarned>.Unsubscribe(OnCurrencyChanged);
+            EventBus<BattlePassTierReached>.Unsubscribe(_onBpTier);
+            EventBus<LanguageChanged>.Unsubscribe(_onLangChanged);
             if (Instance == this) Instance = null;
         }
 
