@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 namespace StrafAdvance
 {
@@ -7,6 +8,10 @@ namespace StrafAdvance
     {
         public static AudioManager Instance { get; private set; }
 
+        [SerializeField] private AudioMixer _mixer;
+        [SerializeField] private AudioMixerGroup _sfxGroup;
+        [SerializeField] private AudioMixerGroup _musicGroup;
+        [SerializeField] private AudioMixerGroup _uiGroup;
         [SerializeField] private AudioSource musicSource;
         [SerializeField] private int sfxPoolSize = 8;
 
@@ -35,22 +40,38 @@ namespace StrafAdvance
             DontDestroyOnLoad(gameObject);
 
             _map = new Dictionary<SoundID, SoundEntry>();
-            foreach (var entry in sounds) _map[entry.id] = entry;
+            foreach (var entry in sounds)
+                _map[entry.id] = entry;
+
+            // Auto-load generated placeholder clips for any unassigned SoundID
+            foreach (SoundID id in System.Enum.GetValues(typeof(SoundID)))
+            {
+                if (_map.ContainsKey(id)) continue;
+                var clip = Resources.Load<AudioClip>($"Audio/Generated/{id}");
+                if (clip != null)
+                    _map[id] = new SoundEntry { id = id, clip = clip, volume = 0.8f };
+                else
+                    Debug.LogWarning($"[AudioManager] no clip for {id}");
+            }
 
             for (int i = 0; i < sfxPoolSize; i++)
             {
-                AudioSource src = gameObject.AddComponent<AudioSource>();
+                var src = gameObject.AddComponent<AudioSource>();
                 src.playOnAwake = false;
+                if (_sfxGroup != null) src.outputAudioMixerGroup = _sfxGroup;
                 _sfxPool.Enqueue(src);
             }
+
+            if (musicSource != null && _musicGroup != null)
+                musicSource.outputAudioMixerGroup = _musicGroup;
         }
 
         public void PlaySFX(SoundID id)
         {
             if (!_map.TryGetValue(id, out SoundEntry entry)) return;
-            AudioSource src = _sfxPool.Dequeue();
+            var src = _sfxPool.Dequeue();
             src.clip = entry.clip;
-            src.volume = entry.volume * _sfxVolume;
+            src.volume = _mixer != null ? entry.volume : entry.volume * _sfxVolume;
             src.Play();
             _sfxPool.Enqueue(src);
         }
@@ -63,13 +84,34 @@ namespace StrafAdvance
             musicSource.Play();
         }
 
-        public void SetMusicVolume(float v) => musicSource.volume = v;
+        public void PlayGeneratedBgm(AudioClip clip)
+        {
+            if (musicSource == null || clip == null) return;
+            musicSource.clip = clip;
+            musicSource.loop = true;
+            musicSource.Play();
+        }
+
+        // ── volume controls ──────────────────────────────────────────────────────
+
+        static float VolToDb(float v) => v <= 0.0001f ? -80f : Mathf.Log10(v) * 20f;
+
+        public void SetMusicVolume(float v)
+        {
+            if (_mixer != null) { _mixer.SetFloat("Music_Vol", VolToDb(v)); return; }
+            if (musicSource != null) musicSource.volume = v;
+        }
 
         public void SetSFXVolume(float v)
         {
+            if (_mixer != null) { _mixer.SetFloat("SFX_Vol", VolToDb(v)); return; }
             _sfxVolume = Mathf.Clamp01(v);
-            foreach (AudioSource src in _sfxPool)
-                src.volume = _sfxVolume;
+            foreach (var src in _sfxPool) src.volume = _sfxVolume;
+        }
+
+        public void SetUIVolume(float v)
+        {
+            if (_mixer != null) _mixer.SetFloat("UI_Vol", VolToDb(v));
         }
     }
 }
