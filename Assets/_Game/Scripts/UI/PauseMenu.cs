@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -19,6 +20,9 @@ namespace StrafAdvance
         private GameObject _panel;
         private bool _open;
         private float _savedScale = 1f;
+        private CanvasGroup   _dimGroup;
+        private Coroutine     _dimTween;
+        private RectTransform _panelRT;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void ResetStatics() { Instance = null; }
@@ -60,9 +64,29 @@ namespace StrafAdvance
             _open = true;
             _savedScale = Time.timeScale > 0f ? Time.timeScale : 1f;
             Time.timeScale = 0f;
-            // Toggle the whole canvas so the dim background ALSO appears (and blocks input only when open).
             if (_canvas != null) _canvas.gameObject.SetActive(true);
-            if (_panel != null)  _panel.SetActive(true);
+            if (_panel != null)
+            {
+                _panel.SetActive(true);
+                if (_panelRT == null) _panelRT = _panel.GetComponent<RectTransform>();
+                UITransition.SlideIn(this, _panelRT, new Vector2(0f, -600f));
+            }
+            if (_dimTween != null) StopCoroutine(_dimTween);
+            _dimTween = StartCoroutine(FadeDim(0f, 1f, 0.15f));
+        }
+
+        IEnumerator FadeDim(float from, float to, float duration)
+        {
+            if (_dimGroup == null) yield break;
+            if (duration <= 0f) { _dimGroup.alpha = to; _dimTween = null; yield break; }
+            _dimGroup.alpha = from;
+            for (float t = 0; t < duration; t += Time.unscaledDeltaTime)
+            {
+                _dimGroup.alpha = Mathf.Lerp(from, to, t / duration);
+                yield return null;
+            }
+            _dimGroup.alpha = to;
+            _dimTween = null;
         }
 
         public void Resume()
@@ -73,6 +97,8 @@ namespace StrafAdvance
             // Hide the whole canvas — full-screen dim Image would otherwise eat clicks on the MainHub / HUD beneath us.
             if (_canvas != null) _canvas.gameObject.SetActive(false);
             if (_panel != null)  _panel.SetActive(false);
+            if (_dimTween != null) { StopCoroutine(_dimTween); _dimTween = null; }
+            if (_dimGroup != null) _dimGroup.alpha = 0f;
         }
 
         void RestartLevel()
@@ -117,6 +143,10 @@ namespace StrafAdvance
             var dimImg = dim.AddComponent<Image>();
             dimImg.color = new Color(0f, 0f, 0f, 0.6f);
             dimImg.raycastTarget = true;
+            _dimGroup = dim.AddComponent<CanvasGroup>();
+            _dimGroup.alpha = 0f;
+            _dimGroup.blocksRaycasts = true;
+            _dimGroup.interactable = false;
 
             _panel = new GameObject("Panel");
             _panel.transform.SetParent(canvasGO.transform, false);
@@ -147,6 +177,8 @@ namespace StrafAdvance
         {
             if (_canvas != null) _canvas.gameObject.SetActive(false);
             if (_panel != null)  _panel.SetActive(false);
+            if (_dimTween != null) { StopCoroutine(_dimTween); _dimTween = null; }
+            if (_dimGroup != null) _dimGroup.alpha = 0f;
             _open = false;
         }
 

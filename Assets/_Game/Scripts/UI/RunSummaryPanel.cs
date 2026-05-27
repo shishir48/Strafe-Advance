@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -47,14 +48,20 @@ namespace StrafAdvance
             _title.text       = won
                 ? $"<color=#00eeff>{Loc.Tr("run_summary.win")}</color>"
                 : $"<color=#ff2828>{Loc.Tr("run_summary.loss")}</color>";
-            _scoreText.text   = $"Score:     <b>{score:N0}</b>";
-            _killsText.text   = $"Kills:     <b>{kills}</b>";
-            _xpText.text      = $"XP earned: <b>{xpGain}</b>";
-            _currencyText.text = $"Credits:   <b>{currency:N0}</b>";
-            _bestText.text    = $"Best:      <b>{p.bestScore:N0}</b>";
+            _scoreText.text    = "Score:     <b>0</b>";
+            _killsText.text    = "Kills:     <b>0</b>";
+            _xpText.text       = "XP earned: <b>0</b>";
+            _currencyText.text = "Credits:   <b>0</b>";
+            _bestText.text     = $"Best:      <b>{p.bestScore:N0}</b>";
 
             if (_canvasGO != null) _canvasGO.SetActive(true);
             _panel.SetActive(true);
+
+            StopAllCoroutines();
+            StartCoroutine(CountUp(_scoreText,    "Score:     ",  score,    "N0", 0.4f, 0.00f));
+            StartCoroutine(CountUp(_killsText,    "Kills:     ",  kills,    "0",  0.4f, 0.05f));
+            StartCoroutine(CountUp(_xpText,       "XP earned: ",  xpGain,  "0",  0.4f, 0.10f));
+            StartCoroutine(CountUp(_currencyText, "Credits:   ",  currency, "N0", 0.4f, 0.15f));
         }
 
         public void Hide()
@@ -62,6 +69,22 @@ namespace StrafAdvance
             // Hide whole canvas so the full-screen dim Image doesn't intercept clicks meant for MainHub/HUD.
             if (_canvasGO != null) _canvasGO.SetActive(false);
             if (_panel != null)    _panel.SetActive(false);
+        }
+
+        IEnumerator CountUp(TMP_Text label, string prefix, int target, string fmt, float duration, float delay)
+        {
+            if (label == null) yield break;
+            if (delay > 0f) yield return new WaitForSecondsRealtime(delay);
+            if (duration <= 0f) { label.text = $"{prefix}<b>{target.ToString(fmt)}</b>"; yield break; }
+            float t = 0f;
+            while (t < duration)
+            {
+                t += Time.unscaledDeltaTime;
+                int v = Mathf.RoundToInt(Mathf.Lerp(0, target, Mathf.Clamp01(t / duration)));
+                label.text = $"{prefix}<b>{v.ToString(fmt)}</b>";
+                yield return null;
+            }
+            label.text = $"{prefix}<b>{target.ToString(fmt)}</b>";
         }
 
         void Restart()
