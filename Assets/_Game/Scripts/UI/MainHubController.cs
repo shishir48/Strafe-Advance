@@ -139,6 +139,14 @@ namespace StrafAdvance
             var bgImg = bg.gameObject.AddComponent<Image>();
             bgImg.color = new Color(0.04f, 0.06f, 0.16f, 1f);
 
+            // Starfield layer
+            var sfGO = new GameObject("Starfield");
+            sfGO.transform.SetParent(bg.transform, false);
+            var sfRT = sfGO.AddComponent<RectTransform>();
+            sfRT.anchorMin = Vector2.zero; sfRT.anchorMax = Vector2.one;
+            sfRT.offsetMin = Vector2.zero; sfRT.offsetMax = Vector2.zero;
+            sfGO.AddComponent<UIStarfield>().Init(sfRT);
+
             // Title (top-center)
             var titleRT = MakeRect(canvasGO.transform, "Title", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0, -220f), Vector2.zero, new Vector2(960, 140));
             titleRT.pivot = new Vector2(0.5f, 0.5f);
