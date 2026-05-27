@@ -28,6 +28,8 @@ namespace StrafAdvance
         private float _scoreTween;
         private int      _prevMultiplier = 1;
         private Coroutine _popRoutine;
+        private TMP_Text _killLabel;
+        private int      _killCount;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void ResetStatics() { Instance = null; }
@@ -41,6 +43,7 @@ namespace StrafAdvance
             EventBus<ComboChanged>.Subscribe(OnCombo);
             EventBus<WaveStarted>.Subscribe(OnWaveStarted);
             EventBus<GameStateChanged>.Subscribe(OnStateChanged);
+            EventBus<EnemyKilled>.Subscribe(OnKill);
         }
 
         void OnDestroy()
@@ -48,6 +51,7 @@ namespace StrafAdvance
             EventBus<ComboChanged>.Unsubscribe(OnCombo);
             EventBus<WaveStarted>.Unsubscribe(OnWaveStarted);
             EventBus<GameStateChanged>.Unsubscribe(OnStateChanged);
+            EventBus<EnemyKilled>.Unsubscribe(OnKill);
             if (Instance == this) Instance = null;
         }
 
@@ -115,9 +119,17 @@ void SetHp(int cur, int max)
                 return;
             }
 
+            string multColor = c.Multiplier switch
+            {
+                >= 8 => "#ff3030",
+                >= 4 => "#ff8c00",
+                >= 2 => "#ffd700",
+                _    => "#ffffff",
+            };
+
             _comboLabel.text = c.Multiplier > 1
-                ? $"<color=#ffd166>×{c.Multiplier}</color>  <size=22>x{c.Streak}</size>"
-                : $"<size=22>x{c.Streak}</size>";
+                ? $"<color={multColor}>×{c.Multiplier}  <size=22>x{c.Streak}</size></color>"
+                : $"<color={multColor}><size=22>x{c.Streak}</size></color>";
 
             if (c.Multiplier > _prevMultiplier)
             {
@@ -130,7 +142,18 @@ void SetHp(int cur, int max)
 
         void OnStateChanged(GameStateChanged e)
         {
-            if (e.Current == GameState.Playing) _prevMultiplier = 1;
+            if (e.Current == GameState.Playing)
+            {
+                _prevMultiplier = 1;
+                _killCount = 0;
+                if (_killLabel != null) _killLabel.text = "KILLS  000";
+            }
+        }
+
+        void OnKill(EnemyKilled _)
+        {
+            _killCount++;
+            if (_killLabel != null) _killLabel.text = $"KILLS  {_killCount:000}";
         }
 
         void OnWaveStarted(WaveStarted w)
@@ -197,6 +220,13 @@ void BuildUI()
             _scoreLabel.alignment = TextAlignmentOptions.Right;
             var rt = _scoreLabel.rectTransform;
             rt.pivot = new Vector2(1, 1);
+
+            _killLabel = MakeLabel(go.transform, "Kills", new Vector2(1, 1), new Vector2(-30, -72), 26, new Color(0.85f, 0.85f, 1.0f));
+            _killLabel.alignment = TextAlignmentOptions.Right;
+            var killRT = _killLabel.rectTransform;
+            killRT.pivot = new Vector2(1, 1);
+            killRT.sizeDelta = new Vector2(280, 40);
+            _killLabel.text = "KILLS  000";
 
             var vignette = gameObject.AddComponent<DamageFlashVignette>();
             vignette.Init(_canvas, _hpBarBgRT);
