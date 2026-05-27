@@ -125,7 +125,7 @@ namespace StrafAdvance
             prt.anchorMax = new Vector2(0.85f, 0.75f);
             prt.offsetMin = prt.offsetMax = Vector2.zero;
             var bg = _panel.AddComponent<Image>();
-            bg.color = new Color(0.03f, 0.07f, 0.13f, 0.95f);
+            bg.color = new Color(0.05f, 0.08f, 0.18f, 0.95f);
 
             MakeTitle(_panel.transform, Loc.Tr("pause.title"));
             float y = -120f, gap = 95f;
@@ -164,7 +164,7 @@ namespace StrafAdvance
             tmp.text = text;
             tmp.fontSize = 56;
             tmp.alignment = TextAlignmentOptions.Center;
-            tmp.color = new Color(0.31f, 0.76f, 0.97f);
+            tmp.color = new Color(0.0f, 0.9f, 1.0f);
         }
 
         static void MakeButton(Transform parent, string label, float y, System.Action onClick)
@@ -176,9 +176,10 @@ namespace StrafAdvance
             rt.pivot = new Vector2(0.5f, 1f);
             rt.anchoredPosition = new Vector2(0, y); rt.sizeDelta = new Vector2(420, 80);
             var img = go.AddComponent<Image>();
-            img.color = new Color(0.06f, 0.13f, 0.22f, 0.9f);
+            img.color = new Color(0.08f, 0.18f, 0.38f, 0.92f);
             var btn = go.AddComponent<Button>();
             btn.onClick.AddListener(() => onClick?.Invoke());
+            go.AddComponent<UIButtonAnimator>();
 
             var textGO = new GameObject("Label");
             textGO.transform.SetParent(go.transform, false);

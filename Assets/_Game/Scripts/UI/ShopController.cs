@@ -97,7 +97,7 @@ namespace StrafAdvance
                 bool isEquipped = SlotEquipped(s.Slot) == s.Id;
                 bool canAfford = CurrencyService.Instance != null && CurrencyService.Instance.Balance >= s.Price;
                 string priceLine = isOwned
-                    ? (isEquipped ? "<color=#4fc3f7>EQUIPPED</color>" : "<color=#7ed957>OWNED</color>")
+                    ? (isEquipped ? "<color=#00eeff>EQUIPPED</color>" : "<color=#7ed957>OWNED</color>")
                     : (canAfford ? $"<color=#ffd166>◆ {s.Price:N0}</color>" : $"<color=#888>◆ {s.Price:N0}</color>");
                 string action = isOwned ? (isEquipped ? "EQUIPPED" : "EQUIP") : (canAfford ? "BUY" : "LOCKED");
 
@@ -164,7 +164,7 @@ namespace StrafAdvance
                 bool owned = unlocked.Contains(w.id);
                 bool canAfford = CurrencyService.Instance != null && CurrencyService.Instance.Balance >= w.price;
                 string priceLine = owned
-                    ? "<color=#4fc3f7>OWNED</color>"
+                    ? "<color=#00eeff>OWNED</color>"
                     : (w.price == 0
                         ? "FREE"
                         : (canAfford ? $"<color=#ffd166>◆ {w.price:N0}</color>" : $"<color=#888>◆ {w.price:N0}</color>"));
@@ -189,7 +189,7 @@ namespace StrafAdvance
             foreach (var (id, name, price) in CosmeticItems)
             {
                 bool owned = reg != null && reg.IsUnlocked(id);
-                string priceLine = owned ? "<color=#4fc3f7>OWNED</color>" : price;
+                string priceLine = owned ? "<color=#00eeff>OWNED</color>" : price;
                 string action    = owned ? "OWNED" : "BUY";
                 string capturedId = id;
                 var row = MakeShopRow(
@@ -260,16 +260,16 @@ namespace StrafAdvance
             var prt = panel.AddComponent<RectTransform>();
             prt.anchorMin = new Vector2(0.05f, 0.08f); prt.anchorMax = new Vector2(0.95f, 0.92f);
             prt.offsetMin = prt.offsetMax = Vector2.zero;
-            panel.AddComponent<Image>().color = new Color(0.03f, 0.07f, 0.13f, 0.97f);
+            panel.AddComponent<Image>().color = new Color(0.05f, 0.08f, 0.18f, 0.97f);
 
             // Title
-            var title = MakeText(panel.transform, "SHOP", 0.5f, 1f, new Vector2(0, -30f), new Vector2(-40, 80), 56, new Color(0.31f, 0.76f, 0.97f));
+            var title = MakeText(panel.transform, "SHOP", 0.5f, 1f, new Vector2(0, -30f), new Vector2(-40, 80), 56, new Color(0.0f, 0.9f, 1.0f));
             title.fontStyle = FontStyles.Bold;
 
             // Balance chip
             var balRT = MakeRect(panel.transform, "Balance", new Vector2(1, 1), new Vector2(1, 1), new Vector2(-30f, -30f), new Vector2(320, 60));
             balRT.pivot = new Vector2(1f, 1f);
-            balRT.gameObject.AddComponent<Image>().color = new Color(0.04f, 0.08f, 0.14f, 0.92f);
+            balRT.gameObject.AddComponent<Image>().color = new Color(0.06f, 0.12f, 0.28f, 0.92f);
             _balanceLabel = AttachText(balRT.gameObject, "◆  0", 28, new Color(1f, 0.85f, 0.3f), TextAlignmentOptions.Center);
 
             // Tab buttons (3-up — Weapons / Skins / Cosmetics)
@@ -285,7 +285,7 @@ namespace StrafAdvance
             _content.offsetMin = _content.offsetMax = Vector2.zero;
 
             // Close button
-            MakeButton(panel.transform, "CLOSE", new Vector2(0.70f, 0.02f), new Vector2(0.95f, 0.12f), new Color(0.15f, 0.2f, 0.3f), Hide);
+            MakeButton(panel.transform, "CLOSE", new Vector2(0.70f, 0.02f), new Vector2(0.95f, 0.12f), new Color(0.08f, 0.18f, 0.38f), Hide);
         }
 
         Button MakeTabButton(Transform parent, string label, Vector2 aMin, Vector2 aMax, System.Action onClick)
@@ -296,10 +296,11 @@ namespace StrafAdvance
             rt.anchorMin = aMin; rt.anchorMax = aMax;
             rt.offsetMin = rt.offsetMax = Vector2.zero;
             var img = go.AddComponent<Image>();
-            img.color = new Color(0.06f, 0.13f, 0.22f, 0.92f);
+            img.color = new Color(0.08f, 0.18f, 0.38f, 0.92f);
             var btn = go.AddComponent<Button>();
             btn.targetGraphic = img;
             btn.onClick.AddListener(() => onClick?.Invoke());
+            go.AddComponent<UIButtonAnimator>();
             AttachText(go, label, 26, Color.white, TextAlignmentOptions.Center);
             return btn;
         }
@@ -308,7 +309,7 @@ namespace StrafAdvance
         {
             if (btn == null) return;
             var img = btn.GetComponent<Image>();
-            img.color = on ? new Color(0.18f, 0.40f, 0.60f, 0.95f) : new Color(0.06f, 0.13f, 0.22f, 0.92f);
+            img.color = on ? new Color(0.0f, 0.42f, 0.88f, 0.95f) : new Color(0.08f, 0.18f, 0.38f, 0.92f);
         }
 
         GameObject MakeShopRow(string title, string priceText, string actionLabel, bool enabled, Vector2 pos, System.Action onClick)
@@ -321,7 +322,7 @@ namespace StrafAdvance
             rt.anchoredPosition = pos;
             rt.sizeDelta = new Vector2(-20, 120);
             var bg = go.AddComponent<Image>();
-            bg.color = new Color(0.06f, 0.13f, 0.22f, 0.92f);
+            bg.color = new Color(0.08f, 0.18f, 0.38f, 0.92f);
 
             // Title (left)
             var titleRT = MakeRect(go.transform, "Title", new Vector2(0, 0), new Vector2(0.62f, 1), new Vector2(0, 0), Vector2.zero);
@@ -342,11 +343,12 @@ namespace StrafAdvance
             actRT.anchorMin = new Vector2(0.79f, 0.15f); actRT.anchorMax = new Vector2(0.98f, 0.85f);
             actRT.offsetMin = actRT.offsetMax = Vector2.zero;
             var actImg = actGO.AddComponent<Image>();
-            actImg.color = enabled ? new Color(0.18f, 0.6f, 0.85f, 0.95f) : new Color(0.3f, 0.3f, 0.3f, 0.7f);
+            actImg.color = enabled ? new Color(0.0f, 0.5f, 1.0f, 0.95f) : new Color(0.25f, 0.25f, 0.28f, 0.7f);
             var btn = actGO.AddComponent<Button>();
             btn.targetGraphic = actImg;
             btn.interactable = enabled;
             btn.onClick.AddListener(() => onClick?.Invoke());
+            actGO.AddComponent<UIButtonAnimator>();
             AttachText(actGO, actionLabel, 24, Color.white, TextAlignmentOptions.Center);
 
             return go;
@@ -412,6 +414,7 @@ namespace StrafAdvance
             var img = go.AddComponent<Image>(); img.color = bg;
             var btn = go.AddComponent<Button>(); btn.targetGraphic = img;
             btn.onClick.AddListener(() => onClick?.Invoke());
+            go.AddComponent<UIButtonAnimator>();
             AttachText(go, label, 26, Color.white, TextAlignmentOptions.Center);
         }
     }

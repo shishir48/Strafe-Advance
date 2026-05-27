@@ -77,7 +77,7 @@ namespace StrafAdvance
                 {
                     var perk = PerkCatalog.Find(pid);
                     if (perk == null) continue;
-                    var row = MakeText(_perksList, $"<color=#4fc3f7>●</color> {perk.displayName}  <size=18><color=#8aa>{perk.description}</color></size>", new Vector2(0, py), 22, Color.white);
+                    var row = MakeText(_perksList, $"<color=#00eeff>●</color> {perk.displayName}  <size=18><color=#8aa>{perk.description}</color></size>", new Vector2(0, py), 22, Color.white);
                     _perkRowPool.Add(row.gameObject);
                     py -= 40f;
                 }
@@ -135,10 +135,10 @@ namespace StrafAdvance
             var prt = panel.AddComponent<RectTransform>();
             prt.anchorMin = new Vector2(0.05f, 0.08f); prt.anchorMax = new Vector2(0.95f, 0.92f);
             prt.offsetMin = prt.offsetMax = Vector2.zero;
-            panel.AddComponent<Image>().color = new Color(0.03f, 0.07f, 0.13f, 0.97f);
+            panel.AddComponent<Image>().color = new Color(0.05f, 0.08f, 0.18f, 0.97f);
 
             // Title
-            var title = MakeText(panel.transform, "LOADOUT", new Vector2(0, -30f), 56, new Color(0.31f, 0.76f, 0.97f));
+            var title = MakeText(panel.transform, "LOADOUT", new Vector2(0, -30f), 56, new Color(0.0f, 0.9f, 1.0f));
             title.alignment = TextAlignmentOptions.Center;
             title.rectTransform.anchorMin = new Vector2(0, 1); title.rectTransform.anchorMax = new Vector2(1, 1);
             title.rectTransform.pivot = new Vector2(0.5f, 1f);
@@ -190,7 +190,7 @@ namespace StrafAdvance
 
             // Bottom buttons
             MakeButton(panel.transform, "BACK", new Vector2(0.05f, 0.02f), new Vector2(0.3f, 0.13f), new Color(0.15f, 0.2f, 0.3f), Back);
-            MakeButton(panel.transform, "START RUN", new Vector2(0.55f, 0.02f), new Vector2(0.95f, 0.13f), new Color(0.18f, 0.6f, 0.85f), StartRun);
+            MakeButton(panel.transform, "START RUN", new Vector2(0.55f, 0.02f), new Vector2(0.95f, 0.13f), new Color(0.0f, 0.5f, 1.0f), StartRun);
         }
 
         GameObject MakeWeaponCard(WeaponConfig w, bool isEquipped, Vector2 pos)
@@ -203,13 +203,13 @@ namespace StrafAdvance
             rt.anchoredPosition = pos;
             rt.sizeDelta = new Vector2(-20, 140);
             var img = go.AddComponent<Image>();
-            img.color = isEquipped ? new Color(0.10f, 0.30f, 0.50f, 0.95f) : new Color(0.06f, 0.13f, 0.22f, 0.92f);
+            img.color = isEquipped ? new Color(0.0f, 0.35f, 0.75f, 0.95f) : new Color(0.08f, 0.18f, 0.38f, 0.92f);
             var btn = go.AddComponent<Button>();
             btn.targetGraphic = img;
             string capturedId = w.id;
             btn.onClick.AddListener(() => EquipWeapon(capturedId));
 
-            var name = MakeText(go.transform, $"{(isEquipped ? "<color=#4fc3f7>[EQUIPPED] </color>" : "")}{w.displayName}", new Vector2(20, -10), 28, Color.white);
+            var name = MakeText(go.transform, $"{(isEquipped ? "<color=#00eeff>[EQUIPPED] </color>" : "")}{w.displayName}", new Vector2(20, -10), 28, Color.white);
             name.alignment = TextAlignmentOptions.TopLeft;
             name.rectTransform.anchorMin = new Vector2(0, 1); name.rectTransform.anchorMax = new Vector2(1, 1);
             name.rectTransform.pivot = new Vector2(0, 1);
@@ -262,6 +262,7 @@ namespace StrafAdvance
             var btn = go.AddComponent<Button>();
             btn.targetGraphic = img;
             btn.onClick.AddListener(() => onClick?.Invoke());
+            go.AddComponent<UIButtonAnimator>();
 
             var t = new GameObject("Label");
             t.transform.SetParent(go.transform, false);

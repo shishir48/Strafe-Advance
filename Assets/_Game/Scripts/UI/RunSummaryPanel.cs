@@ -45,8 +45,8 @@ namespace StrafAdvance
             SaveSystem.Save();
 
             _title.text       = won
-                ? $"<color=#4fc3f7>{Loc.Tr("run_summary.win")}</color>"
-                : $"<color=#ff6b6b>{Loc.Tr("run_summary.loss")}</color>";
+                ? $"<color=#00eeff>{Loc.Tr("run_summary.win")}</color>"
+                : $"<color=#ff2828>{Loc.Tr("run_summary.loss")}</color>";
             _scoreText.text   = $"Score:     <b>{score:N0}</b>";
             _killsText.text   = $"Kills:     <b>{kills}</b>";
             _xpText.text      = $"XP earned: <b>{xpGain}</b>";
@@ -106,7 +106,7 @@ namespace StrafAdvance
             prt.anchorMin = new Vector2(0.1f, 0.2f); prt.anchorMax = new Vector2(0.9f, 0.8f);
             prt.offsetMin = prt.offsetMax = Vector2.zero;
             var bg = _panel.AddComponent<Image>();
-            bg.color = new Color(0.03f, 0.07f, 0.13f, 0.97f);
+            bg.color = new Color(0.05f, 0.08f, 0.18f, 0.97f);
 
             _title        = MakeLine(_panel.transform, "Title",    -10f, 64f);
             _scoreText    = MakeLine(_panel.transform, "Score",    -140f, 36f);
@@ -147,9 +147,10 @@ namespace StrafAdvance
             rt.anchoredPosition = new Vector2(x - 155, -yFromBottom);
             rt.sizeDelta = new Vector2(240, 80);
             var img = go.AddComponent<Image>();
-            img.color = new Color(0.06f, 0.13f, 0.22f, 0.95f);
+            img.color = new Color(0.08f, 0.18f, 0.38f, 0.95f);
             var btn = go.AddComponent<Button>();
             btn.onClick.AddListener(() => onClick?.Invoke());
+            go.AddComponent<UIButtonAnimator>();
 
             var textGO = new GameObject("Label");
             textGO.transform.SetParent(go.transform, false);

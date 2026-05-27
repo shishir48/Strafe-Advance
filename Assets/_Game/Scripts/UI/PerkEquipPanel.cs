@@ -76,7 +76,7 @@ namespace StrafAdvance
             _root.anchorMax = new Vector2(0.9f, 0.8f);
             _root.offsetMin = _root.offsetMax = Vector2.zero;
             var bg = panel.AddComponent<Image>();
-            bg.color = new Color(0.03f, 0.07f, 0.13f, 0.95f);
+            bg.color = new Color(0.05f, 0.08f, 0.18f, 0.95f);
 
             // Title
             var title = new GameObject("Title");
@@ -92,7 +92,7 @@ namespace StrafAdvance
             titleTMP.text = "PERKS  (tap to equip)";
             titleTMP.fontSize = 44;
             titleTMP.alignment = TextAlignmentOptions.Center;
-            titleTMP.color = new Color(0.31f, 0.76f, 0.97f);
+            titleTMP.color = new Color(0.0f, 0.9f, 1.0f);
 
             // List root
             var list = new GameObject("List");
@@ -124,7 +124,7 @@ namespace StrafAdvance
                 bool isEquipped = equipped.Contains(id);
 
                 var row = MakeButton(_listRoot,
-                    $"{(isEquipped ? "<color=#4fc3f7>[EQ]</color> " : "")}{perk.displayName}\n<size=22>{perk.description}</size>",
+                    $"{(isEquipped ? "<color=#00eeff>[EQ]</color> " : "")}{perk.displayName}\n<size=22>{perk.description}</size>",
                     new Vector2(0, 1), new Vector2(1, 1), new Vector2(0, y), new Vector2(0, 110),
                     () => ToggleEquip(id));
                 row.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 1f);
@@ -154,9 +154,10 @@ namespace StrafAdvance
             rt.anchorMin = anchorMin; rt.anchorMax = anchorMax;
             rt.anchoredPosition = anchoredPos; rt.sizeDelta = sizeDelta;
             var img = go.AddComponent<Image>();
-            img.color = new Color(0.06f, 0.13f, 0.22f, 0.9f);
+            img.color = new Color(0.08f, 0.18f, 0.38f, 0.9f);
             var btn = go.AddComponent<Button>();
             btn.onClick.AddListener(() => onClick?.Invoke());
+            go.AddComponent<UIButtonAnimator>();
 
             var textGO = new GameObject("Label");
             textGO.transform.SetParent(go.transform, false);

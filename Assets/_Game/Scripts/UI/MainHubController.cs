@@ -129,39 +129,39 @@ namespace StrafAdvance
             // Full-screen background gradient
             var bg = MakeRect(canvasGO.transform, "BG", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, Vector2.zero);
             var bgImg = bg.gameObject.AddComponent<Image>();
-            bgImg.color = new Color(0.02f, 0.04f, 0.08f, 1f);
+            bgImg.color = new Color(0.04f, 0.06f, 0.16f, 1f);
 
             // Title (top-center)
             var titleRT = MakeRect(canvasGO.transform, "Title", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0, -220f), Vector2.zero, new Vector2(960, 140));
             titleRT.pivot = new Vector2(0.5f, 0.5f);
-            _title = AddText(titleRT.gameObject, "STRAFE ADVANCE", 96, new Color(0.31f, 0.76f, 0.97f), TextAlignmentOptions.Center);
+            _title = AddText(titleRT.gameObject, "STRAFE ADVANCE", 96, new Color(0.0f, 0.9f, 1.0f), TextAlignmentOptions.Center);
             _title.fontStyle = FontStyles.Bold;
 
             // Subtitle
             var subRT = MakeRect(canvasGO.transform, "Subtitle", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0, -310f), Vector2.zero, new Vector2(720, 40));
             subRT.pivot = new Vector2(0.5f, 0.5f);
-            AddText(subRT.gameObject, Loc.Tr("menu.subtitle"), 22, new Color(0.6f, 0.7f, 0.85f, 0.9f), TextAlignmentOptions.Center);
+            AddText(subRT.gameObject, Loc.Tr("menu.subtitle"), 22, new Color(0.65f, 0.78f, 0.95f, 0.9f), TextAlignmentOptions.Center);
 
             // Top-right currency chip
             var creditsRT = MakeRect(canvasGO.transform, "Credits", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-30f, -30f), Vector2.zero, new Vector2(320, 60));
             creditsRT.pivot = new Vector2(1f, 1f);
             var creditsBg = creditsRT.gameObject.AddComponent<Image>();
-            creditsBg.color = new Color(0.04f, 0.08f, 0.14f, 0.92f);
+            creditsBg.color = new Color(0.06f, 0.12f, 0.28f, 0.92f);
             _credits = AddText(creditsRT.gameObject, "◆  0", 32, new Color(1f, 0.85f, 0.3f), TextAlignmentOptions.Center);
             _credits.richText = true;
 
             // Center column buttons (5 stacked — tightened gap)
             float cy = 60f, gap = 116f;
-            MakeButton(canvasGO.transform, Loc.Tr("menu.play"),        new Vector2(0, cy + gap * 2f), new Color(0.31f, 0.76f, 0.97f), OnPlay);
-            MakeButton(canvasGO.transform, Loc.Tr("menu.loadout"),     new Vector2(0, cy + gap * 1f), new Color(0.06f, 0.13f, 0.22f), OnLoadout);
-            MakeButton(canvasGO.transform, Loc.Tr("menu.shop"),        new Vector2(0, cy + gap * 0f), new Color(0.06f, 0.13f, 0.22f), OnShop);
+            MakeButton(canvasGO.transform, Loc.Tr("menu.play"),        new Vector2(0, cy + gap * 2f), new Color(0.0f, 0.5f, 1.0f), OnPlay);
+            MakeButton(canvasGO.transform, Loc.Tr("menu.loadout"),     new Vector2(0, cy + gap * 1f), new Color(0.08f, 0.18f, 0.38f), OnLoadout);
+            MakeButton(canvasGO.transform, Loc.Tr("menu.shop"),        new Vector2(0, cy + gap * 0f), new Color(0.08f, 0.18f, 0.38f), OnShop);
             MakeButton(canvasGO.transform, Loc.Tr("menu.battle_pass"), new Vector2(0, cy - gap * 1f), new Color(0.15f, 0.30f, 0.18f), OnBattlePass);
-            MakeButton(canvasGO.transform, Loc.Tr("menu.settings"),    new Vector2(0, cy - gap * 2f), new Color(0.06f, 0.13f, 0.22f), OnSettings);
+            MakeButton(canvasGO.transform, Loc.Tr("menu.settings"),    new Vector2(0, cy - gap * 2f), new Color(0.08f, 0.18f, 0.38f), OnSettings);
 
             // BP tier chip — left of credits chip (top-right area)
             var bpRT = MakeRect(canvasGO.transform, "BpChip", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-370f, -30f), Vector2.zero, new Vector2(280, 60));
             bpRT.pivot = new Vector2(1f, 1f);
-            bpRT.gameObject.AddComponent<Image>().color = new Color(0.04f, 0.14f, 0.10f, 0.92f);
+            bpRT.gameObject.AddComponent<Image>().color = new Color(0.06f, 0.22f, 0.14f, 0.92f);
             _bpTierChip = AddText(bpRT.gameObject, "BP  Tier 0/10", 26, new Color(0.7f, 1f, 0.85f), TextAlignmentOptions.Center);
             _bpTierChip.richText = true;
 
@@ -169,15 +169,16 @@ namespace StrafAdvance
             var quitRT = MakeRect(canvasGO.transform, "Quit", new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-30f, 30f), Vector2.zero, new Vector2(180, 70));
             quitRT.pivot = new Vector2(1f, 0f);
             var quitImg = quitRT.gameObject.AddComponent<Image>();
-            quitImg.color = new Color(0.15f, 0.04f, 0.06f, 0.92f);
+            quitImg.color = new Color(0.28f, 0.04f, 0.08f, 0.92f);
             var quitBtn = quitRT.gameObject.AddComponent<Button>();
             quitBtn.onClick.AddListener(OnQuit);
+            quitRT.gameObject.AddComponent<UIButtonAnimator>();
             AddText(quitRT.gameObject, Loc.Tr("menu.quit"), 26, new Color(1f, 0.5f, 0.5f), TextAlignmentOptions.Center);
 
             // Bottom-left status line (best score + level)
             var bestRT = MakeRect(canvasGO.transform, "BestScore", new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(30f, 30f), Vector2.zero, new Vector2(520, 60));
             bestRT.pivot = new Vector2(0f, 0f);
-            _bestScoreLabel = AddText(bestRT.gameObject, "Best: 0   ·   Lvl 1", 22, new Color(0.6f, 0.7f, 0.85f, 0.9f), TextAlignmentOptions.Left);
+            _bestScoreLabel = AddText(bestRT.gameObject, "Best: 0   ·   Lvl 1", 22, new Color(0.65f, 0.78f, 0.95f, 0.9f), TextAlignmentOptions.Left);
         }
 
         // ─── Construction Helpers ───────────────────────────────────────────────
@@ -232,6 +233,7 @@ namespace StrafAdvance
             colors.pressedColor     = new Color(bg.r * 0.7f, bg.g * 0.7f, bg.b * 0.7f, 1f);
             btn.colors = colors;
             btn.onClick.AddListener(() => onClick?.Invoke());
+            rt.gameObject.AddComponent<UIButtonAnimator>();
             var labelText = AddText(rt.gameObject, label, 38, Color.white, TextAlignmentOptions.Center);
             labelText.fontStyle = FontStyles.Bold;
         }

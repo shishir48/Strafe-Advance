@@ -54,7 +54,7 @@ namespace StrafAdvance
             int into   = svc != null ? svc.XpIntoCurrentTier : 0;
             int span   = svc != null ? svc.XpSpanCurrentTier : BattlePassCatalog.XpPerTier;
 
-            _tierLabel.text = $"SEASON 1   ·   TIER <color=#4fc3f7>{tier}</color> / {max}";
+            _tierLabel.text = $"SEASON 1   ·   TIER <color=#00eeff>{tier}</color> / {max}";
             _xpLabel.text   = tier >= max ? "MAX TIER" : $"{into:N0} / {span:N0} XP";
             _xpFill.fillAmount = tier >= max ? 1f : prog;
 
@@ -98,7 +98,7 @@ namespace StrafAdvance
             bg.color = unlocked ? new Color(0.06f, 0.14f, 0.22f, 0.95f) : new Color(0.04f, 0.06f, 0.10f, 0.92f);
 
             // Tier number
-            var label = AttachText(row, $"<b>{t.TierIndex}</b>", 36, unlocked ? new Color(0.31f, 0.76f, 0.97f) : new Color(0.5f, 0.55f, 0.65f), TextAlignmentOptions.Center);
+            var label = AttachText(row, $"<b>{t.TierIndex}</b>", 36, unlocked ? new Color(0.0f, 0.9f, 1.0f) : new Color(0.5f, 0.55f, 0.65f), TextAlignmentOptions.Center);
             label.rectTransform.anchorMin = new Vector2(0, 0); label.rectTransform.anchorMax = new Vector2(0.10f, 1);
             label.rectTransform.offsetMin = label.rectTransform.offsetMax = Vector2.zero;
             label.richText = true;
@@ -136,6 +136,7 @@ namespace StrafAdvance
             btn.targetGraphic = img;
             btn.interactable = canClaim;
             btn.onClick.AddListener(() => onClick?.Invoke());
+            go.AddComponent<UIButtonAnimator>();
 
             string laneLine = laneLabel == "PREMIUM" && !laneEligible
                 ? "<color=#aaa>PREMIUM LOCKED</color>"
@@ -171,9 +172,9 @@ namespace StrafAdvance
             var prt = panel.AddComponent<RectTransform>();
             prt.anchorMin = new Vector2(0.05f, 0.08f); prt.anchorMax = new Vector2(0.95f, 0.92f);
             prt.offsetMin = prt.offsetMax = Vector2.zero;
-            panel.AddComponent<Image>().color = new Color(0.03f, 0.07f, 0.13f, 0.97f);
+            panel.AddComponent<Image>().color = new Color(0.05f, 0.08f, 0.18f, 0.97f);
 
-            _tierLabel = AttachText(panel, "SEASON 1  ·  TIER 0 / 10", 32, new Color(0.31f, 0.76f, 0.97f), TextAlignmentOptions.Center);
+            _tierLabel = AttachText(panel, "SEASON 1  ·  TIER 0 / 10", 32, new Color(0.0f, 0.9f, 1.0f), TextAlignmentOptions.Center);
             _tierLabel.rectTransform.anchorMin = new Vector2(0, 1); _tierLabel.rectTransform.anchorMax = new Vector2(1, 1);
             _tierLabel.rectTransform.pivot = new Vector2(0.5f, 1f);
             _tierLabel.rectTransform.anchoredPosition = new Vector2(0, -30f);
@@ -196,7 +197,7 @@ namespace StrafAdvance
             _xpFill = fillGO.AddComponent<Image>();
             _xpFill.type = Image.Type.Filled;
             _xpFill.fillMethod = Image.FillMethod.Horizontal;
-            _xpFill.color = new Color(0.31f, 0.76f, 0.97f);
+            _xpFill.color = new Color(0.0f, 0.82f, 1.0f);
             _xpFill.fillAmount = 0f;
 
             _xpLabel = AttachText(panel, "0 / 500 XP", 18, new Color(0.7f, 0.8f, 0.95f, 0.9f), TextAlignmentOptions.Center);
@@ -214,6 +215,7 @@ namespace StrafAdvance
             var pmImg = premium.AddComponent<Image>(); pmImg.color = new Color(0.6f, 0.45f, 0.1f, 0.95f);
             _premiumBtn = premium.AddComponent<Button>();
             _premiumBtn.targetGraphic = pmImg;
+            premium.AddComponent<UIButtonAnimator>();
             _premiumBtn.onClick.AddListener(() =>
             {
                 if (BattlePassService.Instance == null) return;
@@ -260,6 +262,7 @@ namespace StrafAdvance
             var cbtn = close.AddComponent<Button>();
             cbtn.targetGraphic = cimg;
             cbtn.onClick.AddListener(Hide);
+            close.AddComponent<UIButtonAnimator>();
             AttachText(close, "CLOSE", 22, Color.white, TextAlignmentOptions.Center);
         }
 
