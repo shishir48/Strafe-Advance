@@ -23,6 +23,7 @@ namespace StrafAdvance
         private PlayerController _player;
         private PlayerHealth _playerHealth;
 
+        private RectTransform _hpBarBgRT;
         private int   _displayedScore;
         private float _scoreTween;
         private int      _prevMultiplier = 1;
@@ -94,10 +95,13 @@ namespace StrafAdvance
             }
         }
 
-        void SetHp(int cur, int max)
+void SetHp(int cur, int max)
         {
             if (_hpFill == null || max <= 0) return;
-            _hpFill.fillAmount = (float)cur / max;
+            float t = (float)cur / max;
+            _hpFill.fillAmount = t;
+            // Gradient: vivid red at low HP, yellow-green at full
+            _hpFill.color = Color.Lerp(new Color(1f, 0.15f, 0.10f), new Color(0.2f, 0.9f, 0.1f), t);
         }
 
         void OnCombo(ComboChanged c)
@@ -165,7 +169,7 @@ namespace StrafAdvance
 
         // ─── UI Construction ────────────────────────────────────────────────────
 
-        void BuildUI()
+void BuildUI()
         {
             var go = new GameObject("ModernHUDCanvas");
             go.transform.SetParent(transform, false);
@@ -178,19 +182,24 @@ namespace StrafAdvance
             go.AddComponent<GraphicRaycaster>();
 
             // ── Top-left: HP + stamina + dodge pip ─────────────────────────────
-            _hpFill      = MakeBar(go.transform, "HP",      new Vector2(0, 1), new Vector2(30, -30),  new Vector2(360, 26), new Color(0.31f, 0.76f, 0.97f));
-            _staminaFill = MakeBar(go.transform, "Stamina", new Vector2(0, 1), new Vector2(30, -70),  new Vector2(280, 14), new Color(0.85f, 0.95f, 0.4f));
-            _dodgePip    = MakePip(go.transform, new Vector2(0, 1), new Vector2(330, -70), new Vector2(22, 22), new Color(0.4f, 1f, 0.6f));
+            // HP bar starts at full (yellow-green), gradient handled in SetHp
+            _hpFill      = MakeBar(go.transform, "HP",      new Vector2(0, 1), new Vector2(30, -30),  new Vector2(360, 26), new Color(0.2f, 0.9f, 0.1f));
+            _hpBarBgRT   = _hpFill.transform.parent.GetComponent<RectTransform>();
+            _staminaFill = MakeBar(go.transform, "Stamina", new Vector2(0, 1), new Vector2(30, -70),  new Vector2(280, 14), new Color(1f, 0.88f, 0.05f));
+            _dodgePip    = MakePip(go.transform, new Vector2(0, 1), new Vector2(330, -70), new Vector2(22, 22), new Color(0.1f, 1f, 0.5f));
 
             // ── Top-center: wave + combo ───────────────────────────────────────
-            _waveLabel   = MakeLabel(go.transform, "Wave",  new Vector2(0.5f, 1), new Vector2(0, -28), 44, new Color(0.31f, 0.76f, 0.97f));
-            _comboLabel  = MakeLabel(go.transform, "Combo", new Vector2(0.5f, 1), new Vector2(0, -80), 40, Color.white);
+            _waveLabel   = MakeLabel(go.transform, "Wave",  new Vector2(0.5f, 1), new Vector2(0, -28), 44, new Color(0.0f, 0.95f, 1.0f));
+            _comboLabel  = MakeLabel(go.transform, "Combo", new Vector2(0.5f, 1), new Vector2(0, -80), 40, new Color(1f, 0.85f, 0.1f));
 
             // ── Top-right: score ────────────────────────────────────────────────
-            _scoreLabel  = MakeLabel(go.transform, "Score", new Vector2(1, 1), new Vector2(-30, -30), 32, Color.white);
+            _scoreLabel  = MakeLabel(go.transform, "Score", new Vector2(1, 1), new Vector2(-30, -30), 32, new Color(0.0f, 1.0f, 0.9f));
             _scoreLabel.alignment = TextAlignmentOptions.Right;
             var rt = _scoreLabel.rectTransform;
             rt.pivot = new Vector2(1, 1);
+
+            var vignette = gameObject.AddComponent<DamageFlashVignette>();
+            vignette.Init(_canvas, _hpBarBgRT);
         }
 
         static Image MakeBar(Transform parent, string name, Vector2 anchor, Vector2 pos, Vector2 size, Color fill)
