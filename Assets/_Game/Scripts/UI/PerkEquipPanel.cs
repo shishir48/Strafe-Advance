@@ -46,6 +46,7 @@ namespace StrafAdvance
         {
             _isOpen = true;
             _root.gameObject.SetActive(true);
+            UITransition.SlideIn(this, _root, new Vector2(1200f, 0f));
             RebuildRows();
         }
 

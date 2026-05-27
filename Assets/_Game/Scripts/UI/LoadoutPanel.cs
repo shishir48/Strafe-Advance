@@ -14,6 +14,7 @@ namespace StrafAdvance
         public static LoadoutPanel Instance { get; private set; }
 
         private GameObject _root;
+        private RectTransform _panelRT;
         private RectTransform _weaponList;
         private RectTransform _perksList;
         private TMP_Text _equippedLabel;
@@ -37,6 +38,7 @@ namespace StrafAdvance
         public void Show()
         {
             _root.SetActive(true);
+            if (_panelRT != null) UITransition.SlideIn(this, _panelRT, new Vector2(1200f, 0f));
             Rebuild();
         }
 
@@ -136,6 +138,7 @@ namespace StrafAdvance
             prt.anchorMin = new Vector2(0.05f, 0.08f); prt.anchorMax = new Vector2(0.95f, 0.92f);
             prt.offsetMin = prt.offsetMax = Vector2.zero;
             panel.AddComponent<Image>().color = new Color(0.05f, 0.08f, 0.18f, 0.97f);
+            _panelRT = prt;
 
             // Title
             var title = MakeText(panel.transform, "LOADOUT", new Vector2(0, -30f), 56, new Color(0.0f, 0.9f, 1.0f));

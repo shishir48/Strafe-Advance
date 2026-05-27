@@ -14,6 +14,7 @@ namespace StrafAdvance
         public static MainHubController Instance { get; private set; }
 
         private GameObject _root;
+        private RectTransform _buttonColumn;
         private TMP_Text   _credits;
         private TMP_Text   _bestScoreLabel;
         private TMP_Text   _bpTierChip;
@@ -66,7 +67,14 @@ namespace StrafAdvance
         public void Hide() { if (_root != null) _root.SetActive(false); }
 
         void OnState(GameStateChanged e) => ApplyVisibility(e.Current);
-        void ApplyVisibility(GameState state) { if (_root != null) _root.SetActive(state == GameState.Menu); }
+        void ApplyVisibility(GameState state)
+        {
+            if (_root == null) return;
+            bool show = state == GameState.Menu;
+            _root.SetActive(show);
+            if (show && _buttonColumn != null)
+                UITransition.SlideIn(this, _buttonColumn, new Vector2(0f, -120f));
+        }
 
         void OnCurrencyChanged(CurrencyEarned _) => RefreshCredits();
 
@@ -151,12 +159,20 @@ namespace StrafAdvance
             _credits.richText = true;
 
             // Center column buttons (5 stacked — tightened gap)
+            var colGO = new GameObject("ButtonColumn");
+            colGO.transform.SetParent(canvasGO.transform, false);
+            _buttonColumn = colGO.AddComponent<RectTransform>();
+            _buttonColumn.anchorMin = new Vector2(0.5f, 0.5f);
+            _buttonColumn.anchorMax = new Vector2(0.5f, 0.5f);
+            _buttonColumn.anchoredPosition = Vector2.zero;
+            _buttonColumn.sizeDelta = new Vector2(420f, 600f);
+
             float cy = 60f, gap = 116f;
-            MakeButton(canvasGO.transform, Loc.Tr("menu.play"),        new Vector2(0, cy + gap * 2f), new Color(0.0f, 0.5f, 1.0f), OnPlay);
-            MakeButton(canvasGO.transform, Loc.Tr("menu.loadout"),     new Vector2(0, cy + gap * 1f), new Color(0.08f, 0.18f, 0.38f), OnLoadout);
-            MakeButton(canvasGO.transform, Loc.Tr("menu.shop"),        new Vector2(0, cy + gap * 0f), new Color(0.08f, 0.18f, 0.38f), OnShop);
-            MakeButton(canvasGO.transform, Loc.Tr("menu.battle_pass"), new Vector2(0, cy - gap * 1f), new Color(0.15f, 0.30f, 0.18f), OnBattlePass);
-            MakeButton(canvasGO.transform, Loc.Tr("menu.settings"),    new Vector2(0, cy - gap * 2f), new Color(0.08f, 0.18f, 0.38f), OnSettings);
+            MakeButton(_buttonColumn, Loc.Tr("menu.play"),        new Vector2(0, cy + gap * 2f), new Color(0.0f, 0.5f, 1.0f), OnPlay);
+            MakeButton(_buttonColumn, Loc.Tr("menu.loadout"),     new Vector2(0, cy + gap * 1f), new Color(0.08f, 0.18f, 0.38f), OnLoadout);
+            MakeButton(_buttonColumn, Loc.Tr("menu.shop"),        new Vector2(0, cy + gap * 0f), new Color(0.08f, 0.18f, 0.38f), OnShop);
+            MakeButton(_buttonColumn, Loc.Tr("menu.battle_pass"), new Vector2(0, cy - gap * 1f), new Color(0.15f, 0.30f, 0.18f), OnBattlePass);
+            MakeButton(_buttonColumn, Loc.Tr("menu.settings"),    new Vector2(0, cy - gap * 2f), new Color(0.08f, 0.18f, 0.38f), OnSettings);
 
             // BP tier chip — left of credits chip (top-right area)
             var bpRT = MakeRect(canvasGO.transform, "BpChip", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-370f, -30f), Vector2.zero, new Vector2(280, 60));

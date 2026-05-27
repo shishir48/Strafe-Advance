@@ -16,6 +16,7 @@ namespace StrafAdvance
         public static ShopController Instance { get; private set; }
 
         private GameObject _root;
+        private RectTransform _panelRT;
         private RectTransform _content;
         private TMP_Text _balanceLabel;
         private Tab _activeTab = Tab.Weapons;
@@ -51,6 +52,7 @@ namespace StrafAdvance
         public void Show()
         {
             _root.SetActive(true);
+            if (_panelRT != null) UITransition.SlideIn(this, _panelRT, new Vector2(1200f, 0f));
             SwitchTab(Tab.Weapons);
             RefreshBalance();
         }
@@ -261,6 +263,7 @@ namespace StrafAdvance
             prt.anchorMin = new Vector2(0.05f, 0.08f); prt.anchorMax = new Vector2(0.95f, 0.92f);
             prt.offsetMin = prt.offsetMax = Vector2.zero;
             panel.AddComponent<Image>().color = new Color(0.05f, 0.08f, 0.18f, 0.97f);
+            _panelRT = prt;
 
             // Title
             var title = MakeText(panel.transform, "SHOP", 0.5f, 1f, new Vector2(0, -30f), new Vector2(-40, 80), 56, new Color(0.0f, 0.9f, 1.0f));

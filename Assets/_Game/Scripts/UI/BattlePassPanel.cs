@@ -15,6 +15,7 @@ namespace StrafAdvance
         public static BattlePassPanel Instance { get; private set; }
 
         GameObject _root;
+        RectTransform _panelRT;
         TMP_Text _tierLabel, _xpLabel, _premiumLabel;
         Image _xpFill;
         RectTransform _listRoot;
@@ -40,7 +41,7 @@ namespace StrafAdvance
             if (Instance == this) Instance = null;
         }
 
-        public void Show() { _root.SetActive(true); Refresh(); }
+        public void Show() { _root.SetActive(true); if (_panelRT != null) UITransition.SlideIn(this, _panelRT, new Vector2(0f, -1800f)); Refresh(); }
         public void Hide() { if (_root != null) _root.SetActive(false); }
 
         void RefreshIfOpen() { if (_root != null && _root.activeSelf) Refresh(); }
@@ -173,6 +174,7 @@ namespace StrafAdvance
             prt.anchorMin = new Vector2(0.05f, 0.08f); prt.anchorMax = new Vector2(0.95f, 0.92f);
             prt.offsetMin = prt.offsetMax = Vector2.zero;
             panel.AddComponent<Image>().color = new Color(0.05f, 0.08f, 0.18f, 0.97f);
+            _panelRT = prt;
 
             _tierLabel = AttachText(panel, "SEASON 1  ·  TIER 0 / 10", 32, new Color(0.0f, 0.9f, 1.0f), TextAlignmentOptions.Center);
             _tierLabel.rectTransform.anchorMin = new Vector2(0, 1); _tierLabel.rectTransform.anchorMax = new Vector2(1, 1);
