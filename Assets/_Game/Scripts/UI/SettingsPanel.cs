@@ -17,6 +17,8 @@ namespace StrafAdvance
         private Toggle _vibration, _invertY, _colorblind;
         private TMP_Dropdown _quality;
         private TMP_Dropdown _language;
+        private GameObject _tooltipRoot;
+        private TMP_Text   _tooltipLbl;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void ResetStatics() { Instance = null; }
@@ -144,7 +146,95 @@ namespace StrafAdvance
                 else { SaveSystem.Current.profile.tutorialCompleted = false; SaveSystem.Save(); }
             });
             MakeButton(panel.transform, Loc.Tr("settings.close"),          new Vector2(0.68f, 0.02f), new Vector2(0.94f, 0.10f), new Color(0.08f, 0.18f, 0.38f, 0.95f), Hide);
+
+            // "?" explainers next to the less-obvious settings.
+            AddHelpBadge(panel.transform, yStart - gap * 3, "How fast aim moves for a given drag.\nHigher = more sensitive.");
+            AddHelpBadge(panel.transform, yStart - gap * 4 + 10f,        "Haptic feedback on hits and pickups.");
+            AddHelpBadge(panel.transform, yStart - gap * 4 + 10f - 56f,  "Flip the vertical aim direction.");
+            AddHelpBadge(panel.transform, yStart - gap * 4 + 10f - 112f, "Shifts enemy and UI colors for\ndeuteranopia-friendly contrast.");
+            AddHelpBadge(panel.transform, yStart - gap * 4 + 10f - 180f, "Render quality. Lower it if the device\nruns hot or drains battery fast.");
+
+            BuildTooltip(panel.transform);
         }
+
+        // ─── Tooltip helpers (P6.6) ─────────────────────────────────────────────
+
+        // Small "?" badge anchored at the end of a row's label; taps open the shared tooltip card.
+        void AddHelpBadge(Transform parent, float y, string help)
+        {
+            var go = new GameObject("Help");
+            go.transform.SetParent(parent, false);
+            var rt = go.AddComponent<RectTransform>();
+            rt.anchorMin = new Vector2(0, 1); rt.anchorMax = new Vector2(0, 1);
+            rt.pivot = new Vector2(0, 1);
+            rt.anchoredPosition = new Vector2(360, y - 6);
+            rt.sizeDelta = new Vector2(40, 40);
+            var img = go.AddComponent<Image>();
+            img.color = new Color(0.10f, 0.28f, 0.5f, 0.95f);
+            var btn = go.AddComponent<Button>();
+            btn.targetGraphic = img;
+            btn.onClick.AddListener(() => ShowTooltip(help));
+            var t = new GameObject("Q");
+            t.transform.SetParent(go.transform, false);
+            var trt = t.AddComponent<RectTransform>();
+            trt.anchorMin = Vector2.zero; trt.anchorMax = Vector2.one;
+            trt.offsetMin = trt.offsetMax = Vector2.zero;
+            var tmp = t.AddComponent<TextMeshProUGUI>();
+            var font = TMP_Settings.defaultFontAsset;
+            if (font != null) tmp.font = font;
+            tmp.text = "?"; tmp.fontSize = 26; tmp.fontStyle = FontStyles.Bold;
+            tmp.alignment = TextAlignmentOptions.Center; tmp.color = Color.white;
+        }
+
+        void BuildTooltip(Transform parent)
+        {
+            _tooltipRoot = new GameObject("Tooltip");
+            _tooltipRoot.transform.SetParent(parent, false);
+            var rootRT = _tooltipRoot.AddComponent<RectTransform>();
+            rootRT.anchorMin = Vector2.zero; rootRT.anchorMax = Vector2.one;
+            rootRT.offsetMin = rootRT.offsetMax = Vector2.zero;
+
+            // Transparent backer — tap anywhere to dismiss.
+            var backer = _tooltipRoot.AddComponent<Image>();
+            backer.color = new Color(0f, 0f, 0f, 0.001f);
+            var backerBtn = _tooltipRoot.AddComponent<Button>();
+            backerBtn.targetGraphic = backer;
+            backerBtn.onClick.AddListener(HideTooltip);
+
+            // Card.
+            var card = new GameObject("Card");
+            card.transform.SetParent(_tooltipRoot.transform, false);
+            var cardRT = card.AddComponent<RectTransform>();
+            cardRT.anchorMin = new Vector2(0.5f, 0.5f); cardRT.anchorMax = new Vector2(0.5f, 0.5f);
+            cardRT.pivot = new Vector2(0.5f, 0.5f);
+            cardRT.sizeDelta = new Vector2(620, 260);
+            card.AddComponent<Image>().color = new Color(0.03f, 0.07f, 0.16f, 0.99f);
+
+            var lblGO = new GameObject("Text");
+            lblGO.transform.SetParent(card.transform, false);
+            var lrt = lblGO.AddComponent<RectTransform>();
+            lrt.anchorMin = Vector2.zero; lrt.anchorMax = Vector2.one;
+            lrt.offsetMin = new Vector2(30, 30); lrt.offsetMax = new Vector2(-30, -30);
+            _tooltipLbl = lblGO.AddComponent<TextMeshProUGUI>();
+            var font = TMP_Settings.defaultFontAsset;
+            if (font != null) _tooltipLbl.font = font;
+            _tooltipLbl.fontSize = 30;
+            _tooltipLbl.alignment = TextAlignmentOptions.Center;
+            _tooltipLbl.color = Color.white;
+            _tooltipLbl.enableWordWrapping = true;
+
+            _tooltipRoot.SetActive(false);
+        }
+
+        void ShowTooltip(string text)
+        {
+            if (_tooltipRoot == null) return;
+            _tooltipLbl.text = text;
+            _tooltipRoot.transform.SetAsLastSibling();
+            _tooltipRoot.SetActive(true);
+        }
+
+        void HideTooltip() { if (_tooltipRoot != null) _tooltipRoot.SetActive(false); }
 
         // ─── Widget Factories ───────────────────────────────────────────────────
 
