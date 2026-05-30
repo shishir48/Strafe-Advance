@@ -38,6 +38,7 @@ namespace StrafAdvance
             EventBus<EnemyDamaged>.Clear();
             EventBus<WaveStarted>.Clear();
             EventBus<SurgeEvent>.Clear();
+            EventBus<MilestoneReached>.Clear();
             EventBus<PlayerDamaged>.Clear();
             EventBus<DodgePerformed>.Clear();
             EventBus<ComboChanged>.Clear();
