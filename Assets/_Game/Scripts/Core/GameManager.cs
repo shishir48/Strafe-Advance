@@ -25,6 +25,8 @@ namespace StrafAdvance
             fsm.Allow(GameState.BossFight,     GameState.GameOver);
             fsm.Allow(GameState.BossFight,     GameState.LevelComplete);
             fsm.Allow(GameState.GameOver,      GameState.Menu);
+            fsm.Allow(GameState.GameOver,      GameState.Playing); // revive resumes the run
+
             fsm.Allow(GameState.LevelComplete, GameState.Menu);
             return fsm;
         }

@@ -404,6 +404,50 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3578916643112778131, guid: 4324ede58a374435b8e20f9fd9c5c879, type: 3}
   m_PrefabInstance: {fileID: 236458128}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &314723098
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 314723100}
+  - component: {fileID: 314723099}
+  m_Layer: 0
+  m_Name: ReviveService
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &314723099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 314723098}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec841b5e9acd6463f9084a0909b20676, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: _Game.Scripts::StrafAdvance.ReviveService
+--- !u!4 &314723100
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 314723098}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &352334797
 GameObject:
   m_ObjectHideFlags: 0
@@ -3126,3 +3170,4 @@ SceneRoots:
   - {fileID: 92721675}
   - {fileID: 957339395}
   - {fileID: 1448867685}
+  - {fileID: 314723100}

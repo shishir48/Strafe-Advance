@@ -17,6 +17,8 @@ namespace StrafAdvance
         private GameObject _canvasGO;
         private GameObject _panel;
         private TMP_Text _title, _scoreText, _killsText, _xpText, _currencyText, _bestText;
+        private GameObject _reviveBtn;
+        private TMP_Text _reviveLabel;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void ResetStatics() { Instance = null; }
@@ -57,6 +59,8 @@ namespace StrafAdvance
             if (_canvasGO != null) _canvasGO.SetActive(true);
             _panel.SetActive(true);
 
+            UpdateReviveButton(won);
+
             StopAllCoroutines();
             StartCoroutine(CountUp(_scoreText,    "Score:     ",  score,    "N0", 0.4f, 0.00f));
             StartCoroutine(CountUp(_killsText,    "Kills:     ",  kills,    "0",  0.4f, 0.05f));
@@ -85,6 +89,26 @@ namespace StrafAdvance
                 yield return null;
             }
             label.text = $"{prefix}<b>{target.ToString(fmt)}</b>";
+        }
+
+        // Show the revive CTA only on a lost endless run the player can afford to revive.
+        void UpdateReviveButton(bool won)
+        {
+            if (_reviveBtn == null) return;
+            bool show = !won
+                        && ReviveService.Instance != null
+                        && GameManager.Instance != null
+                        && GameManager.Instance.Mode == GameManager.RunMode.Endless
+                        && ReviveService.Instance.CanAffordRevive;
+            _reviveBtn.SetActive(show);
+            if (show && _reviveLabel != null)
+                _reviveLabel.text = $"REVIVE   ◆ {ReviveService.Instance.CurrentCost:N0}";
+        }
+
+        void OnReviveClicked()
+        {
+            // On success, ReviveService resumes the run and hides this panel. On failure, leave it open.
+            if (ReviveService.Instance != null) ReviveService.Instance.TryReviveWithCurrency();
         }
 
         void Restart()
@@ -140,6 +164,41 @@ namespace StrafAdvance
 
             MakeButton(_panel.transform, Loc.Tr("run_summary.restart"), 30f,  -60f, Restart);
             MakeButton(_panel.transform, Loc.Tr("run_summary.menu"),    280f, -60f, Menu);
+
+            BuildReviveButton(_panel.transform);
+        }
+
+        void BuildReviveButton(Transform parent)
+        {
+            var go = new GameObject("Btn_Revive");
+            go.transform.SetParent(parent, false);
+            var rt = go.AddComponent<RectTransform>();
+            rt.anchorMin = new Vector2(0.5f, 0); rt.anchorMax = new Vector2(0.5f, 0);
+            rt.pivot = new Vector2(0.5f, 0f);
+            rt.anchoredPosition = new Vector2(0, 160f);
+            rt.sizeDelta = new Vector2(420, 90);
+            var img = go.AddComponent<Image>();
+            img.color = new Color(0.95f, 0.45f, 0.05f, 0.97f);
+            var btn = go.AddComponent<Button>();
+            btn.onClick.AddListener(OnReviveClicked);
+            go.AddComponent<UIButtonAnimator>();
+
+            var textGO = new GameObject("Label");
+            textGO.transform.SetParent(go.transform, false);
+            var trt = textGO.AddComponent<RectTransform>();
+            trt.anchorMin = Vector2.zero; trt.anchorMax = Vector2.one;
+            trt.offsetMin = trt.offsetMax = Vector2.zero;
+            var tmp = textGO.AddComponent<TextMeshProUGUI>();
+            var f = TMP_Settings.defaultFontAsset;
+            if (f != null) tmp.font = f;
+            tmp.text = "REVIVE";
+            tmp.fontSize = 34;
+            tmp.alignment = TextAlignmentOptions.Center;
+            tmp.color = Color.white;
+
+            _reviveBtn = go;
+            _reviveLabel = tmp;
+            go.SetActive(false);
         }
 
         static TMP_Text MakeLine(Transform parent, string name, float y, float size)
