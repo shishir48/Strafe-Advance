@@ -42,10 +42,19 @@ namespace StrafAdvance
                 return;
             }
             Hide();
-            FindAnyObjectByType<WaveSpawner>().LoadLevel(level);
-            FindAnyObjectByType<CorridorScroller>().Initialize(level.worldScrollSpeed);
-            GameManager.Instance.SetState(GameState.Playing);
-            FindAnyObjectByType<WaveSpawner>().StartSpawning();
+
+            var waveSpawner      = FindAnyObjectByType<WaveSpawner>();
+            var corridorScroller = FindAnyObjectByType<CorridorScroller>();
+            if (waveSpawner == null || corridorScroller == null)
+            {
+                Debug.LogWarning("[LevelSelect] WaveSpawner/CorridorScroller missing — cannot start level.");
+                return;
+            }
+
+            waveSpawner.LoadLevel(level);
+            corridorScroller.Initialize(level.worldScrollSpeed);
+            if (GameManager.Instance != null) GameManager.Instance.SetState(GameState.Playing);
+            waveSpawner.StartSpawning();
         }
     }
 }

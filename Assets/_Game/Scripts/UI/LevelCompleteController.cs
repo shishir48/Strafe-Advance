@@ -35,6 +35,6 @@ namespace StrafAdvance
         }
 
         public void OnNextPressed() => GameManager.Instance.SetState(GameState.Menu);
-        public void OnShopPressed() => FindAnyObjectByType<ShopController>().Show();
+        public void OnShopPressed() => FindAnyObjectByType<ShopController>()?.Show();
     }
 }

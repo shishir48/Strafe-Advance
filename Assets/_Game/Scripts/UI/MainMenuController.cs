@@ -21,6 +21,6 @@ namespace StrafAdvance
         public void OnPlayPressed() => levelSelect.Show();
 
         public void OnShopPressed()
-            => FindAnyObjectByType<ShopController>().Show();
+            => FindAnyObjectByType<ShopController>()?.Show();
     }
 }
