@@ -46,6 +46,9 @@ namespace StrafAdvance
 
         /// <summary>Wipe all subscribers. Call between play sessions to defend against domain-reload skip.</summary>
         public static void Clear() => _handlers.Clear();
+
+        /// <summary>Live subscriber count. Used by leak-detection tests across scene reloads.</summary>
+        public static int HandlerCount => _handlers.Count;
     }
 
     // ─── Standard game messages ─────────────────────────────────────────────────
