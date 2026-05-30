@@ -24,6 +24,9 @@ namespace StrafAdvance
         public long lastPlayedUtcMs;
         // Set true after the player finishes (or skips) the in-run tutorial.
         public bool tutorialCompleted;
+        // First-impression nudges — fire once ever, then stay quiet.
+        public bool firstBloodSeen;
+        public bool firstDeathCoached;
     }
 
     [Serializable]

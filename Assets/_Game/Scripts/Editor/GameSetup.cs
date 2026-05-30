@@ -1135,6 +1135,8 @@ namespace StrafAdvance.Editor
             MakeGO<SettingsPanel>("SettingsPanel");
             // Onboarding (P4.6): first-run tutorial overlay
             MakeGO<TutorialController>("TutorialController");
+            // First-impression coach (P6.4/P6.5): first-blood banner + first-death perk nudge
+            MakeGO<FirstImpressionCoach>("FirstImpressionCoach");
             // Crash + retention infra (P7.2 / P6.3 / P6.4)
             MakeGO<CrashReporter>("CrashReporter");
             MakeGO<DailyLoginService>("DailyLoginService");
@@ -1329,6 +1331,7 @@ namespace StrafAdvance.Editor
             EnsureSingleton<ShopController>("ShopController");
             EnsureSingleton<SettingsPanel>("SettingsPanel");
             EnsureSingleton<TutorialController>("TutorialController");
+            EnsureSingleton<FirstImpressionCoach>("FirstImpressionCoach");
 
             // Audio
             EnsureSingleton<SfxRouter>("SfxRouter");
