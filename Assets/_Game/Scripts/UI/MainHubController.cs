@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,6 +22,9 @@ namespace StrafAdvance
         private TMP_Text   _bpTierChip;
         private float      _titlePulseTime;
         private TMP_Text   _title;
+        private RectTransform _titleRT;
+        private readonly List<CanvasGroup> _buttonGroups = new List<CanvasGroup>();
+        private Coroutine  _entrance;
         private System.Action<BattlePassTierReached> _onBpTier;
         private System.Action<LanguageChanged>       _onLangChanged;
 
@@ -78,8 +83,41 @@ namespace StrafAdvance
             if (_root == null) return;
             bool show = state == GameState.Menu;
             _root.SetActive(show);
-            if (show && _buttonColumn != null)
-                UITransition.SlideIn(this, _buttonColumn, new Vector2(0f, -120f));
+            if (show)
+            {
+                if (_entrance != null) StopCoroutine(_entrance);
+                _entrance = StartCoroutine(PlayEntrance());
+            }
+        }
+
+        /// <summary>Title slides down from above; buttons fade in top-down, staggered 50ms.</summary>
+        IEnumerator PlayEntrance()
+        {
+            const float titleDur = 0.45f, fadeDur = 0.25f, stagger = 0.05f;
+            float restY = _titleRT != null ? _titleRT.anchoredPosition.y : 0f;
+            foreach (var g in _buttonGroups) if (g != null) g.alpha = 0f;
+
+            float t = 0f;
+            while (t < titleDur || t < stagger * _buttonGroups.Count + fadeDur)
+            {
+                t += Time.unscaledDeltaTime;
+                if (_titleRT != null)
+                {
+                    float k = Mathf.Clamp01(t / titleDur);
+                    float ease = 1f - (1f - k) * (1f - k);
+                    var p = _titleRT.anchoredPosition; p.y = Mathf.Lerp(restY + 160f, restY, ease); _titleRT.anchoredPosition = p;
+                }
+                for (int i = 0; i < _buttonGroups.Count; i++)
+                {
+                    if (_buttonGroups[i] == null) continue;
+                    float k = Mathf.Clamp01((t - i * stagger) / fadeDur);
+                    _buttonGroups[i].alpha = k;
+                }
+                yield return null;
+            }
+            if (_titleRT != null) { var p = _titleRT.anchoredPosition; p.y = restY; _titleRT.anchoredPosition = p; }
+            foreach (var g in _buttonGroups) if (g != null) g.alpha = 1f;
+            _entrance = null;
         }
 
         void OnCurrencyChanged(CurrencyEarned _) => RefreshCredits();
@@ -131,6 +169,7 @@ namespace StrafAdvance
         {
             var canvasGO = new GameObject("MainHubCanvas");
             canvasGO.transform.SetParent(transform, false);
+            _buttonGroups.Clear();
             var c = canvasGO.AddComponent<Canvas>();
             c.renderMode = RenderMode.ScreenSpaceOverlay;
             c.sortingOrder = 60;
@@ -156,6 +195,7 @@ namespace StrafAdvance
             // Title (top-center)
             var titleRT = MakeRect(canvasGO.transform, "Title", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0, -220f), Vector2.zero, new Vector2(960, 140));
             titleRT.pivot = new Vector2(0.5f, 0.5f);
+            _titleRT = titleRT;
             _title = AddText(titleRT.gameObject, "STRAFE ADVANCE", 96, new Color(0.0f, 0.9f, 1.0f), TextAlignmentOptions.Center);
             _title.fontStyle = FontStyles.Bold;
 
@@ -254,6 +294,7 @@ namespace StrafAdvance
         {
             var rt = MakeRect(parent, "Btn_" + label, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), pos, Vector2.zero, new Vector2(420, 110));
             rt.pivot = new Vector2(0.5f, 0.5f);
+            _buttonGroups.Add(rt.gameObject.AddComponent<CanvasGroup>());
             var img = rt.gameObject.AddComponent<Image>();
             img.color = bg;
             var btn = rt.gameObject.AddComponent<Button>();
