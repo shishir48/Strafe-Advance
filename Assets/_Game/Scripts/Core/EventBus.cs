@@ -76,6 +76,13 @@ namespace StrafAdvance
         public WaveStarted(int index, int total) { Index = index; Total = total; }
     }
 
+    /// <summary>A mid-run surge spike began (Endless mode). Carries the type for UI/banners.</summary>
+    public readonly struct SurgeEvent
+    {
+        public readonly SurgeType Type;
+        public SurgeEvent(SurgeType type) { Type = type; }
+    }
+
     public readonly struct PlayerDamaged
     {
         public readonly int Amount;

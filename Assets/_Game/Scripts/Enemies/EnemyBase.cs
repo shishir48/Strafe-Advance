@@ -40,6 +40,13 @@ namespace StrafAdvance
             }
         }
 
+        /// <summary>Restore HP up to max (used by HealerEnemy). No effect on a dead enemy.</summary>
+        public void Heal(int amount)
+        {
+            if (CurrentHp <= 0 || amount <= 0) return;
+            CurrentHp = Mathf.Min(Config.maxHp, CurrentHp + amount);
+        }
+
         protected virtual void OnDamageTaken() { }
         public event System.Action<EnemyBase> OnEscaped;
 

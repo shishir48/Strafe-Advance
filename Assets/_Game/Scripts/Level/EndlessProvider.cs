@@ -17,7 +17,9 @@ namespace StrafAdvance
             (2, EnemyType.Flanker),
             (4, EnemyType.Charger),
             (6, EnemyType.Sniper),
+            (7, EnemyType.Bomber),
             (8, EnemyType.Shielded),
+            (10, EnemyType.Healer),
             (11, EnemyType.Drone),
             (14, EnemyType.Splitter),
         };
@@ -57,6 +59,21 @@ namespace StrafAdvance
             // Mini-boss surge every 5th wave (index 4, 9, 14, ...).
             if (depth % 5 == 4)
                 entries.Add(new WaveEntry { enemyType = EnemyType.MiniBoss, count = 1, startDelay = 1.5f });
+
+            // Mid-run surge spikes (themed extra spawns; banner via SurgeAnnouncer).
+            switch (SurgeSchedule.For(depth))
+            {
+                case SurgeType.SwarmRush:
+                    entries.Add(new WaveEntry { enemyType = EnemyType.Drone, count = 10, spawnInterval = 0.2f, startDelay = 0.5f });
+                    break;
+                case SurgeType.EliteAmbush:
+                    entries.Add(new WaveEntry { enemyType = EnemyType.Elite, count = 4, spawnInterval = 0.6f, startDelay = 0.5f });
+                    break;
+                case SurgeType.Gauntlet:
+                    entries.Add(new WaveEntry { enemyType = EnemyType.Bomber,  count = 3, spawnInterval = 0.5f, startDelay = 0.5f });
+                    entries.Add(new WaveEntry { enemyType = EnemyType.Charger, count = 3, spawnInterval = 0.6f, startDelay = 1.0f });
+                    break;
+            }
 
             var wave = ScriptableObject.CreateInstance<WaveConfig>();
             wave.entries = entries.ToArray();

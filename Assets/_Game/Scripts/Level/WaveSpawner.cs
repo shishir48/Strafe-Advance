@@ -26,6 +26,10 @@ namespace StrafAdvance
         [SerializeField] private EnemyConfig droneConfig;
         [SerializeField] private MiniBossEnemy miniBossPrefab;
         [SerializeField] private EnemyConfig miniBossConfig;
+        [SerializeField] private BomberEnemy bomberPrefab;
+        [SerializeField] private EnemyConfig bomberConfig;
+        [SerializeField] private HealerEnemy healerPrefab;
+        [SerializeField] private EnemyConfig healerConfig;
         [SerializeField] private Bullet enemyBulletPrefab;
 
         private ObjectPool<Bullet> _enemyBulletPool;
@@ -208,6 +212,24 @@ namespace StrafAdvance
                         EventBus<KillCamRequest>.Publish(new KillCamRequest(e.transform.position));
                     };
                     mb.OnEscaped += _ => ReportKill();
+                    return true;
+                }
+                case EnemyType.Bomber:
+                {
+                    if (bomberPrefab == null) { WarnMissingPrefab(type); return false; }
+                    BomberEnemy e = Instantiate(bomberPrefab, spawnPos, Quaternion.identity, spawnParent);
+                    e.Initialize(ScaledOr(bomberConfig != null ? bomberConfig : gruntConfig));
+                    e.InitBomber(playerTransform);
+                    WireDeathAndEscape(e, EnemyType.Bomber, 220);
+                    return true;
+                }
+                case EnemyType.Healer:
+                {
+                    if (healerPrefab == null) { WarnMissingPrefab(type); return false; }
+                    HealerEnemy e = Instantiate(healerPrefab, spawnPos, Quaternion.identity, spawnParent);
+                    e.Initialize(ScaledOr(healerConfig != null ? healerConfig : gruntConfig));
+                    e.InitHealer(playerTransform);
+                    WireDeathAndEscape(e, EnemyType.Healer, 280);
                     return true;
                 }
             }
