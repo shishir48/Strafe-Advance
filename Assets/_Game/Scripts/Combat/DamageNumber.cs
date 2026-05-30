@@ -28,6 +28,10 @@ namespace StrafAdvance
 
         public void Show(int amount, Vector3 worldPos, Color color)
         {
+            // Awake doesn't fire on inactive Instantiate clones until SetActive(true), so
+            // initialize lazily here — text assignment otherwise NREs on first pool spawn.
+            if (_label == null) _label = GetComponent<TMP_Text>();
+            if (_cam == null)   _cam   = Camera.main;
             _label.text  = amount.ToString();
             _label.color = color;
             _t = 0f;
