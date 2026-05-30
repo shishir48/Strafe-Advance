@@ -23,6 +23,8 @@ namespace StrafAdvance
         private TMP_Text _stepLabel;
         private CanvasGroup _panelGroup;
         private RectTransform _panelRT;
+        private RectTransform _dragHint;
+        private CanvasGroup   _dragHintGroup;
 
         private readonly List<Step> _steps = new List<Step>();
         private int _activeIdx = -1;
@@ -81,9 +83,22 @@ namespace StrafAdvance
         {
             if (!_running) return;
             AnimatePanel();
+            AnimateDragHint();
             if (_activeIdx < 0 || _activeIdx >= _steps.Count) return;
             var step = _steps[_activeIdx];
             if (step.IsComplete != null && step.IsComplete()) NextStep();
+        }
+
+        // Finger/touch dot slides L↔R over the play area during the drag step only.
+        void AnimateDragHint()
+        {
+            if (_dragHint == null) return;
+            bool show = _running && _activeIdx == 0;
+            if (_dragHintGroup != null) _dragHintGroup.alpha = show ? 1f : 0f;
+            if (!show) return;
+            float ping = Mathf.Sin(Time.unscaledTime * 2.2f); // -1..1
+            var p = _dragHint.anchoredPosition; p.x = ping * 170f; _dragHint.anchoredPosition = p;
+            _dragHint.localScale = Vector3.one * Mathf.Lerp(0.85f, 1f, 1f - Mathf.Abs(ping)); // press at center
         }
 
         // ─── Public API ─────────────────────────────────────────────────────────
@@ -219,8 +234,35 @@ namespace StrafAdvance
             _panelGroup = panel.AddComponent<CanvasGroup>();
             _panelGroup.blocksRaycasts = false; // never blocks gameplay input
 
+            // Drag-hint touch dot — lives on the canvas (above play area), not the panel.
+            var hint = new GameObject("DragHint");
+            hint.transform.SetParent(canvasGO.transform, false);
+            _dragHint = hint.AddComponent<RectTransform>();
+            _dragHint.anchorMin = _dragHint.anchorMax = new Vector2(0.5f, 0.42f);
+            _dragHint.pivot = new Vector2(0.5f, 0.5f);
+            _dragHint.sizeDelta = new Vector2(110, 110);
+            _dragHintGroup = hint.AddComponent<CanvasGroup>();
+            _dragHintGroup.alpha = 0f;
+            _dragHintGroup.blocksRaycasts = false;
+            _dragHintGroup.interactable = false;
+            var circle = MakeCircleSprite();
+            var ring = new GameObject("Ring");
+            ring.transform.SetParent(hint.transform, false);
+            var ringRT = ring.AddComponent<RectTransform>();
+            ringRT.anchorMin = Vector2.zero; ringRT.anchorMax = Vector2.one;
+            ringRT.offsetMin = ringRT.offsetMax = Vector2.zero;
+            var ringImg = ring.AddComponent<Image>();
+            ringImg.sprite = circle; ringImg.color = new Color(0f, 0.9f, 1f, 0.35f); ringImg.raycastTarget = false;
+            var dot = new GameObject("Dot");
+            dot.transform.SetParent(hint.transform, false);
+            var dotRT = dot.AddComponent<RectTransform>();
+            dotRT.anchorMin = new Vector2(0.5f, 0.5f); dotRT.anchorMax = new Vector2(0.5f, 0.5f);
+            dotRT.pivot = new Vector2(0.5f, 0.5f); dotRT.sizeDelta = new Vector2(56, 56);
+            var dotImg = dot.AddComponent<Image>();
+            dotImg.sprite = circle; dotImg.color = new Color(0f, 0.9f, 1f, 0.95f); dotImg.raycastTarget = false;
+
             // Step counter (top-left)
-            _stepLabel = MakeText(panel.transform, "TUTORIAL 1/4", new Vector2(0, 1), new Vector2(0, 1), new Vector2(20, -10f), new Vector2(280, 30), 18, new Color(0.31f, 0.76f, 0.97f), TextAlignmentOptions.TopLeft);
+            _stepLabel = MakeText(panel.transform, "TUTORIAL 1/4", new Vector2(0, 1), new Vector2(0, 1), new Vector2(20, -10f), new Vector2(280, 30), 18, new Color(0.0f, 0.9f, 1.0f), TextAlignmentOptions.TopLeft);
 
             // Big prompt (center)
             _promptLabel = MakeText(panel.transform, "", new Vector2(0, 0), new Vector2(1, 1), new Vector2(20, 60), new Vector2(-40, -20), 38, Color.white, TextAlignmentOptions.Center);
@@ -246,6 +288,25 @@ namespace StrafAdvance
             var skipLbl = MakeText(skip.transform, "SKIP", new Vector2(0, 0), new Vector2(1, 1), Vector2.zero, Vector2.zero, 22, new Color(0.7f, 0.8f, 0.95f), TextAlignmentOptions.Center);
             skipLbl.rectTransform.anchorMin = Vector2.zero; skipLbl.rectTransform.anchorMax = Vector2.one;
             skipLbl.rectTransform.offsetMin = skipLbl.rectTransform.offsetMax = Vector2.zero;
+        }
+
+        // One-off antialiased white circle sprite for the touch dot / ring.
+        static Sprite MakeCircleSprite()
+        {
+            const int n = 64;
+            var tex = new Texture2D(n, n, TextureFormat.RGBA32, false);
+            float r = n * 0.5f, c = r - 0.5f;
+            var px = new Color32[n * n];
+            for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                {
+                    float d = Mathf.Sqrt((x - c) * (x - c) + (y - c) * (y - c));
+                    float a = Mathf.Clamp01(r - d); // 1px soft edge
+                    px[y * n + x] = new Color32(255, 255, 255, (byte)(a * 255));
+                }
+            tex.SetPixels32(px);
+            tex.Apply();
+            return Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), 100f);
         }
 
         static TMP_Text MakeText(Transform parent, string text, Vector2 aMin, Vector2 aMax, Vector2 pos, Vector2 size, float fontSize, Color color, TextAlignmentOptions align)
