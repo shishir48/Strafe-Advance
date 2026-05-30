@@ -1399,6 +1399,12 @@ namespace StrafAdvance.Editor
             foreach (var r in scene.GetRootGameObjects())
                 Object.DestroyImmediate(r);
 
+            // Camera so the splash overlay renders on a clean black frame.
+            var camGO = new GameObject("SplashCamera");
+            var cam = camGO.AddComponent<Camera>();
+            cam.clearFlags = CameraClearFlags.SolidColor;
+            cam.backgroundColor = new Color(0.04f, 0.06f, 0.16f, 1f);
+
             // Bootstrap loader
             var loaderGO = new GameObject("SceneLoader");
             loaderGO.AddComponent<BootstrapLoader>();
