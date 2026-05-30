@@ -91,6 +91,7 @@ namespace StrafAdvance
             ["en"] = new Dictionary<string, string>
             {
                 ["menu.play"]          = "PLAY",
+                ["menu.arcade"]        = "ARCADE",
                 ["menu.loadout"]       = "LOADOUT",
                 ["menu.shop"]          = "SHOP",
                 ["menu.battle_pass"]   = "BATTLE PASS",
@@ -129,6 +130,7 @@ namespace StrafAdvance
             ["es"] = new Dictionary<string, string>
             {
                 ["menu.play"]          = "JUGAR",
+                ["menu.arcade"]        = "ARCADE",
                 ["menu.loadout"]       = "EQUIPO",
                 ["menu.shop"]          = "TIENDA",
                 ["menu.battle_pass"]   = "PASE DE BATALLA",
@@ -167,6 +169,7 @@ namespace StrafAdvance
             ["ja"] = new Dictionary<string, string>
             {
                 ["menu.play"]          = "プレイ",
+                ["menu.arcade"]        = "アーケード",
                 ["menu.loadout"]       = "装備",
                 ["menu.shop"]          = "ショップ",
                 ["menu.battle_pass"]   = "バトルパス",
@@ -205,6 +208,7 @@ namespace StrafAdvance
             ["zh-CN"] = new Dictionary<string, string>
             {
                 ["menu.play"]          = "开始",
+                ["menu.arcade"]        = "街机",
                 ["menu.loadout"]       = "装备",
                 ["menu.shop"]          = "商店",
                 ["menu.battle_pass"]   = "战令",

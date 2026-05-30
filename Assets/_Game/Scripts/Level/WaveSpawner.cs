@@ -29,7 +29,7 @@ namespace StrafAdvance
         [SerializeField] private Bullet enemyBulletPrefab;
 
         private ObjectPool<Bullet> _enemyBulletPool;
-        private LevelConfig _level;
+        private IWaveProvider _provider;
         private int _enemiesAlive;
         private bool _spawning;
 
@@ -43,9 +43,12 @@ namespace StrafAdvance
                 _enemyBulletPool = new ObjectPool<Bullet>(enemyBulletPrefab, 30, spawnParent);
         }
 
-        public void LoadLevel(LevelConfig level)
+        public void LoadLevel(LevelConfig level) => LoadProvider(new FixedLevelProvider(level));
+
+        /// <summary>Load any wave source — FixedLevelProvider for campaign, EndlessProvider for arcade.</summary>
+        public void LoadProvider(IWaveProvider provider)
         {
-            _level = level;
+            _provider = provider;
             CurrentWaveIndex = 0;
             _enemiesAlive = 0;
         }
@@ -55,9 +58,9 @@ namespace StrafAdvance
         IEnumerator SpawnWave(int index)
         {
             _spawning = true;
-            WaveConfig wave = _level.waves[index];
+            WaveConfig wave = _provider.GetWave(index);
             OnWaveStarted?.Invoke(index);
-            EventBus<WaveStarted>.Publish(new WaveStarted(index, _level.waves.Length));
+            EventBus<WaveStarted>.Publish(new WaveStarted(index, _provider.WaveCount));
 
             if (wave.UsesEntries)
             {
@@ -81,7 +84,7 @@ namespace StrafAdvance
             if (_enemiesAlive <= 0)
             {
                 CurrentWaveIndex++;
-                if (CurrentWaveIndex >= _level.waves.Length)
+                if (CurrentWaveIndex >= _provider.WaveCount)
                     OnAllWavesComplete?.Invoke();
                 else
                     StartCoroutine(SpawnWave(CurrentWaveIndex));
@@ -239,7 +242,7 @@ namespace StrafAdvance
             if (_enemiesAlive > 0 || _spawning) return;
 
             CurrentWaveIndex++;
-            if (CurrentWaveIndex >= _level.waves.Length)
+            if (CurrentWaveIndex >= _provider.WaveCount)
                 OnAllWavesComplete?.Invoke();
             else if (Application.isPlaying)
                 StartCoroutine(SpawnWave(CurrentWaveIndex));

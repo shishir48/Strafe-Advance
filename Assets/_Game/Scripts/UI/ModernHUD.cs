@@ -159,7 +159,10 @@ void SetHp(int cur, int max)
         void OnWaveStarted(WaveStarted w)
         {
             if (_waveLabel == null) return;
-            _waveLabel.text = $"WAVE {w.Index + 1}/{w.Total}";
+            // Endless mode reports int.MaxValue total — drop the "/N" so it reads "WAVE 37".
+            _waveLabel.text = w.Total >= int.MaxValue
+                ? $"WAVE {w.Index + 1}"
+                : $"WAVE {w.Index + 1}/{w.Total}";
         }
 
         IEnumerator ComboPopRoutine()
