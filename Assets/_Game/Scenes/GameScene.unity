@@ -5320,6 +5320,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4616555552890649729, guid: 4324ede58a374435b8e20f9fd9c5c879, type: 3}
+      propertyPath: shieldVisual
+      value: 
+      objectReference: {fileID: 1263007766}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -13079,7 +13083,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1263007767
 Transform:
   m_ObjectHideFlags: 0
