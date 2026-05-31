@@ -20244,6 +20244,10 @@ PrefabInstance:
       value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 3548075511590600291, guid: 3ae788305127f45de86fe4a57a04f455, type: 3}
+      propertyPath: m_Cookie
+      value: 
+      objectReference: {fileID: 2800000, guid: 251f4ed67532b4aa4b29a632696a1c97, type: 3}
+    - target: {fileID: 3548075511590600291, guid: 3ae788305127f45de86fe4a57a04f455, type: 3}
       propertyPath: m_Color.b
       value: 0.3
       objectReference: {fileID: 0}
