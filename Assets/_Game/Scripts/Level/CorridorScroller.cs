@@ -46,5 +46,9 @@ namespace StrafAdvance
 
         public void SetSpeed(float speed) => _speed = speed;
         public void Stop() => _speed = 0f;
+
+        /// <summary>Current world-scroll speed. Read by EnvironmentScroller so the
+        /// static set-dressing scrolls in lockstep with the corridor (incl. pause/stop).</summary>
+        public float Speed => _speed;
     }
 }
