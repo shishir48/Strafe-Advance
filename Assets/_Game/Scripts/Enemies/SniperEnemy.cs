@@ -25,6 +25,11 @@ namespace StrafAdvance
         private float _fireTimer;
         private float _chargeTimer;
 
+        // Shared across all snipers — laser color is driven per-instance via
+        // startColor/endColor, so one cached material avoids a per-spawn
+        // Shader.Find + a leaked Material instance per enemy.
+        private static Material s_LaserMat;
+
         public void InitSniper(Transform player, ObjectPool<Bullet> sharedBulletPool)
         {
             _player = player;
@@ -34,7 +39,8 @@ namespace StrafAdvance
             _laser.positionCount = 2;
             _laser.startWidth = 0.04f;
             _laser.endWidth   = 0.01f;
-            _laser.material   = new Material(Shader.Find("Sprites/Default")) { color = laserIdleColor };
+            if (s_LaserMat == null) s_LaserMat = new Material(Shader.Find("Sprites/Default"));
+            _laser.sharedMaterial = s_LaserMat;
             _laser.startColor = _laser.endColor = laserIdleColor;
         }
 
