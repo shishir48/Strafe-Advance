@@ -69,7 +69,15 @@ namespace StrafAdvance
                                      ForceMode.VelocityChange);
 
             // Fade the last fraction by lowering emission toward black; then destroy.
+            // Base emission captured once from sharedMaterial; faded via MaterialPropertyBlock
+            // (no material cloning, and a correct linear fade rather than per-frame compounding).
             var renderers = GetComponentsInChildren<Renderer>();
+            var baseEmission = new Color[renderers.Length];
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                var sm = renderers[i] != null ? renderers[i].sharedMaterial : null;
+                baseEmission[i] = (sm != null && sm.HasProperty("_EmissionColor")) ? sm.GetColor("_EmissionColor") : Color.black;
+            }
             float t = 0f;
             while (t < lifetime)
             {
@@ -78,15 +86,8 @@ namespace StrafAdvance
                 if (u >= fadeStartFrac)
                 {
                     float fade = 1f - (u - fadeStartFrac) / (1f - fadeStartFrac);
-                    foreach (var r in renderers)
-                    {
-                        if (r == null || r.material == null) continue;
-                        if (r.material.HasProperty("_EmissionColor"))
-                        {
-                            var c = r.material.GetColor("_EmissionColor");
-                            r.material.SetColor("_EmissionColor", c * fade);
-                        }
-                    }
+                    for (int i = 0; i < renderers.Length; i++)
+                        RendererEmission.Set(renderers[i], baseEmission[i] * fade);
                 }
                 yield return null;
             }

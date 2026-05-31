@@ -7,12 +7,12 @@ namespace StrafAdvance
     /// <summary>
     /// Universal damage-response component. Add once to every enemy prefab root.
     /// On <c>EnemyDamaged</c> firing for this enemy's position, it:
-    ///   - flashes every Renderer's material emission to white for <see cref="flashSeconds"/>
+    ///   - flashes every Renderer's emission to white for <see cref="flashSeconds"/>
     ///   - scales the model up to <see cref="popScale"/> over <see cref="popSeconds"/> then back
     ///   - applies a brief positional knockback away from the hit
     ///
-    /// Material instancing is unavoidable for the flash (URP shared mats can't be tinted per-instance
-    /// without instancing). Restored on death.
+    /// Flash uses <see cref="RendererEmission"/> (MaterialPropertyBlock) — per-instance tint with
+    /// no material cloning, no GC, batching preserved. Base emission read from sharedMaterial.
     /// </summary>
     public class EnemyHitReact : MonoBehaviour
     {
@@ -37,8 +37,8 @@ namespace StrafAdvance
             _baseEmission.Clear();
             foreach (var r in _renderers)
             {
-                var mat = r.material; // forces instance — required for per-instance flash
-                _baseEmission.Add(mat.HasProperty("_EmissionColor") ? mat.GetColor("_EmissionColor") : Color.black);
+                var mat = r.sharedMaterial; // read base from shared — no instancing
+                _baseEmission.Add(mat != null && mat.HasProperty("_EmissionColor") ? mat.GetColor("_EmissionColor") : Color.black);
             }
             _baseScale = transform.localScale;
         }
@@ -60,18 +60,10 @@ namespace StrafAdvance
         IEnumerator FlashRoutine()
         {
             for (int i = 0; i < _renderers.Count; i++)
-            {
-                var r = _renderers[i];
-                if (r != null && r.material != null && r.material.HasProperty("_EmissionColor"))
-                    r.material.SetColor("_EmissionColor", flashColor);
-            }
+                RendererEmission.Set(_renderers[i], flashColor);
             yield return new WaitForSeconds(flashSeconds);
             for (int i = 0; i < _renderers.Count; i++)
-            {
-                var r = _renderers[i];
-                if (r != null && r.material != null && r.material.HasProperty("_EmissionColor"))
-                    r.material.SetColor("_EmissionColor", _baseEmission[i]);
-            }
+                RendererEmission.Set(_renderers[i], _baseEmission[i]);
             _flashRoutine = null;
         }
 

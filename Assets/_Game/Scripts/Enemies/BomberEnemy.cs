@@ -69,8 +69,7 @@ namespace StrafAdvance
             {
                 var r = _renderers[i];
                 if (r is ParticleSystemRenderer || r is LineRenderer) continue;
-                var m = r.material;
-                if (m.HasProperty("_EmissionColor")) m.SetColor("_EmissionColor", c);
+                RendererEmission.Set(r, c);
             }
         }
     }
