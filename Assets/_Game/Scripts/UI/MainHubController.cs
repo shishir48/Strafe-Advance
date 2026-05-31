@@ -142,6 +142,7 @@ namespace StrafAdvance
             else BeginRunDirect();
         }
 
+        void OnArcade()     { GameManager.Instance?.BeginEndlessRun(); }
         void OnLoadout()    { if (LoadoutPanel.Instance != null) LoadoutPanel.Instance.Show(); }
         void OnShop()       { if (ShopController.Instance != null) ShopController.Instance.Show(); }
         void OnBattlePass() { if (BattlePassPanel.Instance != null) BattlePassPanel.Instance.Show(); }
@@ -204,6 +205,14 @@ namespace StrafAdvance
             subRT.pivot = new Vector2(0.5f, 0.5f);
             AddText(subRT.gameObject, Loc.Tr("menu.subtitle"), 22, new Color(0.65f, 0.78f, 0.95f, 0.9f), TextAlignmentOptions.Center);
 
+            // Arcade best-score line (shown only once a run has been recorded)
+            if (EndlessScore.Best > 0)
+            {
+                var arcadeBestRT = MakeRect(canvasGO.transform, "ArcadeBest", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0, -360f), Vector2.zero, new Vector2(720, 36));
+                arcadeBestRT.pivot = new Vector2(0.5f, 0.5f);
+                AddText(arcadeBestRT.gameObject, $"{Loc.Tr("menu.arcade")} BEST  ◆ {EndlessScore.Best:n0}", 24, new Color(0.95f, 0.55f, 0.15f), TextAlignmentOptions.Center);
+            }
+
             // Top-right currency chip
             var creditsRT = MakeRect(canvasGO.transform, "Credits", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-30f, -30f), Vector2.zero, new Vector2(320, 60));
             creditsRT.pivot = new Vector2(1f, 1f);
@@ -212,7 +221,7 @@ namespace StrafAdvance
             _credits = AddText(creditsRT.gameObject, "◆  0", 32, new Color(1f, 0.85f, 0.3f), TextAlignmentOptions.Center);
             _credits.richText = true;
 
-            // Center column buttons (5 stacked — tightened gap)
+            // Center column buttons (6 stacked — tightened gap)
             var colGO = new GameObject("ButtonColumn");
             colGO.transform.SetParent(canvasGO.transform, false);
             _buttonColumn = colGO.AddComponent<RectTransform>();
@@ -221,12 +230,13 @@ namespace StrafAdvance
             _buttonColumn.anchoredPosition = Vector2.zero;
             _buttonColumn.sizeDelta = new Vector2(420f, 600f);
 
-            float cy = 60f, gap = 116f;
-            MakeButton(_buttonColumn, Loc.Tr("menu.play"),        new Vector2(0, cy + gap * 2f), new Color(0.0f, 0.5f, 1.0f), OnPlay);
-            MakeButton(_buttonColumn, Loc.Tr("menu.loadout"),     new Vector2(0, cy + gap * 1f), new Color(0.08f, 0.18f, 0.38f), OnLoadout);
-            MakeButton(_buttonColumn, Loc.Tr("menu.shop"),        new Vector2(0, cy + gap * 0f), new Color(0.08f, 0.18f, 0.38f), OnShop);
-            MakeButton(_buttonColumn, Loc.Tr("menu.battle_pass"), new Vector2(0, cy - gap * 1f), new Color(0.15f, 0.30f, 0.18f), OnBattlePass);
-            MakeButton(_buttonColumn, Loc.Tr("menu.settings"),    new Vector2(0, cy - gap * 2f), new Color(0.08f, 0.18f, 0.38f), OnSettings);
+            float cy = 60f, gap = 100f;
+            MakeButton(_buttonColumn, Loc.Tr("menu.play"),        new Vector2(0, cy + gap * 2.5f), new Color(0.0f, 0.5f, 1.0f), OnPlay);
+            MakeButton(_buttonColumn, Loc.Tr("menu.arcade"),      new Vector2(0, cy + gap * 1.5f), new Color(0.95f, 0.45f, 0.05f), OnArcade);
+            MakeButton(_buttonColumn, Loc.Tr("menu.loadout"),     new Vector2(0, cy + gap * 0.5f), new Color(0.08f, 0.18f, 0.38f), OnLoadout);
+            MakeButton(_buttonColumn, Loc.Tr("menu.shop"),        new Vector2(0, cy - gap * 0.5f), new Color(0.08f, 0.18f, 0.38f), OnShop);
+            MakeButton(_buttonColumn, Loc.Tr("menu.battle_pass"), new Vector2(0, cy - gap * 1.5f), new Color(0.15f, 0.30f, 0.18f), OnBattlePass);
+            MakeButton(_buttonColumn, Loc.Tr("menu.settings"),    new Vector2(0, cy - gap * 2.5f), new Color(0.08f, 0.18f, 0.38f), OnSettings);
 
             // BP tier chip — left of credits chip (top-right area)
             var bpRT = MakeRect(canvasGO.transform, "BpChip", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-370f, -30f), Vector2.zero, new Vector2(280, 60));

@@ -35,6 +35,7 @@ namespace StrafAdvance
         public int   highestWaveCleared;
         public int   totalKills;
         public int   bestScore;
+        public int   bestEndlessScore;
         public int   softCurrency;
         public int   hardCurrency;
         public int   playerLevel = 1;

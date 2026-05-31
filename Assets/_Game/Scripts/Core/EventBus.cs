@@ -46,6 +46,9 @@ namespace StrafAdvance
 
         /// <summary>Wipe all subscribers. Call between play sessions to defend against domain-reload skip.</summary>
         public static void Clear() => _handlers.Clear();
+
+        /// <summary>Live subscriber count. Used by leak-detection tests across scene reloads.</summary>
+        public static int HandlerCount => _handlers.Count;
     }
 
     // ─── Standard game messages ─────────────────────────────────────────────────
@@ -71,6 +74,13 @@ namespace StrafAdvance
         public readonly int Index;
         public readonly int Total;
         public WaveStarted(int index, int total) { Index = index; Total = total; }
+    }
+
+    /// <summary>A mid-run surge spike began (Endless mode). Carries the type for UI/banners.</summary>
+    public readonly struct SurgeEvent
+    {
+        public readonly SurgeType Type;
+        public SurgeEvent(SurgeType type) { Type = type; }
     }
 
     public readonly struct PlayerDamaged

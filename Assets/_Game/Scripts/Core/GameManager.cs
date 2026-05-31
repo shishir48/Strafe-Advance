@@ -25,6 +25,8 @@ namespace StrafAdvance
             fsm.Allow(GameState.BossFight,     GameState.GameOver);
             fsm.Allow(GameState.BossFight,     GameState.LevelComplete);
             fsm.Allow(GameState.GameOver,      GameState.Menu);
+            fsm.Allow(GameState.GameOver,      GameState.Playing); // revive resumes the run
+
             fsm.Allow(GameState.LevelComplete, GameState.Menu);
             return fsm;
         }
@@ -37,6 +39,8 @@ namespace StrafAdvance
             EventBus<EnemyKilled>.Clear();
             EventBus<EnemyDamaged>.Clear();
             EventBus<WaveStarted>.Clear();
+            EventBus<SurgeEvent>.Clear();
+            EventBus<MilestoneReached>.Clear();
             EventBus<PlayerDamaged>.Clear();
             EventBus<DodgePerformed>.Clear();
             EventBus<ComboChanged>.Clear();
@@ -73,7 +77,12 @@ namespace StrafAdvance
         public int Score { get; private set; }
         public int KillCount { get; private set; }
 
-        private bool _runLoopWired;
+        public enum RunMode { Campaign, Endless }
+        public RunMode Mode { get; private set; } = RunMode.Campaign;
+
+        private const float EndlessScrollSpeed = 5f;
+        private bool _playerDeathWired;
+        private bool _bossWired;
 
         void Start()
         {
@@ -121,19 +130,17 @@ namespace StrafAdvance
 
             Score = 0;
             KillCount = 0;
+            Mode = RunMode.Campaign;
 
             corridorScroller.Initialize(l1.worldScrollSpeed);
             waveSpawner.LoadLevel(l1);
             SetState(GameState.Playing);
             waveSpawner.StartSpawning();
 
-            if (_runLoopWired) return;
-            _runLoopWired = true;
+            WirePlayerDeath();
 
-            // Wire game loop events (idempotent guard above prevents double-subscription on retry).
-            var playerHealth = FindAnyObjectByType<PlayerHealth>();
-            if (playerHealth != null)
-                playerHealth.OnDeath += () => SetState(GameState.GameOver);
+            if (_bossWired) return;
+            _bossWired = true;
 
             waveSpawner.OnAllWavesComplete += () =>
             {
@@ -165,6 +172,43 @@ namespace StrafAdvance
             };
         }
 
+        /// <summary>Transition from Menu → Playing in Endless Arcade mode: procedural waves, no end-boss, runs until death.</summary>
+        public void BeginEndlessRun()
+        {
+            if (State != GameState.Menu) return;
+
+            var waveSpawner      = FindAnyObjectByType<WaveSpawner>();
+            var corridorScroller = FindAnyObjectByType<CorridorScroller>();
+
+            if (waveSpawner == null || corridorScroller == null)
+            {
+                Debug.LogWarning("[GameManager] Missing required components for BeginEndlessRun.");
+                return;
+            }
+
+            Score = 0;
+            KillCount = 0;
+            Mode = RunMode.Endless;
+
+            corridorScroller.Initialize(EndlessScrollSpeed);
+            waveSpawner.LoadProvider(new EndlessProvider());
+            SetState(GameState.Playing);
+            waveSpawner.StartSpawning();
+
+            WirePlayerDeath();
+            // No boss wiring: EndlessProvider injects a mini-boss every 5th wave and never completes.
+        }
+
+        // Player-death → GameOver. Guarded so menu→run→menu→run cycles don't double-subscribe.
+        void WirePlayerDeath()
+        {
+            if (_playerDeathWired) return;
+            _playerDeathWired = true;
+            var playerHealth = FindAnyObjectByType<PlayerHealth>();
+            if (playerHealth != null)
+                playerHealth.OnDeath += () => SetState(GameState.GameOver);
+        }
+
         public void SetState(GameState state)
         {
             var prev = _fsm.Current;
@@ -173,6 +217,10 @@ namespace StrafAdvance
                 if (prev != state) Debug.LogWarning($"[GameManager] Illegal transition {prev} → {state}, ignored.");
                 return;
             }
+            // Record best endless score when an arcade run ends.
+            if (state == GameState.GameOver && Mode == RunMode.Endless)
+                EndlessScore.Record(Score);
+
             OnStateChanged?.Invoke(state);
             EventBus<GameStateChanged>.Publish(new GameStateChanged(prev, state));
             // RunSummaryPanel listens for GameOver/LevelComplete and presents Restart/Menu — no extra overlay needed.

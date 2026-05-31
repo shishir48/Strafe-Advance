@@ -24,19 +24,40 @@ namespace StrafAdvance
             if (_cache.TryGetValue(key, out var cached)) return cached as T;
 
             T asset = null;
-            try
+            // Only route through Addressables when the key is actually registered. Probing an
+            // unregistered key with LoadAssetAsync logs an InvalidKeyException to the console even
+            // though we catch the throw — that error noise fails stability ("zero exceptions") runs.
+            if (HasAddressableKey(key))
             {
-                AsyncOperationHandle<T> op = Addressables.LoadAssetAsync<T>(key);
-                asset = op.WaitForCompletion();
-            }
-            catch
-            {
-                // Key not registered in Addressables — fall through to Resources.
+                try
+                {
+                    AsyncOperationHandle<T> op = Addressables.LoadAssetAsync<T>(key);
+                    asset = op.WaitForCompletion();
+                }
+                catch
+                {
+                    // Registered but failed to load — fall through to Resources.
+                }
             }
 
             if (asset == null) asset = Resources.Load<T>(key);
             if (asset != null) _cache[key] = asset;
             return asset;
+        }
+
+        /// <summary>True when <paramref name="key"/> resolves to at least one Addressable location.
+        /// LoadResourceLocationsAsync returns an empty list (no error log) for unknown keys.</summary>
+        static bool HasAddressableKey(string key)
+        {
+            try
+            {
+                var locs = Addressables.LoadResourceLocationsAsync(key).WaitForCompletion();
+                return locs != null && locs.Count > 0;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>Drop the cache. Call between scene loads if memory budget is tight.</summary>
