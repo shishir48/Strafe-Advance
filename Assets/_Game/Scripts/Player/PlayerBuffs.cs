@@ -8,6 +8,7 @@ namespace StrafAdvance
     {
         [SerializeField] private AutoShooter autoShooter;
         [SerializeField] private PlayerHealth health;
+        [SerializeField] private GameObject shieldVisual;
 
         private readonly Dictionary<PowerUpType, Coroutine> _active = new Dictionary<PowerUpType, Coroutine>();
 
@@ -35,6 +36,7 @@ namespace StrafAdvance
                     break;
                 case PowerUpType.Shield:
                     if (health != null) health.SetInvincible(on);
+                    if (shieldVisual != null) shieldVisual.SetActive(on);
                     break;
                 case PowerUpType.Multishot:
                     if (autoShooter != null) autoShooter.SetMultishot(on);
